@@ -1,0 +1,22 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+#
+# Visual studio dirs:
+Licenta/.vs/
+Licenta/Visual Studio/.vs/
+Licenta/Visual Studio/obj/
+Licenta/Visual Studio/x64/
+Licenta/libs/
+Licenta/x64/
+# LaTeX files:
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.toc

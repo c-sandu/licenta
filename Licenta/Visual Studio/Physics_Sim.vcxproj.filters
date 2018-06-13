@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Component">
+      <UniqueIdentifier>{ffd36542-e34d-410c-bc58-4b894826cd56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{a8037b96-114b-4585-8990-e4bbc9e05270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\GPU">
+      <UniqueIdentifier>{6cb218a8-606b-4ccf-b600-b138b737312f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Managers">
+      <UniqueIdentifier>{3bad645f-a623-462b-b9e2-86fa67436f7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Window">
+      <UniqueIdentifier>{9a7d30b3-b916-49c0-be07-3280eeb16f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{97a44fe7-18f2-45af-bc70-66ba288f7dd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{97eca0c2-a835-4d7b-86e3-45ac0ba6575a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\scenes">
+      <UniqueIdentifier>{b3c70305-fe34-4dfe-aa73-83359e200ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\shaders">
+      <UniqueIdentifier>{bcbe7cce-3443-427f-80ff-984954c48e92}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\Component\CameraInput.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Component\SceneInput.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Component\SimpleScene.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\GPU\GPUBuffers.cpp">
+      <Filter>Core\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\GPU\Mesh.cpp">
+      <Filter>Core\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\GPU\Shader.cpp">
+      <Filter>Core\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\GPU\Texture2D.cpp">
+      <Filter>Core\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\Managers\TextureManager.cpp">
+      <Filter>Core\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\Window\InputController.cpp">
+      <Filter>Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\Window\WindowCallbacks.cpp">
+      <Filter>Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\Window\WindowObject.cpp">
+      <Filter>Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\Engine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\World.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\include\gl.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Main.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\TestApp.cpp">
+      <Filter>Physics\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\rigidbody.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\broadphase.cpp" />
+    <ClCompile Include="..\Source\Physics\object.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Component\CameraInput.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Component\SceneInput.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Component\SimpleScene.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\GPU\GPUBuffers.h">
+      <Filter>Core\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\GPU\Mesh.h">
+      <Filter>Core\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\GPU\Shader.h">
+      <Filter>Core\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\GPU\Texture2D.h">
+      <Filter>Core\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Managers\ResourcePath.h">
+      <Filter>Core\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Managers\TextureManager.h">
+      <Filter>Core\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Window\InputController.h">
+      <Filter>Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Window\WindowCallbacks.h">
+      <Filter>Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Window\WindowObject.h">
+      <Filter>Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\Engine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\World.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\include\gl.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\include\glm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\include\math.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\include\utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\TestApp.h">
+      <Filter>Physics\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\rigidbody.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\broadphase.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\object.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Source\Physics\shaders\FragmentShader.glsl">
+      <Filter>Physics\shaders</Filter>
+    </None>
+    <None Include="..\Source\Physics\shaders\VertexShader.glsl">
+      <Filter>Physics\shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
