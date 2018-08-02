@@ -46,6 +46,7 @@ public:
 	void applyForce(const glm::vec3 & force);
 	void applyForceAtWorldPoint(const glm::vec3 & force, const glm::vec3 & point);
 	void applyForceAtLocalPoint(const glm::vec3 & force, const glm::vec3 & point);
+	void applyTorqueAtLocalPoint(const glm::vec3 & torque, const glm::vec3 & point);
 
 	/* basic moments of inertia(with mass factored out) */
 	static glm::mat3 inertiaTensorCube(const glm::vec3 & halfsizes = glm::vec3(0.5));

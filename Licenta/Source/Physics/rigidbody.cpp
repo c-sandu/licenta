@@ -21,10 +21,10 @@ RigidBody::RigidBody(const glm::vec3 & position, glm::vec3 scale)
 
 void RigidBody::updateTransformMatrix()
 {
-	transform = glm::mat4(1);
-	transform = glm::translate(transform, position);
+	transform = glm::translate(glm::mat4(1), position) * glm::mat4_cast(orientation) * glm::scale(glm::mat4(1), scale) * glm::mat4(1);
+	/*transform = glm::translate(transform, position);
 	transform *= glm::mat4_cast(orientation);
-	transform = glm::scale(transform, scale);
+	transform = glm::scale(transform, scale);*/
 }
 
 void RigidBody::updateInvInertiaTensorWorld()
@@ -61,9 +61,11 @@ void RigidBody::integrate(float deltaTime)
 
 	angAcceleration = invInertiaTensorWorld * torqueAccumulator * invMass;
 	angVelocity += angAcceleration * deltaTime;
-	glm::vec3 axis = glm::normalize(angVelocity);
-	float angle = glm::length(angVelocity);
-	orientation = glm::rotate(orientation, angle, axis);
+	//glm::vec3 axis = glm::normalize(angVelocity);
+	//float angle = glm::length(angVelocity);
+	//orientation = glm::rotate(orientation, angle, angVelocity);
+	//orientation = glm::normalize(orientation);
+	orientation = orientation + deltaTime * 0.5f * glm::quat(0.0f, angVelocity) * orientation;
 	orientation = glm::normalize(orientation);
 
 	linVelocity *= glm::pow(linDamping, deltaTime);
@@ -91,6 +93,14 @@ void RigidBody::applyForceAtLocalPoint(const glm::vec3 & force, const glm::vec3 
 	glm::vec3 pointWorld = transform * glm::vec4(point, 1);
 	applyForceAtWorldPoint(force, pointWorld);
 }
+
+void RigidBody::applyTorqueAtLocalPoint(const glm::vec3 & torque, const glm::vec3 & point)
+{
+	glm::vec3 pointWorld = transform * glm::vec4(point, 1);
+	glm::vec3 torqueWorld = transform * glm::vec4(torque * 10000.0f, 1);
+	torqueAccumulator += glm::cross(torqueWorld, pointWorld - position);
+}
+
 
 glm::mat3 RigidBody::inertiaTensorCube(const glm::vec3 & halfSizes)
 {

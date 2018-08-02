@@ -2,8 +2,9 @@
 
 #include <Core/Engine.h>
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
-
+#include "../nearphase.h"
 
 TestApp::TestApp()
 {
@@ -60,12 +61,13 @@ void TestApp::Init()
 	polygonMode = GL_FILL;
 
 	{
-		boxDefault = new RigidBody();
+		boxDefault = new RigidBody(glm::vec3(0, 2, 0), glm::vec3(1));
 		boxDefault->setMass(32.0f);
 		boxDefault->updateTransformMatrix();
 		boxDefault->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
-		boxDefault->applyForce(glm::vec3(0, 8, 0));
-		boxDefault->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+		boxDefault->orientation = glm::rotate(boxDefault->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1));
+		/*boxDefault->applyForce(glm::vec3(0, 8, 0));
+		boxDefault->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
 		obj->body = boxDefault;
 		obj->mesh = meshes["box"];
@@ -74,89 +76,91 @@ void TestApp::Init()
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
 		obj->name.assign("boxDefault");
+		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
-	{
-		boxSmall = new RigidBody(glm::vec3(-8, 0, 0), glm::vec3(0.25f));
-		boxSmall->setMass(32.0f);
-		boxSmall->updateTransformMatrix();
-		boxSmall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxSmall->scale));
-		boxSmall->applyForce(glm::vec3(0, 8, 0));
-		boxSmall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
-		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxSmall;
-		obj->mesh = meshes["box"];
-		obj->color = glm::vec3(1, 0, 0);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
-		obj->collider->setRigidBody(obj->body);
-		obj->collider->updateInternals();
-		obj->name.assign("boxSmall");
-		objects.push_back(obj);
-		pcd.addCollider((OBBCollider*)obj->collider);
-	}
-	{
-		boxLarge = new RigidBody(glm::vec3(-4, 0, 0), glm::vec3(2.0f));
-		boxLarge->setMass(32.0f);
-		boxLarge->updateTransformMatrix();
-		boxLarge->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
-		boxLarge->applyForce(glm::vec3(0, 8, 0));
-		boxLarge->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
-		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxLarge;
-		obj->mesh = meshes["box"];
-		obj->color = glm::vec3(0, 1, 0);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
-		obj->collider->setRigidBody(obj->body);
-		obj->collider->updateInternals();
-		obj->name.assign("boxLarge");
-		objects.push_back(obj);
-		pcd.addCollider((OBBCollider*)obj->collider);
-	}
-	{
-		boxHeavy = new RigidBody(glm::vec3(4, 0, 0));
-		boxHeavy->setMass(128.0f);
-		boxHeavy->updateTransformMatrix();
-		boxHeavy->setInertiaTensor(RigidBody::inertiaTensorCube());
-		boxHeavy->applyForce(glm::vec3(0, 8, 0));
-		boxHeavy->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
-		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxHeavy;
-		obj->mesh = meshes["box"];
-		obj->color = glm::vec3(0, 0, 1);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
-		obj->collider->setRigidBody(obj->body);
-		obj->collider->updateInternals();
-		obj->name.assign("boxHeavy");
-		objects.push_back(obj);
-		pcd.addCollider((OBBCollider*)obj->collider);
-	}
-	{
-		boxSmallHeavy = new RigidBody(glm::vec3(8, 0, 0), glm::vec3(0.25f));
-		boxSmallHeavy->setMass(128.0f);
-		boxSmallHeavy->updateTransformMatrix();
-		boxSmallHeavy->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
-		boxSmallHeavy->applyForce(glm::vec3(0, 8, 0));
-		boxSmallHeavy->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
-		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxSmallHeavy;
-		obj->mesh = meshes["box"];
-		obj->color = glm::vec3(0, 1, 1);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
-		obj->collider->setRigidBody(obj->body);
-		obj->collider->updateInternals();
-		obj->name.assign("boxSmallHeavy");
-		objects.push_back(obj);
-		pcd.addCollider((OBBCollider*)obj->collider);
-	}
+	//{
+	//	boxSmall = new RigidBody(glm::vec3(-8, 0, 0), glm::vec3(0.25f));
+	//	boxSmall->setMass(32.0f);
+	//	boxSmall->updateTransformMatrix();
+	//	boxSmall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxSmall->scale));
+	//	boxSmall->applyForce(glm::vec3(0, 8, 0));
+	//	boxSmall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+	//	PhysicsObject *obj = new PhysicsObject();
+	//	obj->body = boxSmall;
+	//	obj->mesh = meshes["box"];
+	//	obj->color = glm::vec3(1, 0, 0);
+	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider->setRigidBody(obj->body);
+	//	obj->collider->updateInternals();
+	//	obj->name.assign("boxSmall");
+	//	objects.push_back(obj);
+	//	pcd.addCollider((OBBCollider*)obj->collider);
+	//}
+	//{
+	//	boxLarge = new RigidBody(glm::vec3(-4, 0, 0), glm::vec3(2.0f));
+	//	boxLarge->setMass(32.0f);
+	//	boxLarge->updateTransformMatrix();
+	//	boxLarge->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
+	//	boxLarge->applyForce(glm::vec3(0, 8, 0));
+	//	boxLarge->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+	//	PhysicsObject *obj = new PhysicsObject();
+	//	obj->body = boxLarge;
+	//	obj->mesh = meshes["box"];
+	//	obj->color = glm::vec3(0, 1, 0);
+	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider->setRigidBody(obj->body);
+	//	obj->collider->updateInternals();
+	//	obj->name.assign("boxLarge");
+	//	objects.push_back(obj);
+	//	pcd.addCollider((OBBCollider*)obj->collider);
+	//}
+	//{
+	//	boxHeavy = new RigidBody(glm::vec3(4, 0, 0));
+	//	boxHeavy->setMass(128.0f);
+	//	boxHeavy->updateTransformMatrix();
+	//	boxHeavy->setInertiaTensor(RigidBody::inertiaTensorCube());
+	//	boxHeavy->applyForce(glm::vec3(0, 8, 0));
+	//	boxHeavy->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+	//	PhysicsObject *obj = new PhysicsObject();
+	//	obj->body = boxHeavy;
+	//	obj->mesh = meshes["box"];
+	//	obj->color = glm::vec3(0, 0, 1);
+	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider->setRigidBody(obj->body);
+	//	obj->collider->updateInternals();
+	//	obj->name.assign("boxHeavy");
+	//	objects.push_back(obj);
+	//	pcd.addCollider((OBBCollider*)obj->collider);
+	//}
+	//{
+	//	boxSmallHeavy = new RigidBody(glm::vec3(8, 0, 0), glm::vec3(0.25f));
+	//	boxSmallHeavy->setMass(128.0f);
+	//	boxSmallHeavy->updateTransformMatrix();
+	//	boxSmallHeavy->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
+	//	boxSmallHeavy->applyForce(glm::vec3(0, 8, 0));
+	//	boxSmallHeavy->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+	//	PhysicsObject *obj = new PhysicsObject();
+	//	obj->body = boxSmallHeavy;
+	//	obj->mesh = meshes["box"];
+	//	obj->color = glm::vec3(0, 1, 1);
+	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider->setRigidBody(obj->body);
+	//	obj->collider->updateInternals();
+	//	obj->name.assign("boxSmallHeavy");
+	//	objects.push_back(obj);
+	//	pcd.addCollider((OBBCollider*)obj->collider);
+	//}
 
 	{
-		boxTall = new RigidBody(glm::vec3(0, 0, -3), glm::vec3(1, 2, 1));
+		boxTall = new RigidBody(glm::vec3(0, 3, -3), glm::vec3(1, 2, 1));
 		boxTall->setMass(32.0f);
 		boxTall->updateTransformMatrix();
 		boxTall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxTall->scale));
-		boxTall->applyForce(glm::vec3(0, 8, 0));
-		boxTall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
+		boxTall->orientation = glm::rotate(boxTall->orientation, 0.1f, glm::vec3(0, 1, 0));
+		/*boxTall->applyForce(glm::vec3(0, 8, 0));
+		boxTall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
 		obj->body = boxTall;
 		obj->mesh = meshes["box"];
@@ -165,6 +169,7 @@ void TestApp::Init()
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
 		obj->name.assign("boxTall");
+		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
@@ -177,11 +182,27 @@ void TestApp::Init()
 		obj->collider = new PlaneCollider(glm::vec3(0, 1, 0), -0.1f, obj);
 		obj->collider->setRigidBody(obj->body);
 		obj->name.assign("planeXoZ");
+		obj->shape = new Plane(25.0f, 25.0f);
 		objects.push_back(obj);
 		pcd.addCollider((PlaneCollider*)obj->collider);
 	}
 
 	selectedObjIndex = 0;
+
+	std::cout << "Positions = {\n\t";
+	for (glm::vec3 &p : meshes["box"]->positions)
+		std::cout << glm::to_string(p) << "\n\t";
+	std::cout << "}\n";
+
+	std::cout << "Vertices = {\n\t";
+	for (VertexFormat &p : meshes["box"]->vertices)
+		std::cout << "pos = " << glm::to_string(p.position) << ", normal = " << glm::to_string(p.normal) <<"\n\t";
+	std::cout << "}\n";
+
+	std::cout << "Indices = {\n\t";
+	for (unsigned short &p : meshes["box"]->indices)
+		std::cout << p << ", ";
+	std::cout << "\n}\n";
 }
 
 void TestApp::FrameStart()
@@ -237,6 +258,28 @@ void TestApp::Update(float deltaTime)
 	*/
 	for (auto & obj : objects)
 		obj->update(deltaTime);
+
+	pcd.fillPotentialCollisions();
+
+	//std::cout << pcd.potentialCollisions.size() << " potential collisions\n";
+
+	for (auto & col : pcd.potentialCollisions) {
+		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
+
+		if (cg.testIntersection()) {
+			std::cout << "found intersection found between " << col->one->name << " and " << col->two->name << "\n";
+
+			ContactInfo contact;
+			if (cg.createContact(&contact)) {
+				glm::mat4 t = glm::scale(glm::translate(glm::mat4(1), contact.point), glm::vec3(0.25f));
+				RenderSimpleMesh(meshes["sphere"], shaders["phong"], t, glm::vec3(1.0f, 0.0f, 0.0f));
+				std::cout << "contact info = {\n\t";
+				std::cout << "point = " << contact.point << "\n\t";
+				std::cout << "normal = " << contact.normal << "\n\t";
+				std::cout << "penetration = " << contact.penetration << "\n}\n";
+			}
+		}
+	}
 }
 
 void TestApp::FrameEnd()
@@ -313,6 +356,18 @@ void TestApp::OnInputUpdate(float deltaTime, int mods)
 			objects[selectedObjIndex]->body->position += glm::vec3(0, -1, 0) * deltaTime;
 		if (window->KeyHold(GLFW_KEY_E))
 			objects[selectedObjIndex]->body->position += glm::vec3(0, +1, 0) * deltaTime;
+		if (window->KeyHold(GLFW_KEY_SEMICOLON))
+			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, 1) * deltaTime, glm::vec3(0.5, 0, 0));
+			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 1, 0)));
+		if (window->KeyHold(GLFW_KEY_APOSTROPHE))
+			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 1, 0)));
+			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, -1) * deltaTime, glm::vec3(0.5, 0, 0));
+		if (window->KeyHold(GLFW_KEY_LEFT_BRACKET))
+			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 0, 1)));
+			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
+		if (window->KeyHold(GLFW_KEY_RIGHT_BRACKET))
+			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 0, 1)));
+			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, -1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
 	}
 }
 
@@ -349,10 +404,10 @@ void TestApp::OnKeyPress(int key, int mods)
 		for (auto & obj : objects)
 			std::cout << obj->toString();
 	}
-	else if (key >= GLFW_KEY_0 && key < GLFW_KEY_7)
+	else if (key >= GLFW_KEY_0 && key < GLFW_KEY_0 + objects.size() - 1)
 		std::cout << objects[key - GLFW_KEY_0]->toString();
 	else if (key == GLFW_KEY_TAB) {
-		selectedObjIndex = (selectedObjIndex + 1) % 6;
+		selectedObjIndex = (selectedObjIndex + 1) % (objects.size() - 1);
 		std::cout << "selected object = " << objects[selectedObjIndex]->name << "\n";
 	}
 }
