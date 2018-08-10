@@ -1,9 +1,9 @@
-#include "nearphase.h"
+#include "contactgeneration.h"
 
 #include <list>
 #include <limits>
-#include <stdio.h>
 #include <glm/gtx/matrix_decompose.hpp>
+#include "debug.h"
 
 GJK::GJKContactGenerator::GJKContactGenerator(PhysicsObject *objA, PhysicsObject *objB)
 	: objA(objA), objB(objB)
@@ -65,8 +65,8 @@ GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool 
 	glm::vec3 maxAWorld, maxBWorld;
 
 
-	glm::vec3 dirALocal = glm::inverse(glm::mat3_cast(orientationA)) * glm::normalize(dir);
-	glm::vec3 dirBLocal = glm::inverse(glm::mat3_cast(orientationB)) * glm::normalize(-dir);
+	glm::vec3 dirALocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) * glm::inverse(glm::mat3_cast(orientationA)) * glm::normalize(dir);
+	glm::vec3 dirBLocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) * glm::inverse(glm::mat3_cast(orientationB)) * glm::normalize(-dir);
 
 	maxALocal = objA->shape->getSupportPtInLocalSpace(glm::normalize(dirALocal));
 	maxBLocal = objB->shape->getSupportPtInLocalSpace(glm::normalize(dirBLocal));
@@ -367,36 +367,36 @@ bool GJK::GJKContactGenerator::testIntersection()
 
 	while (true) {
 		if (iterations++ > GJK_MAX_ITERATIONS) {
-			std::cout << "max iterations reached\n";
-			std::cout << "simplex = {\n\t";
+			DEBUG_PRINT("max iterations reached\n");
+			DEBUG_PRINT("simplex = {\n\t");
 			if (simplex.numVertices > 0)
-				std::cout << "A = " << simplex.a.v << "\n\t";
+				DEBUG_PRINT("A = " << simplex.a.v << "\n\t");
 			if (simplex.numVertices > 1)
-				std::cout << "B = " << simplex.b.v << "\n\t";
+				DEBUG_PRINT("B = " << simplex.b.v << "\n\t");
 			if (simplex.numVertices > 2)
-				std::cout << "C = " << simplex.c.v << "\n\t";
+				DEBUG_PRINT("C = " << simplex.c.v << "\n\t");
 			if (simplex.numVertices > 3)
-				std::cout << "D = " << simplex.c.v << "\n}\n";
+				DEBUG_PRINT("D = " << simplex.c.v << "\n}\n");
 			return false;
 		}
 
 		SupportPoint supPt = support(searchDir);
-		//std::cout << "supPt = {\n\tsupPt.v = " << supPt.v << "\n\tsupPt.supA = " << supPt.supA << "\n\tsupPt.supB = " << supPt.supB << "\n}\n";
+		//DEBUG_PRINT("supPt = {\n\tsupPt.v = " << supPt.v << "\n\tsupPt.supA = " << supPt.supA << "\n\tsupPt.supB = " << supPt.supB << "\n}\n");
 		/* new point is not past the origin */
 		if (glm::dot(supPt.v, searchDir) < 0) {
-			std::cout << "new point is not past the origin \n";
+			DEBUG_PRINT("new point is not past the origin \n");
 			return false;
 		}
 
 		simplex.pushVertex(supPt);
 
 		if (doSimplex()) {
-			std::cout << "origin inside tetrahedron \n";
+			DEBUG_PRINT("origin inside tetrahedron \n");
 			return true;
 		}
 	}
 
-	std::cout << "GJK intersection test returned false \n";
+	DEBUG_PRINT("GJK intersection test returned false \n");
 	return false;
 }
 
@@ -434,7 +434,7 @@ static void computeBarycentricCoords(const glm::vec3 &a, const glm::vec3 &b, con
 }
 bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 {
-	const float EPA_GROWTH_THRESHOLD = 0.0001f;
+	const float EPA_GROWTH_THRESHOLD = 0.00001f;
 	const unsigned int EPA_MAX_ITERATIONS = 50;
 	unsigned int iterations = 0;
 
@@ -450,13 +450,13 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 	for (Triangle & t : triangles) {
 		dotProducts.push_back(glm::dot(-t.supA.v, t.vecABC));
 		if (dotProducts[dotProducts.size() - 1] < 0)
-			std::cout << " NOT OKAY";
+			DEBUG_PRINT(" NOT OKAY");
 	}
-	std::cout << "Simplex = {\n\t";
-	std::cout << "A = " << simplex.a.v << "\n\t";
-	std::cout << "B = " << simplex.b.v << "\n\t";
-	std::cout << "C = " << simplex.c.v << "\n\t";
-	std::cout << "D = " << simplex.d.v << "\n}\n\n";
+	DEBUG_PRINT("Simplex = {\n\t");
+	DEBUG_PRINT("A = " << simplex.a.v << "\n\t");
+	DEBUG_PRINT("B = " << simplex.b.v << "\n\t");
+	DEBUG_PRINT("C = " << simplex.c.v << "\n\t");
+	DEBUG_PRINT("D = " << simplex.d.v << "\n}\n\n");
 
 
 	while (iterations < EPA_MAX_ITERATIONS) {
@@ -465,6 +465,7 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 		for (Triangle t : triangles) {
 			/* distance to origin */
 			float distance = glm::length(t.supA.v - glm::dot(t.vecABC, t.supA.v) * t.vecABC);
+			//float distance = glm::dot(t.vecABC, t.supA.v);
 			if (distance < minDistance) {
 				minDistance = distance;
 				closestTriangle = &t;
@@ -482,6 +483,8 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 			/* TODO: fill contact info */
 			glm::vec3 barCoords;
 
+			//minDistance = glm::dot(closestTriangle->vecABC, closestTriangle->supA.v);
+
 			/* compute barycentric coordinates of origin's projection on the triangle with respect to this
 			closest triangle */
 			computeBarycentricCoords(closestTriangle->supA.v,
@@ -495,24 +498,30 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 			if (glm::abs(barCoords.x) > 1.0f || glm::abs(barCoords.y) > 1.0f || glm::abs(barCoords.z) > 1.0f)
 				return false;
-			contact->point = glm::vec3(
+			contact->points[0] = glm::vec3(
 				barCoords.x * closestTriangle->supA.supA +
 				barCoords.y * closestTriangle->supB.supA +
 				barCoords.z * closestTriangle->supC.supA);
+			contact->points[1] = glm::vec3(
+				barCoords.x * closestTriangle->supA.supB +
+				barCoords.y * closestTriangle->supB.supB +
+				barCoords.z * closestTriangle->supC.supB);
 
 			contact->normal = -closestTriangle->vecABC;
 
 			contact->penetration = minDistance;
 
-			contact->objA = objA;
-			contact->objB = objB;
+			contact->objects[0] = objA;
+			contact->objects[1] = objB;
 
-			std::cout << "EPA found contact point in barycentric coordinates$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+			DEBUG_PRINT("EPA found contact point in barycentric coordinates$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 			return true;
 		}
 
-		if (glm::dot(closestTriangle->vecABC, nextSup.v - closestTriangle->supA.v) < 0)
-			std::cout << "NOT OK";
+		if (glm::dot(closestTriangle->vecABC, nextSup.v - closestTriangle->supA.v) < 0) {
+			DEBUG_PRINT("NOT OK");
+			return false;
+		}
 
 		std::list<Triangle>::iterator it = triangles.begin();
 		while (it != triangles.end()) {
@@ -540,12 +549,12 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 		/*for (Triangle t : triangles) {
 		if (glm::dot(t.vecABC, t.supA.v) < 0)
-		std::cout << "not ok";
+		DEBUG_PRINT("not ok");
 		}*/
 		edges.clear();
 		iterations++;
 	}
 
-	std::cout << "EPA max iterations reached\n";
+	DEBUG_PRINT("EPA max iterations reached\n");
 	return false;
 }

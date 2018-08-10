@@ -17,6 +17,9 @@ RigidBody::RigidBody(const glm::vec3 & position, glm::vec3 scale)
 	torqueAccumulator = glm::vec3(0);
 	linDamping = 0.9f;
 	angDamping = 0.9f;
+
+	isStatic = false;
+	isAwake = false;
 }
 
 void RigidBody::updateTransformMatrix()
@@ -53,28 +56,48 @@ void RigidBody::setInertiaTensor(const glm::mat3 & inertiaTensor)
 	updateInvInertiaTensorWorld();
 }
 
-void RigidBody::integrate(float deltaTime)
+void RigidBody::clearAccumulators()
 {
-	linAcceleration = forceAccumulator * invMass;
-	linVelocity += linAcceleration * deltaTime;
-	position += linVelocity * deltaTime;
-
-	angAcceleration = invInertiaTensorWorld * torqueAccumulator * invMass;
-	angVelocity += angAcceleration * deltaTime;
-	//glm::vec3 axis = glm::normalize(angVelocity);
-	//float angle = glm::length(angVelocity);
-	//orientation = glm::rotate(orientation, angle, angVelocity);
-	//orientation = glm::normalize(orientation);
-	orientation = orientation + deltaTime * 0.5f * glm::quat(0.0f, angVelocity) * orientation;
-	orientation = glm::normalize(orientation);
-
-	linVelocity *= glm::pow(linDamping, deltaTime);
-	angVelocity *= glm::pow(angDamping, deltaTime);
-
-	updateTransformMatrix();
-	updateInvInertiaTensorWorld();
 	forceAccumulator = glm::vec3(0);
 	torqueAccumulator = glm::vec3(0);
+}
+
+void RigidBody::reset()
+{
+	linVelocity = glm::vec3(0);
+	angVelocity = glm::vec3(0);
+	linAcceleration = glm::vec3(0);
+	angAcceleration = glm::vec3(0);
+	clearAccumulators();
+}
+
+void RigidBody::integrate(float deltaTime)
+{
+	if (invMass != 0 && isAwake) {
+		lastFrameAcceleration = glm::vec3(0, -9.8, 0);
+		lastFrameAcceleration += forceAccumulator * invMass;
+		lastFrameAcceleration *= deltaTime;
+
+		linAcceleration = lastFrameAcceleration + forceAccumulator * invMass;
+		linVelocity += linAcceleration * deltaTime;
+		position += linVelocity * deltaTime;
+
+		angAcceleration = invInertiaTensorWorld * torqueAccumulator * invMass;
+		angVelocity += angAcceleration * deltaTime;
+		//glm::vec3 axis = glm::normalize(angVelocity);
+		//float angle = glm::length(angVelocity);
+		//orientation = glm::rotate(orientation, angle, angVelocity);
+		//orientation = glm::normalize(orientation);
+		orientation = orientation + deltaTime * 0.5f * glm::quat(0.0f, angVelocity) * orientation;
+		orientation = glm::normalize(orientation);
+
+		linVelocity *= glm::pow(linDamping, deltaTime);
+		angVelocity *= glm::pow(angDamping, deltaTime);
+
+		updateTransformMatrix();
+		updateInvInertiaTensorWorld();
+		clearAccumulators();
+	}
 }
 
 void RigidBody::applyForce(const glm::vec3 & force)

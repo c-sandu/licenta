@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <iostream>
+#include <string>
 
 class RigidBody
 {
@@ -15,6 +15,7 @@ public:
 
 	glm::vec3 linAcceleration;
 	glm::vec3 angAcceleration;
+	glm::vec3 lastFrameAcceleration;
 
 	glm::vec3 forceAccumulator;
 	glm::vec3 torqueAccumulator;
@@ -28,6 +29,9 @@ public:
 	float linDamping;
 	float angDamping;
 
+	bool isStatic;
+	bool isAwake;
+
 	glm::mat4 transform;
 
 	RigidBody(const glm::vec3 & position = glm::vec3(0), glm::vec3 scale = glm::vec3(1));
@@ -39,6 +43,9 @@ public:
 
 	void setMass(float mass, bool isInverse = false);
 	void setInertiaTensor(const glm::mat3 & inertiaTensor);
+
+	void clearAccumulators();
+	void reset();
 
 	void integrate(float deltaTime);
 

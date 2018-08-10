@@ -3,17 +3,7 @@
 #include <Core/GPU/Mesh.h>
 #include "rigidbody.h"
 #include "object.h"
-
-class ContactInfo
-{
-public:
-	glm::vec3 point; /* point of contact in world coordinates */
-	glm::vec3 normal; /* contact normal */
-	float penetration; /* penetration depth */
-
-	PhysicsObject *objA;
-	PhysicsObject *objB;
-};
+#include "contact.h"
 
 namespace GJK
 {

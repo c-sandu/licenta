@@ -4,7 +4,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
-#include <iostream>
+#include "debug.h"
 
 
 void Collider::setRigidBody(RigidBody * body)
@@ -18,6 +18,7 @@ OBBCollider::OBBCollider(const glm::vec3 & halfSizes, PhysicsObject * phyObject)
 {
 	meshName.assign("box");
 	this->phyObject = phyObject;
+	this->contactManifold = NULL;
 }
 
 void OBBCollider::updateInternals()
@@ -212,8 +213,8 @@ bool OBBCollider::testIntersectionOBB(OBBCollider & other)
 	glm::mat3 R, AbsR;
 
 
-	glm::mat3 rotationMatA = glm::mat3_cast(this->orientation);
-	glm::mat3 rotationMatB = glm::mat3_cast(other.orientation);
+	glm::mat3 rotationMatA = glm::inverse(glm::mat3_cast(this->orientation));
+	glm::mat3 rotationMatB = glm::inverse(glm::mat3_cast(other.orientation));
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
@@ -348,6 +349,7 @@ PlaneCollider::PlaneCollider(glm::vec3 normal, float offset, PhysicsObject * phy
 {
 	meshName.assign("plane");
 	this->phyObject = phyObject;
+	this->contactManifold = NULL;
 }
 
 void PlaneCollider::updateInternals()

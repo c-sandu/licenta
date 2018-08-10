@@ -9,11 +9,11 @@
 #include "../rigidbody.h"
 #include "../object.h"
 
-class TestApp : public SimpleScene
+class TestCollisionDetection : public SimpleScene
 {
 public:
-	TestApp();
-	~TestApp();
+	TestCollisionDetection();
+	~TestCollisionDetection();
 
 	void Init() override;
 

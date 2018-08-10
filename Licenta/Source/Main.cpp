@@ -5,7 +5,8 @@ using namespace std;
 
 #include <Core/Engine.h>
 
-#include <Physics/scenes/TestApp.h>
+#include <Physics/scenes/TestCollisionDetection.h>
+#include <Physics/scenes/TestCollisionResolution.h>
 
 int main(int argc, char **argv)
 {
@@ -19,7 +20,7 @@ int main(int argc, char **argv)
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new TestApp();
+	World *world = new TestCollisionResolution();
 	world->Init();
 	world->Run();
 

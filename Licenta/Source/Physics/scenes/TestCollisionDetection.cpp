@@ -1,20 +1,20 @@
-#include "TestApp.h"
+#include "TestCollisionDetection.h"
 
 #include <Core/Engine.h>
-#include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-#include "../nearphase.h"
+#include "../debug.h"
+#include "../contactgeneration.h"
 
-TestApp::TestApp()
+TestCollisionDetection::TestCollisionDetection()
 {
 }
 
-TestApp::~TestApp()
+TestCollisionDetection::~TestCollisionDetection()
 {
 }
 
-void TestApp::Init()
+void TestCollisionDetection::Init()
 {
 
 	/* load meshes */
@@ -158,7 +158,7 @@ void TestApp::Init()
 		boxTall->setMass(32.0f);
 		boxTall->updateTransformMatrix();
 		boxTall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxTall->scale));
-		boxTall->orientation = glm::rotate(boxTall->orientation, 0.1f, glm::vec3(0, 1, 0));
+		//boxTall->orientation = glm::rotate(boxTall->orientation, 0.1f, glm::vec3(0, 1, 0));
 		/*boxTall->applyForce(glm::vec3(0, 8, 0));
 		boxTall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
@@ -189,23 +189,23 @@ void TestApp::Init()
 
 	selectedObjIndex = 0;
 
-	std::cout << "Positions = {\n\t";
+	PRINT_APP("Positions = {\n\t");
 	for (glm::vec3 &p : meshes["box"]->positions)
-		std::cout << glm::to_string(p) << "\n\t";
-	std::cout << "}\n";
+		PRINT_APP(glm::to_string(p) << "\n\t");
+	PRINT_APP("}\n");
 
-	std::cout << "Vertices = {\n\t";
+	PRINT_APP("Vertices = {\n\t");
 	for (VertexFormat &p : meshes["box"]->vertices)
-		std::cout << "pos = " << glm::to_string(p.position) << ", normal = " << glm::to_string(p.normal) <<"\n\t";
-	std::cout << "}\n";
+		PRINT_APP("pos = " << glm::to_string(p.position) << ", normal = " << glm::to_string(p.normal) <<"\n\t");
+	PRINT_APP("}\n");
 
-	std::cout << "Indices = {\n\t";
+	PRINT_APP("Indices = {\n\t");
 	for (unsigned short &p : meshes["box"]->indices)
-		std::cout << p << ", ";
-	std::cout << "\n}\n";
+		PRINT_APP(p << ", ");
+	PRINT_APP("\n}\n");
 }
 
-void TestApp::FrameStart()
+void TestCollisionDetection::FrameStart()
 {
 	// clears the color buffer (using the previously set color) and depth buffer
 	glClearColor(0, 0, 0, 1);
@@ -216,7 +216,7 @@ void TestApp::FrameStart()
 	glViewport(0, 0, resolution.x, resolution.y);
 }
 
-void TestApp::Update(float deltaTime)
+void TestCollisionDetection::Update(float deltaTime)
 {
 	glLineWidth(3);
 	glPointSize(5);
@@ -261,34 +261,36 @@ void TestApp::Update(float deltaTime)
 
 	pcd.fillPotentialCollisions();
 
-	//std::cout << pcd.potentialCollisions.size() << " potential collisions\n";
+	//PRINT_APP(pcd.potentialCollisions.size() << " potential collisions\n");
 
 	for (auto & col : pcd.potentialCollisions) {
 		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
 
 		if (cg.testIntersection()) {
-			std::cout << "found intersection found between " << col->one->name << " and " << col->two->name << "\n";
+			PRINT_APP("found intersection found between " << col->one->name << " and " << col->two->name << "\n");
 
 			ContactInfo contact;
 			if (cg.createContact(&contact)) {
-				glm::mat4 t = glm::scale(glm::translate(glm::mat4(1), contact.point), glm::vec3(0.25f));
+				glm::mat4 t = glm::scale(glm::translate(glm::mat4(1), contact.points[0]), glm::vec3(0.25f));
 				RenderSimpleMesh(meshes["sphere"], shaders["phong"], t, glm::vec3(1.0f, 0.0f, 0.0f));
-				std::cout << "contact info = {\n\t";
-				std::cout << "point = " << contact.point << "\n\t";
-				std::cout << "normal = " << contact.normal << "\n\t";
-				std::cout << "penetration = " << contact.penetration << "\n}\n";
+				t = glm::scale(glm::translate(glm::mat4(1), contact.points[1]), glm::vec3(0.25f));
+				RenderSimpleMesh(meshes["sphere"], shaders["phong"], t, glm::vec3(0.0f, 1.0f, 0.0f));
+				PRINT_APP("contact info = {\n\t");
+				PRINT_APP("point = " << contact.points[0] << "\n\t");
+				PRINT_APP("normal = " << contact.normal << "\n\t");
+				PRINT_APP("penetration = " << contact.penetration << "\n}\n");
 			}
 		}
 	}
 }
 
-void TestApp::FrameEnd()
+void TestCollisionDetection::FrameEnd()
 {
 	DrawCoordinatSystem();
 }
 
 
-void TestApp::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelMatrix, const glm::vec3 &color)
+void TestCollisionDetection::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelMatrix, const glm::vec3 &color)
 {
 	if (!mesh || !shader || !shader->GetProgramID())
 		return;
@@ -341,37 +343,57 @@ void TestApp::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & mod
 	glDrawElements(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_SHORT, 0);
 }
 
-void TestApp::OnInputUpdate(float deltaTime, int mods)
+void TestCollisionDetection::OnInputUpdate(float deltaTime, int mods)
 {
 	if (!window->MouseHold(GLFW_MOUSE_BUTTON_2)) {
-		if (window->KeyHold(GLFW_KEY_W))
+		if (window->KeyHold(GLFW_KEY_W)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, -1) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_S))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_S)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, +1) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_A))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_A)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(-1, 0, 0) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_D))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_D)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(+1, 0, 0) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_Q))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_Q)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, -1, 0) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_E))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_E)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, +1, 0) * deltaTime;
-		if (window->KeyHold(GLFW_KEY_SEMICOLON))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_SEMICOLON)) {
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, 1) * deltaTime, glm::vec3(0.5, 0, 0));
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 1, 0)));
-		if (window->KeyHold(GLFW_KEY_APOSTROPHE))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_APOSTROPHE)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 1, 0)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, -1) * deltaTime, glm::vec3(0.5, 0, 0));
-		if (window->KeyHold(GLFW_KEY_LEFT_BRACKET))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_LEFT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
-		if (window->KeyHold(GLFW_KEY_RIGHT_BRACKET))
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
+		if (window->KeyHold(GLFW_KEY_RIGHT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, -1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
+			objects[selectedObjIndex]->body->isAwake = true;
+		}
 	}
 }
 
-void TestApp::OnKeyPress(int key, int mods)
+void TestCollisionDetection::OnKeyPress(int key, int mods)
 {
 	// add key press event
 	if (key == GLFW_KEY_P)
@@ -397,41 +419,41 @@ void TestApp::OnKeyPress(int key, int mods)
 	{
 		pcd.fillPotentialCollisions();
 		for (auto & pc : pcd.potentialCollisions)
-			std::cout << "potential collision between " << pc->one->name << " and " << pc->two->name << "\n\n";
+			PRINT_APP("potential collision between " << pc->one->name << " and " << pc->two->name << "\n\n");
 	}
 	else if (key == GLFW_KEY_V)
 	{
 		for (auto & obj : objects)
-			std::cout << obj->toString();
+			PRINT_APP(obj->toString());
 	}
 	else if (key >= GLFW_KEY_0 && key < GLFW_KEY_0 + objects.size() - 1)
-		std::cout << objects[key - GLFW_KEY_0]->toString();
+		PRINT_APP(objects[key - GLFW_KEY_0]->toString());
 	else if (key == GLFW_KEY_TAB) {
 		selectedObjIndex = (selectedObjIndex + 1) % (objects.size() - 1);
-		std::cout << "selected object = " << objects[selectedObjIndex]->name << "\n";
+		PRINT_APP("selected object = " << objects[selectedObjIndex]->name << "\n");
 	}
 }
 
-void TestApp::OnKeyRelease(int key, int mods)
+void TestCollisionDetection::OnKeyRelease(int key, int mods)
 {
 }
 
-void TestApp::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
+void TestCollisionDetection::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
 {
 }
 
-void TestApp::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
+void TestCollisionDetection::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
 }
 
-void TestApp::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
+void TestCollisionDetection::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
 {
 }
 
-void TestApp::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
+void TestCollisionDetection::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 {
 }
 
-void TestApp::OnWindowResize(int width, int height)
+void TestCollisionDetection::OnWindowResize(int width, int height)
 {
 }

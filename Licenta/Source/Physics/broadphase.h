@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "rigidbody.h"
+#include <list>
 
 /* Forward declaration for pointer to the object the collider is associated to. */
 class PhysicsObject;
+class Contact;
 
 class Collider
 {
@@ -15,6 +17,8 @@ public:
 	PhysicsObject *phyObject;
 	RigidBody *body;
 	std::string meshName;
+
+	std::list<Contact*> *contactManifold;
 
 	virtual void updateInternals() = 0;
 	void setRigidBody(RigidBody *body);
