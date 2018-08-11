@@ -34,7 +34,7 @@ namespace GJK
 		void set(SupportPoint a, SupportPoint b) { numVertices = 2; this->a = a; this->b = b; }
 		void set(SupportPoint a) { numVertices = 1; this->a = a; }
 
-		void pushVertex(SupportPoint &p) {
+		void pushVertex(SupportPoint p) {
 			numVertices = glm::min(numVertices + 1, 4u);
 			d = c;
 			c = b;

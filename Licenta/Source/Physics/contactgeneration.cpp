@@ -28,29 +28,8 @@ GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool 
 	if (initialSupport)
 		return SupportPoint(verticesA[0] - verticesB[0], verticesA[0], verticesB[0]);
 
-	glm::vec3 maxA, maxB;
-	float maxProjA, maxProjB;
 	glm::vec3 dirNormalized = glm::normalize(dir);
 
-	maxProjA = glm::dot(dirNormalized, verticesA[0]);
-	maxA = verticesA[0];
-	for (glm::vec3 &v : verticesA) {
-		float temp = glm::dot(dirNormalized, v);
-		if (temp > maxProjA) {
-			maxProjA = temp;
-			maxA = v;
-		}
-	}
-
-	maxProjB = glm::dot(-dirNormalized, verticesB[0]);
-	maxB = verticesB[0];
-	for (glm::vec3 &v : verticesB) {
-		float temp = glm::dot(-dirNormalized, v);
-		if (temp > maxProjB) {
-			maxProjB = temp;
-			maxB = v;
-		}
-	}
 	glm::vec3 scaleA, translationA, skewA;
 	glm::quat orientationA;
 	glm::vec4 perspectiveA;
@@ -65,8 +44,8 @@ GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool 
 	glm::vec3 maxAWorld, maxBWorld;
 
 
-	glm::vec3 dirALocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) * glm::inverse(glm::mat3_cast(orientationA)) * glm::normalize(dir);
-	glm::vec3 dirBLocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) * glm::inverse(glm::mat3_cast(orientationB)) * glm::normalize(-dir);
+	glm::vec3 dirALocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) * glm::inverse(glm::mat3_cast(orientationA)) * dirNormalized;
+	glm::vec3 dirBLocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) * glm::inverse(glm::mat3_cast(orientationB)) * -dirNormalized;
 
 	maxALocal = objA->shape->getSupportPtInLocalSpace(glm::normalize(dirALocal));
 	maxBLocal = objB->shape->getSupportPtInLocalSpace(glm::normalize(dirBLocal));
@@ -111,7 +90,7 @@ void GJK::GJKContactGenerator::doSimplex3()
 			searchDir = glm::cross(glm::cross(vecAC, vecAO), vecAC);
 		}
 		else {
-			if (glm::dot(vecAB, vecABC) > 0) {
+			if (glm::dot(vecAB, vecAO) > 0) {
 				simplex.set(simplex.a, simplex.b);
 				searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
 			}
@@ -309,16 +288,22 @@ bool GJK::GJKContactGenerator::doSimplex4()
 	case 7: {
 		if (glm::dot(vecAB, vecAO) > 0) {
 			simplex.set(simplex.a, simplex.b);
-			searchDir = glm::cross(glm::cross(vecAC, vecAO), vecAC);
+			searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
 		}
 		else {
-			if (glm::dot(vecAD, vecAO) > 0) {
-				simplex.set(simplex.a, simplex.d);
-				searchDir = glm::cross(glm::cross(vecAD, vecAO), vecAD);
+			if (glm::dot(vecAC, vecAO) > 0) {
+				simplex.set(simplex.a, simplex.c);
+				searchDir = glm::cross(glm::cross(vecAC, vecAO), vecAC);
 			}
 			else {
-				simplex.set(simplex.a);
-				searchDir = -simplex.a.v;
+				if (glm::dot(vecAD, vecAO) > 0) {
+					simplex.set(simplex.a, simplex.d);
+					searchDir = glm::cross(glm::cross(vecAD, vecAO), vecAD);
+				}
+				else {
+					simplex.set(simplex.a);
+					searchDir = -simplex.a.v;
+				}
 			}
 		}
 		break;
@@ -350,15 +335,16 @@ bool GJK::GJKContactGenerator::doSimplex()
 bool GJK::GJKContactGenerator::testIntersection()
 {
 	const unsigned int GJK_MAX_ITERATIONS = 100;
+	const float GJK_EPSILON = 0.0001f;
 	unsigned int iterations = 0;
 
 	simplex.clear();
 
-	searchDir = glm::vec3(1, 0, 0);
+	searchDir = glm::vec3(0, 1, 0);
 	SupportPoint initialPoint = support(searchDir);
 
 	if (glm::abs(glm::dot(searchDir, initialPoint.v)) >= initialPoint.v.length() * 0.8f) {
-		searchDir = glm::vec3(0, 1, 0);
+		searchDir = glm::vec3(1, 0, 0);
 		initialPoint = support(searchDir);
 	}
 
@@ -380,10 +366,13 @@ bool GJK::GJKContactGenerator::testIntersection()
 			return false;
 		}
 
+		if (searchDir.length() <= GJK_EPSILON)
+			return false;
+
 		SupportPoint supPt = support(searchDir);
 		//DEBUG_PRINT("supPt = {\n\tsupPt.v = " << supPt.v << "\n\tsupPt.supA = " << supPt.supA << "\n\tsupPt.supB = " << supPt.supB << "\n}\n");
 		/* new point is not past the origin */
-		if (glm::dot(supPt.v, searchDir) < 0) {
+		if (glm::dot(supPt.v, searchDir) < -GJK_EPSILON) {
 			DEBUG_PRINT("new point is not past the origin \n");
 			return false;
 		}
@@ -434,7 +423,7 @@ static void computeBarycentricCoords(const glm::vec3 &a, const glm::vec3 &b, con
 }
 bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 {
-	const float EPA_GROWTH_THRESHOLD = 0.00001f;
+	const float EPA_GROWTH_THRESHOLD = 0.001f;
 	const unsigned int EPA_MAX_ITERATIONS = 50;
 	unsigned int iterations = 0;
 

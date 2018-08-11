@@ -349,46 +349,56 @@ void TestCollisionDetection::OnInputUpdate(float deltaTime, int mods)
 		if (window->KeyHold(GLFW_KEY_W)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, -1) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_S)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, +1) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_A)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(-1, 0, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_D)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(+1, 0, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_Q)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, -1, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_E)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, +1, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_SEMICOLON)) {
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, 1) * deltaTime, glm::vec3(0.5, 0, 0));
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 1, 0)));
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_APOSTROPHE)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 1, 0)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, -1) * deltaTime, glm::vec3(0.5, 0, 0));
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_LEFT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 		if (window->KeyHold(GLFW_KEY_RIGHT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, -1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
 			objects[selectedObjIndex]->body->isAwake = true;
+			objects[selectedObjIndex]->body->reset();
 		}
 	}
 }
