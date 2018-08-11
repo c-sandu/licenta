@@ -55,7 +55,7 @@ namespace GJK
 			this->supA = supA;
 			this->supB = supB;
 			this->supC = supC;
-			this->vecABC = glm::normalize(glm::cross(supC.v - supA.v, supB.v - supA.v));
+			this->vecABC = glm::normalize(glm::cross(supB.v - supA.v, supC.v - supA.v));
 		}
 	};
 

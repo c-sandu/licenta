@@ -30,31 +30,29 @@ GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool 
 
 	glm::vec3 dirNormalized = glm::normalize(dir);
 
-	glm::vec3 scaleA, translationA, skewA;
-	glm::quat orientationA;
-	glm::vec4 perspectiveA;
-	glm::vec3 scaleB, translationB, skewB;
-	glm::quat orientationB;
-	glm::vec4 perspectiveB;
-
-	glm::decompose(transformA, scaleA, orientationA, translationA, skewA, perspectiveA);
-	glm::decompose(transformB, scaleB, orientationB, translationB, skewB, perspectiveB);
+	glm::vec3 scaleA = objA->body->scale;
+	glm::vec3 translationA = objA->body->position;
+	glm::quat orientationA = objA->body->orientation;
+	glm::vec3 scaleB = objB->body->scale;
+	glm::vec3 translationB = objB->body->position;
+	glm::quat orientationB = objB->body->orientation;
 
 	glm::vec3 maxALocal, maxBLocal;
 	glm::vec3 maxAWorld, maxBWorld;
 
+	glm::vec3 dirALocal = /*glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) **/ glm::inverse(glm::mat3_cast(orientationA)) * dirNormalized;
+	glm::vec3 dirBLocal = /*glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) **/ glm::inverse(glm::mat3_cast(orientationB)) * -dirNormalized;
 
-	glm::vec3 dirALocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) * glm::inverse(glm::mat3_cast(orientationA)) * dirNormalized;
-	glm::vec3 dirBLocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) * glm::inverse(glm::mat3_cast(orientationB)) * -dirNormalized;
-
-	maxALocal = objA->shape->getSupportPtInLocalSpace(glm::normalize(dirALocal));
-	maxBLocal = objB->shape->getSupportPtInLocalSpace(glm::normalize(dirBLocal));
+	maxALocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleA)) * objA->shape->getSupportPtInLocalSpace(glm::normalize(dirALocal));
+	maxBLocal = glm::mat3(glm::scale(glm::mat4(1), 1.0f / scaleB)) * objB->shape->getSupportPtInLocalSpace(glm::normalize(dirBLocal));
 
 	/*maxAWorld = glm::vec3(transformA * glm::vec4(maxALocal, 1));
 	maxBWorld = glm::vec3(transformB * glm::vec4(maxBLocal, 1));*/
 
-	maxAWorld = glm::translate(glm::mat4(1), translationA) * glm::mat4_cast(orientationA) * glm::scale(glm::mat4(1), scaleA) * glm::vec4(maxALocal, 1);
-	maxBWorld = glm::translate(glm::mat4(1), translationB) * glm::mat4_cast(orientationB) * glm::scale(glm::mat4(1), scaleB) * glm::vec4(maxBLocal, 1);
+	//maxAWorld = glm::translate(glm::mat4(1), translationA) * glm::mat4_cast(orientationA) * glm::scale(glm::mat4(1), scaleA) * glm::vec4(maxALocal, 1);
+	//maxBWorld = glm::translate(glm::mat4(1), translationB) * glm::mat4_cast(orientationB) * glm::scale(glm::mat4(1), scaleB) * glm::vec4(maxBLocal, 1);
+	maxAWorld = objA->body->transform * glm::vec4(maxALocal, 1);
+	maxBWorld = objB->body->transform * glm::vec4(maxBLocal, 1);
 
 	return SupportPoint(maxAWorld - maxBWorld, maxAWorld, maxBWorld);
 	//return SupportPoint(maxA - maxB, maxA, maxB);
@@ -391,16 +389,15 @@ bool GJK::GJKContactGenerator::testIntersection()
 
 static void addRemoveEdge(std::list<GJK::Edge> &edges, const GJK::SupportPoint &a, const GJK::SupportPoint &b)
 {
-	std::list<GJK::Edge>::iterator it = edges.begin();
-	while (it != edges.end()) {
+	for (auto it = edges.begin(); it != edges.end(); it++) {
 		if (it->supA.v == b.v && it->supB.v == a.v) {
 			/* found reversed edge, just remove it */
 			it = edges.erase(it);
 			return;
 		}
-		it++;
 	}
-	edges.push_back(GJK::Edge(a, b));
+	if (edges.size() < 50)
+		edges.push_back(GJK::Edge(a, b));
 }
 
 /* Compute barycentric coordinates barCoords(u, v, w) for point p
@@ -425,20 +422,26 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 {
 	const float EPA_GROWTH_THRESHOLD = 0.001f;
 	const unsigned int EPA_MAX_ITERATIONS = 50;
+	const float EPA_EPSILON = 0.001f;
 	unsigned int iterations = 0;
 
 	std::list<Triangle> triangles;
 	std::list<Edge> edges;
 
+	float test1, test2, test3, test4;
 	triangles.push_back(Triangle(simplex.a, simplex.b, simplex.c));
+	test1 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.a, simplex.d, simplex.b));
+	test2 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.a, simplex.c, simplex.d));
+	test3 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.b, simplex.d, simplex.c));
+	test4 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
 
 	std::vector<float> dotProducts;
 	for (Triangle & t : triangles) {
 		dotProducts.push_back(glm::dot(-t.supA.v, t.vecABC));
-		if (dotProducts[dotProducts.size() - 1] < 0)
+		if (dotProducts[dotProducts.size() - 1] > 0)
 			DEBUG_PRINT(" NOT OKAY");
 	}
 	DEBUG_PRINT("Simplex = {\n\t");
@@ -449,22 +452,30 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 
 	while (iterations < EPA_MAX_ITERATIONS) {
-		Triangle *closestTriangle = &triangles.front();
+		auto closestTriangleIt = triangles.begin();
 		float minDistance = FLT_MAX;
-		for (Triangle t : triangles) {
+		for (auto t = triangles.begin(); t != triangles.end(); t++) {
 			/* distance to origin */
-			float distance = glm::length(t.supA.v - glm::dot(t.vecABC, t.supA.v) * t.vecABC);
-			//float distance = glm::dot(t.vecABC, t.supA.v);
+			//float distance = glm::length(t.supA.v - glm::dot(t.vecABC, t.supA.v) * t.vecABC);
+			float distance = glm::dot(t->vecABC, t->supA.v);
 			if (distance < minDistance) {
+				/*glm::vec3 vecAB = t.supB.v - t.supA.v;
+				glm::vec3 vecBC = t.supC.v - t.supB.v;
+				glm::vec3 vecCA = t.supA.v - t.supC.v;
+
+				if (glm::dot(glm::cross(vecAB, t.vecABC), -t.supA.v) > 0 ||
+					glm::dot(glm::cross(vecBC, t.vecABC), -t.supB.v) > 0 ||
+					glm::dot(glm::cross(vecCA, t.vecABC), -t.supC.v) > 0)
+					continue;*/
 				minDistance = distance;
-				closestTriangle = &t;
+				closestTriangleIt = t;
 			}
 		}
 
 		/* get furthest point in the triangle's normal direction, opposite to the origin */
-		SupportPoint nextSup = support(closestTriangle->vecABC);
+		SupportPoint nextSup = support(closestTriangleIt->vecABC);
 		/* distance from origin to the next point to be added to the expanding polytope */
-		float nextSupDist = glm::dot(nextSup.v, closestTriangle->vecABC);
+		float nextSupDist = glm::dot(nextSup.v, closestTriangleIt->vecABC);
 
 		/* if the new point is not further from the origin than the face in whose direction we
 		are expanding the polytope, we can't expand anymore */
@@ -476,10 +487,10 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 			/* compute barycentric coordinates of origin's projection on the triangle with respect to this
 			closest triangle */
-			computeBarycentricCoords(closestTriangle->supA.v,
-				closestTriangle->supB.v,
-				closestTriangle->supC.v,
-				closestTriangle->vecABC * minDistance,
+			computeBarycentricCoords(closestTriangleIt->supA.v,
+				closestTriangleIt->supB.v,
+				closestTriangleIt->supC.v,
+				closestTriangleIt->vecABC * minDistance,
 				barCoords);
 
 			if (isnan(barCoords.x) || isnan(barCoords.y) || isnan(barCoords.z))
@@ -488,15 +499,15 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 			if (glm::abs(barCoords.x) > 1.0f || glm::abs(barCoords.y) > 1.0f || glm::abs(barCoords.z) > 1.0f)
 				return false;
 			contact->points[0] = glm::vec3(
-				barCoords.x * closestTriangle->supA.supA +
-				barCoords.y * closestTriangle->supB.supA +
-				barCoords.z * closestTriangle->supC.supA);
+				barCoords.x * closestTriangleIt->supA.supA +
+				barCoords.y * closestTriangleIt->supB.supA +
+				barCoords.z * closestTriangleIt->supC.supA);
 			contact->points[1] = glm::vec3(
-				barCoords.x * closestTriangle->supA.supB +
-				barCoords.y * closestTriangle->supB.supB +
-				barCoords.z * closestTriangle->supC.supB);
+				barCoords.x * closestTriangleIt->supA.supB +
+				barCoords.y * closestTriangleIt->supB.supB +
+				barCoords.z * closestTriangleIt->supC.supB);
 
-			contact->normal = -closestTriangle->vecABC;
+			contact->normal = -closestTriangleIt->vecABC;
 
 			contact->penetration = minDistance;
 
@@ -507,33 +518,37 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 			return true;
 		}
 
-		if (glm::dot(closestTriangle->vecABC, nextSup.v - closestTriangle->supA.v) < 0) {
+		if (glm::dot(closestTriangleIt->vecABC, nextSup.v - closestTriangleIt->supA.v) < 0) {
 			DEBUG_PRINT("NOT OK");
 			return false;
 		}
 
-		std::list<Triangle>::iterator it = triangles.begin();
-		while (it != triangles.end()) {
-			if (glm::dot(it->vecABC, nextSup.v - it->supA.v) > 0) {
+		for (auto it = triangles.begin(); it != triangles.end();) {
+			if (glm::dot(it->vecABC, nextSup.v - it->supA.v) > -EPA_EPSILON) {
 				/* update the edge list in order to remove the triangles facing this point */
 				addRemoveEdge(edges, it->supA, it->supC);
 				addRemoveEdge(edges, it->supC, it->supB);
 				addRemoveEdge(edges, it->supB, it->supA);
 				it = triangles.erase(it);
+				continue;
 			}
-			else {
-				it++;
-			}
+			it++;
 		}
 		/* re-create the triangles from the remaining edges */
 		for (Edge e : edges) {
 			glm::vec3 normal = glm::normalize(glm::cross(e.supA.v - nextSup.v, e.supB.v - nextSup.v));
-			if (glm::isnan(glm::dot(nextSup.v, normal)))
+			if (glm::isnan(glm::dot(nextSup.v, normal)) || triangles.size() > 64)
 				continue;
-			if (glm::dot(normal, nextSup.v) < 0)
+			if (glm::dot(normal, nextSup.v) > 0) {
 				triangles.push_back(Triangle(nextSup, e.supA, e.supB));
-			else
+				float test = glm::dot(nextSup.v, triangles.back().vecABC);
+				int g = 0;
+			}
+			else {
 				triangles.push_back(Triangle(nextSup, e.supB, e.supA));
+				float test = glm::dot(nextSup.v, triangles.back().vecABC);
+				int g = 0;
+			}
 		}
 
 		/*for (Triangle t : triangles) {

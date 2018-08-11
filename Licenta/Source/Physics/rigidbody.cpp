@@ -7,7 +7,8 @@ RigidBody::RigidBody(const glm::vec3 & position, glm::vec3 scale)
 	: position(position)
 	, scale(scale)
 {
-	orientation = glm::rotate(glm::mat4(1), 0.0f, glm::vec3(1, 0, 0));
+	orientation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
+	orientation = glm::normalize(orientation);
 
 	linVelocity = glm::vec3(0);
 	angVelocity = glm::vec3(0);

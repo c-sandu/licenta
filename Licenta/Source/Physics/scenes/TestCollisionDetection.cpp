@@ -62,10 +62,10 @@ void TestCollisionDetection::Init()
 
 	{
 		boxDefault = new RigidBody(glm::vec3(0, 2, 0), glm::vec3(1));
-		boxDefault->setMass(32.0f);
+		boxDefault->setMass(16.0f);
 		boxDefault->updateTransformMatrix();
 		boxDefault->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
-		boxDefault->orientation = glm::rotate(boxDefault->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1));
+		boxDefault->orientation = glm::normalize(glm::rotate(boxDefault->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1)));
 		/*boxDefault->applyForce(glm::vec3(0, 8, 0));
 		boxDefault->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
@@ -441,6 +441,8 @@ void TestCollisionDetection::OnKeyPress(int key, int mods)
 	else if (key == GLFW_KEY_TAB) {
 		selectedObjIndex = (selectedObjIndex + 1) % (objects.size() - 1);
 		PRINT_APP("selected object = " << objects[selectedObjIndex]->name << "\n");
+	} else if (key == GLFW_KEY_SPACE) {
+		objects[selectedObjIndex]->body->isAwake = objects[selectedObjIndex]->body->isAwake ? false : true;
 	}
 }
 
