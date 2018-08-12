@@ -1,6 +1,7 @@
 #include "contact.h"
 
 #include "rigidbody.h"
+#include <glm/gtx/string_cast.hpp>
 
 /* From Ian Millington - Game Physics Engine Development (2007) - chapter 14.1.2 */
 static glm::mat3 makeOrthonormalBasis(const glm::vec3 & contactNormal)
@@ -48,4 +49,32 @@ void Contact::computeDerivedData()
 		
 		closingVelocityWorld += (i == 0 ? -1.0f : 1.0f) * localVelocityWorld;
 	}
+	closingVelocityContact = matWorldToContact * closingVelocityWorld;
+}
+
+std::string Contact::toString()
+{
+	return std::string("") + "\Contact {" + "\n\t\t"
+		"ContactInfo {" + "\n\t\t"
+		+ "pointA = " + to_string(points[0]) + "\n\t\t"
+		+ "pointB = " + to_string(points[1]) + "\n\t\t"
+		+ "normal = " + to_string(normal) + "\n\t\t"
+		+ "penetration = " + std::to_string(penetration) + "\n\t\t"
+		+ "objects = { " + objects[0]->name + ", " + objects[1]->name + " }\n}\n\t\t"
+		+ "matContactToWorld = " + to_string(matContactToWorld) + "\n\t\t"
+		+ "matWorldToContact = " + to_string(matWorldToContact) + "\n\n\t\t"
+		+ "closingVelocityWorld = " + to_string(closingVelocityWorld) + "\n\t\t"
+		+ "closingVelocityContact = " + to_string(closingVelocityContact) + "\n\t\t"
+		+ "relativeContactPositions = { " + to_string(relativeContactPositions[0]) + ", " + to_string(relativeContactPositions[1]) + " }\n\n\t\t"
+		+ "desiredDeltaVelocity = " + std::to_string(desiredDeltaVelocity) + "\n\t}\n";
+}
+
+std::string ContactInfo::toString()
+{
+	return std::string("") + "ContactInfo {" + "\n\t"
+		+ "pointA = " + to_string(points[0]) + "\n\t"
+		+ "pointB = " + to_string(points[1]) + "\n\t"
+		+ "normal = " + to_string(normal) + "\n\t"
+		+ "penetration = " + std::to_string(penetration) + "\n\t"
+		+ "objects = { " + objects[0]->name + ", " + objects[1]->name + " }\n}\n";
 }

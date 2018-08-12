@@ -44,6 +44,7 @@ void RigidBody::setMass(float mass, bool isInverse)
 	if (isInverse) {
 		this->mass = mass == 0.0f ? -1.0f : 1.0f / mass;
 		this->invMass = mass;
+		this->isStatic = mass == 0.0f ? true : false;
 	}
 	else {
 		this->mass = mass;
@@ -146,6 +147,7 @@ std::string RigidBody::toString()
 		+ "angVelocity = " + to_string(angVelocity) + "\n\t\t"
 		+ "linAcceleration = " + to_string(linAcceleration) + "\n\t\t"
 		+ "angAcceleration = " + to_string(angAcceleration) + "\n\n\t\t"
+		+ "lastFrameAcceleration = " + to_string(lastFrameAcceleration) + "\n\n\t\t"
 		+ "forceAccumulator = " + to_string(forceAccumulator) + "\n\t\t"
 		+ "torqueAccumulator = " + to_string(torqueAccumulator) + "\n\t}\n";
 }

@@ -316,7 +316,12 @@ void TestCollisionResolution::Update(float deltaTime)
 	}
 
 	ImpulseContactResolver *icr = new ImpulseContactResolver(contacts);
-	icr->solve();
+	if (icr->contacts.size() > 0) {
+		//DEBUG_PRINT("Before resolution: \n");
+		//DEBUG_PRINT(boxAbove->toString());
+		icr->solve();
+		//DEBUG_PRINT(boxAbove->toString());
+	}
 	delete icr;
 }
 

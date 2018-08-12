@@ -3,6 +3,7 @@
 #include "object.h"
 
 #include <glm/gtx/matrix_cross_product.hpp>
+#include "debug.h"
 
 void ImpulseContactResolver::buildContactManifolds()
 {
@@ -53,18 +54,18 @@ void ImpulseContactResolver::buildContactManifolds()
 
 static float computeDesiredDeltaVelocity(Contact *contact)
 {
-	const float MIN_VELOCITY_FOR_RESTITUTION = 0.00001f;
+	const float MIN_VELOCITY_FOR_RESTITUTION = 0.1f;
 
 	float velocityFromAcceleration = 0;
 
 	const glm::vec3 &lastFrameAccelerationA = contact->objects[0]->body != NULL ? contact->objects[0]->body->lastFrameAcceleration : glm::vec3(0);
 	const glm::vec3 &lastFrameAccelerationB = contact->objects[1]->body != NULL ? contact->objects[1]->body->lastFrameAcceleration : glm::vec3(0);
 
-	velocityFromAcceleration = glm::dot(lastFrameAccelerationB, contact->normal) - glm::dot(lastFrameAccelerationA, contact->normal);
+	velocityFromAcceleration = glm::dot(lastFrameAccelerationA, contact->normal) - glm::dot(lastFrameAccelerationB, contact->normal);
 
 	const float effectiveRestitution = contact->closingVelocityContact.x - velocityFromAcceleration >= MIN_VELOCITY_FOR_RESTITUTION ? contact->restitutionCoef : 0.0f;
 
-	return -contact->closingVelocityContact.x - effectiveRestitution * (contact->closingVelocityContact.x - velocityFromAcceleration);
+	return -contact->closingVelocityContact.x - (effectiveRestitution * (contact->closingVelocityContact.x - velocityFromAcceleration));
 }
 
 static glm::vec3 computeImpulse(Contact *contact)
@@ -82,6 +83,7 @@ static glm::vec3 computeImpulse(Contact *contact)
 		totalInvMass += contact->objects[i]->body->invMass;
 	}
 
+
 	/* build change in velocity due to rotation and linear motion */
 	glm::mat3 totalInertiaInvContact = contact->matContactToWorld * rotationalInertiaInvWorld * contact->matWorldToContact;
 	totalInertiaInvContact += glm::mat3(totalInvMass);
@@ -90,7 +92,7 @@ static glm::vec3 computeImpulse(Contact *contact)
 
 	const glm::vec3 velocityToKill = glm::vec3(contact->desiredDeltaVelocity, -contact->closingVelocityContact.y, -contact->closingVelocityContact.z);
 
-	glm::vec3 impulseContact = velocityToKill * impulsePerUnitVelocity;
+	glm::vec3 impulseContact = impulsePerUnitVelocity * velocityToKill;
 
 	const float planarImpulse = glm::sqrt(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
 	if (planarImpulse > impulseContact.x * contact->frictionCoef) {
@@ -98,8 +100,8 @@ static glm::vec3 computeImpulse(Contact *contact)
 		impulseContact.z /= planarImpulse;
 		impulseContact.x =
 			totalInertiaInvContact[0][0] +
-			totalInertiaInvContact[0][1] * contact->frictionCoef * impulseContact.y +
-			totalInertiaInvContact[0][2] * contact->frictionCoef * impulseContact.z;
+			totalInertiaInvContact[1][0] * contact->frictionCoef * impulseContact.y +
+			totalInertiaInvContact[2][0] * contact->frictionCoef * impulseContact.z;
 		impulseContact.x = contact->desiredDeltaVelocity / impulseContact.x;
 		impulseContact.y *= contact->frictionCoef * impulseContact.x;
 		impulseContact.z *= contact->frictionCoef * impulseContact.x;
@@ -107,16 +109,16 @@ static glm::vec3 computeImpulse(Contact *contact)
 		impulseContact *= -1.0f;
 	}
 
-	return impulseContact * contact->matContactToWorld;
+	return contact->matContactToWorld * impulseContact;
 }
 
 void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &manifold)
 {
-	const unsigned int PEN_MAX_ITERATIONS = 50;
-	const unsigned int VEL_MAX_ITERATIONS = 50;
+	const unsigned int PEN_MAX_ITERATIONS = 5;
+	const unsigned int VEL_MAX_ITERATIONS = 5;
 
-	const float PEN_EPSILON = 0.0001f;
-	const float VEL_EPSILON = 0.0001f;
+	const float PEN_EPSILON = 0.01;
+	const float VEL_EPSILON = 0.025;
 
 	unsigned int penetrationIterations = 0;
 	unsigned int velocityIterations = 0;
@@ -132,6 +134,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 	}
 
 	const float penetrationQuotaPerIteration = 1.0f;
+
 
 	/* fix interpenetration */
 	for (penetrationIterations = 0; penetrationIterations < PEN_MAX_ITERATIONS; penetrationIterations++) {
@@ -151,12 +154,13 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 		float angularInertias[2] = { 0, 0 };
 
 		for (uint8_t i = 0; i < 2; i++) {
-			if (deepestContact->objects[i]->body == NULL)
+			if (deepestContact->objects[i]->body == NULL || deepestContact->objects[i]->body->isStatic)
 				continue;
 
 			glm::vec3 angularInertiaWorld = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-			angularInertiaWorld = angularInertiaWorld * deepestContact->objects[i]->body->invInertiaTensorWorld; /* TODO: see if this is the world version */
+			angularInertiaWorld = deepestContact->objects[i]->body->invInertiaTensorWorld * angularInertiaWorld;
 			angularInertiaWorld = glm::cross(angularInertiaWorld, deepestContact->relativeContactPositions[i]);
+			angularInertias[i] = glm::dot(angularInertiaWorld, deepestContact->normal);
 
 			linearInertias[i] = deepestContact->objects[i]->body->invMass;
 
@@ -164,6 +168,9 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 		}
 
 		for (uint8_t i = 0; i < 2; i++) {
+
+			if (deepestContact->objects[i]->body->isStatic)
+				continue;
 
 			float linearMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * linearInertias[i] / totalInertia;
 			float angularMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * angularInertias[i] / totalInertia;
@@ -185,7 +192,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 
 			if (angularMovementMagnitude != 0) {
 				glm::vec3 rotationDirection = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-				angularDelta = rotationDirection * deepestContact->objects[i]->body->invInertiaTensorWorld * angularMovementMagnitude / angularInertias[i];
+				angularDelta = deepestContact->objects[i]->body->invInertiaTensorWorld * rotationDirection * angularMovementMagnitude / angularInertias[i];
 			}
 
 			/* apply the changes */
@@ -225,22 +232,41 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 				slowestContact = contact;
 		}
 
-		if (slowestContact == NULL || slowestContact->desiredDeltaVelocity > -PEN_EPSILON) {
+		if (slowestContact == NULL || slowestContact->desiredDeltaVelocity >= -VEL_EPSILON) {
 			velocityIterations++;
 			break;
 		}
 
+		PRINT_WARN(slowestContact->toString());
+
 		glm::vec3 impulse = computeImpulse(slowestContact);
+		PRINT_WARN("impulse = " << impulse << "\n");
 
 		for (uint8_t i = 0; i < 2; i++) {
 			
+			if (slowestContact->objects[i]->body->isStatic)
+				continue;
+
 			const glm::vec3 velDelta = (i == 0 ? 1.0f : -1.0f) * impulse * slowestContact->objects[i]->body->invMass;
 			slowestContact->objects[i]->body->linVelocity += velDelta;
 
-			glm::vec3 angVelDelta = (i == 0 ? 1.0f : -1.0f) * glm::cross(slowestContact->relativeContactPositions[i], impulse) * slowestContact->objects[i]->body->invInertiaTensorWorld;
+			glm::vec3 angVelDelta = slowestContact->objects[i]->body->invInertiaTensorWorld * (i == 0 ? 1.0f : -1.0f) * glm::cross(slowestContact->relativeContactPositions[i], impulse);
 			slowestContact->objects[i]->body->angVelocity += angVelDelta;
+			PRINT_WARN("angVelDelta = " << angVelDelta << "\nbody angVelocity = " << slowestContact->objects[i]->body->angVelocity << "\n");
+
+			/* TODO: other affected contacts??????? */
+			for (auto &contact : manifold) {
+				const uint8_t colliderIdxInOtherContact = contact->objects[0] == slowestContact->objects[i] ? 0 : 1;
+				const float sign = colliderIdxInOtherContact == 0 ? -1 : 1;
+
+				const glm::vec3 delta = velDelta + glm::cross(angVelDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
+				contact->closingVelocityWorld += sign * delta;
+				contact->closingVelocityContact = contact->matWorldToContact * contact->closingVelocityWorld;
+				contact->desiredDeltaVelocity = computeDesiredDeltaVelocity(contact);
+			}
 		}
 	}
+	PRINT_WARN("AFTER " << penetrationIterations << "penIters and " << velocityIterations << "velIters\n");
 }
 
 void ImpulseContactResolver::solve()

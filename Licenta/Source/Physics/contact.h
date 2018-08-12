@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <string>
 #include "object.h"
 
 class ContactInfo
@@ -12,6 +13,8 @@ public:
 	float penetration; /* penetration depth */
 
 	PhysicsObject *objects[2]; /* {objA, objB} */
+
+	std::string toString();
 };
 
 class Contact : public ContactInfo
@@ -41,10 +44,12 @@ public:
 		this->objects[0] = contactInfo.objects[0];
 		this->objects[1] = contactInfo.objects[1];
 
-		this->restitutionCoef = 1.0f;
-		this->frictionCoef = 1.0f;
+		this->restitutionCoef = 0.25f;
+		this->frictionCoef = 0.00001f;
 		this->invalid = false;
 	}
 
 	void computeDerivedData();
+	
+	std::string toString();
 };
