@@ -7,7 +7,7 @@ void PhysicsObject::update(float deltaTime)
 	collider->updateInternals();
 }
 
-glm::mat4 PhysicsObject::getTransformMatrix()
+glm::mat4 PhysicsObject::getTransformMatrix() const
 {
 	if (body == NULL)
 		return glm::translate(glm::mat4(1), ((PlaneCollider*)collider)->normal * ((PlaneCollider*)collider)->offset);

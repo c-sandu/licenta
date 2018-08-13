@@ -572,8 +572,7 @@ void ContactGenerator::fillContacts()
 			ContactInfo contactInfo;
 			bool ok = cg.createContact(&contactInfo);
 			if (ok) {
-
-				contacts.push_back(new Contact(contactInfo));
+				collisions.push_back(new ContactInfo(contactInfo));
 			}
 		}
 	}
@@ -581,5 +580,10 @@ void ContactGenerator::fillContacts()
 
 void ContactGenerator::clearContacts()
 {
-	contacts.clear();
+	auto collisionIt = collisions.begin();
+	while (collisionIt != collisions.end()) {
+		delete *collisionIt;
+		collisionIt++;
+	}
+	collisions.clear();
 }

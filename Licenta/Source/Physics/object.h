@@ -20,7 +20,7 @@ public:
 	Collider *collider;
 
 	void update(float deltaTime);
-	glm::mat4 getTransformMatrix(); /* returns the local to world transform matrix of the object */
+	glm::mat4 getTransformMatrix() const; /* returns the local to world transform matrix of the object */
 	glm::mat4 getColTransformMatrix(); /* returns the local to world transform matrix of the object colldier */
 
 	std::string toString();

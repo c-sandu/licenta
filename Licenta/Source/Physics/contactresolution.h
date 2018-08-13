@@ -17,25 +17,26 @@ public:
 	PhysicsObject *obj2;
 	std::vector<Contact*> contacts;
 
-	double timestamp;
+	unsigned int timestamp;
 
 };
-const uint8_t MAX_MANIFOLD_SIZE = 4;
-void addContactToManifold(ContactManifold & manifold, const Contact & contact);
-uint8_t findWorstContact(ContactManifold & manifold);
 
 class ImpulseContactResolver
 {
 public:
-	std::vector<Contact*> contacts;
-	std::list<std::list<Contact*>> contactManifolds;
+	unsigned int timestamp;
 
-	ImpulseContactResolver(const std::vector<Contact*> &contacts)
-		: contacts(contacts) {}
+	std::list<Contact> contacts;
+	std::list<ContactManifold> manifolds;
 
-	void buildContactManifolds();
+	ImpulseContactResolver() { timestamp = 0; }
 
-	void solveContactManifold(const std::list<Contact*> &manifold);
+	void solveContactManifold(ContactManifold & manifold);
 
-	void solve();
+	void solve(const std::vector<ContactInfo*> &collisions);
+
+	void updateContacts(const std::vector<ContactInfo*> & collisions);
+	static const uint8_t MAX_MANIFOLD_SIZE = 4;
+	void addContactToManifold(ContactManifold & manifold, const ContactInfo & contact);
+	uint8_t findWorstContact(ContactManifold & manifold);
 };

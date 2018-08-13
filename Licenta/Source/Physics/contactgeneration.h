@@ -104,7 +104,7 @@ class ContactGenerator
 {
 public:
 	std::vector<PotentialCollision*> *potentialCollisions;
-	std::vector<Contact*> contacts;
+	std::vector<ContactInfo*> collisions;
 
 	ContactGenerator() {};
 	ContactGenerator(std::vector<PotentialCollision*> *potentialCollisions)

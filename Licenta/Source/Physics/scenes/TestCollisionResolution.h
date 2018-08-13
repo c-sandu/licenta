@@ -9,6 +9,7 @@
 #include "../rigidbody.h"
 #include "../object.h"
 #include "../contactgeneration.h"
+#include "../contactresolution.h"
 
 class TestCollisionResolution : public SimpleScene
 {
@@ -46,6 +47,7 @@ private:
 	std::vector <PhysicsObject*> objects;
 	PotentialCollisionDetector pcd;
 	ContactGenerator cg;
+	ImpulseContactResolver icr;
 
 	unsigned int selectedObjIndex;
 };

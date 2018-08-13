@@ -1,56 +1,10 @@
-#include "contactresolution.h"
+﻿#include "contactresolution.h"
 #include "contact.h"
 #include "object.h"
 
 #include <glm/gtx/matrix_cross_product.hpp>
 #include "debug.h"
 
-void ImpulseContactResolver::buildContactManifolds()
-{
-	contactManifolds.clear();
-
-	for (auto & contact : contacts) {
-
-		if (contact->invalid)
-			continue;
-
-		for (uint8_t i = 0; i < 2; i++)
-			contact->objects[i]->collider->contactManifold = NULL;
-	}
-	
-	for (auto & contact : contacts) {
-		if (contact->invalid)
-			continue;
-
-		for (uint8_t i = 0; i < 2; i++) {
-			if (contact->objects[i]->collider->contactManifold == NULL && !contact->objects[i]->body->isStatic) {
-				contactManifolds.emplace_back();
-				contact->objects[i]->collider->contactManifold = &contactManifolds.back();
-			}
-		}
-
-		std::list<Contact*> *manifoldA = contact->objects[0]->collider->contactManifold;
-		std::list<Contact*> *manifoldB = contact->objects[1]->collider->contactManifold;
-
-		if (manifoldA == NULL || manifoldB == NULL) {
-			if (manifoldA != NULL)
-				manifoldA->push_back(contact);
-			if (manifoldB != NULL)
-				manifoldB->push_back(contact);
-		}
-		else {
-			if (manifoldA != manifoldB) {
-				manifoldA->splice(manifoldA->end(), *manifoldB);
-				contact->objects[1]->collider->contactManifold = manifoldB = manifoldA;
-			}
-			manifoldA->push_back(contact);
-		}
-
-		contactManifolds.remove_if([](const std::list<Contact*> &item)->bool {
-			return item.size() == 0;
-		});
-	};
-}
 
 static float computeDesiredDeltaVelocity(Contact *contact)
 {
@@ -113,18 +67,18 @@ static glm::vec3 computeImpulse(Contact *contact)
 }
 
 
-void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &manifold)
+void ImpulseContactResolver::solveContactManifold(ContactManifold &manifold)
 {
 	const unsigned int PEN_MAX_ITERATIONS = 5;
 	const unsigned int VEL_MAX_ITERATIONS = 5;
 
-	const float PEN_EPSILON = 0.01;
-	const float VEL_EPSILON = 0.025;
+	const float PEN_EPSILON = 0.01f;
+	const float VEL_EPSILON = 0.025f;
 
 	unsigned int penetrationIterations = 0;
 	unsigned int velocityIterations = 0;
 
-	for (auto & contact : manifold) {
+	for (auto & contact : manifold.contacts) {
 		for (uint8_t i = 0; i < 2; i++) {
 			if (contact->objects[i]->collider->body != NULL)
 				contact->objects[i]->collider->body->isAwake = true;
@@ -141,7 +95,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 	for (penetrationIterations = 0; penetrationIterations < PEN_MAX_ITERATIONS; penetrationIterations++) {
 		/* get the contact with deepest penetration */
 		Contact *deepestContact = NULL;
-		for (auto & contact : manifold)
+		for (auto & contact : manifold.contacts)
 			if (deepestContact == NULL || contact->penetration > deepestContact->penetration)
 				deepestContact = contact;
 
@@ -203,7 +157,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 			deepestContact->objects[i]->body->updateInvInertiaTensorWorld();
 
 			/* TODO: other affected contacts??????? */
-			for (auto &contact : manifold) {
+			for (auto &contact : manifold.contacts) {
 
 				const uint8_t colliderIdxInOtherContact = contact->objects[0] == deepestContact->objects[i] ? 0 : 1;
 				const float sign = colliderIdxInOtherContact == 0 ? -1 : 1;
@@ -226,7 +180,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 	/* fix velocities */
 	for (velocityIterations = 0; velocityIterations < VEL_MAX_ITERATIONS; velocityIterations++) {
 		Contact *slowestContact = NULL;
-		for (auto & contact : manifold) {
+		for (auto & contact : manifold.contacts) {
 			if (contact->penetration < -0.1f)
 				continue;
 			if (slowestContact == NULL || contact->desiredDeltaVelocity < slowestContact->desiredDeltaVelocity)
@@ -256,7 +210,7 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 			PRINT_WARN("angVelDelta = " << angVelDelta << "\nbody angVelocity = " << slowestContact->objects[i]->body->angVelocity << "\n");
 
 			/* TODO: other affected contacts??????? */
-			for (auto &contact : manifold) {
+			for (auto &contact : manifold.contacts) {
 				const uint8_t colliderIdxInOtherContact = contact->objects[0] == slowestContact->objects[i] ? 0 : 1;
 				const float sign = colliderIdxInOtherContact == 0 ? -1 : 1;
 
@@ -270,51 +224,134 @@ void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &man
 	PRINT_WARN("AFTER " << penetrationIterations << "penIters and " << velocityIterations << "velIters\n");
 }
 
-void ImpulseContactResolver::solve()
+void ImpulseContactResolver::solve(const std::vector<ContactInfo*> &collisions)
 {
-	if (contacts.size() > 0) {
-		buildContactManifolds();
+	updateContacts(collisions);
 
-		for (auto &manifold : contactManifolds) {
-			solveContactManifold(manifold);
+	for (auto &manifold : manifolds) {
+		solveContactManifold(manifold);
+	}
+}
+
+void ImpulseContactResolver::updateContacts(const std::vector<ContactInfo*> & collisions)
+{
+	timestamp++;
+
+	for (unsigned int i = 0; i < collisions.size(); i++) {
+		const ContactInfo *collision = collisions[i];
+
+		ContactManifold *manifold = NULL;
+
+		for (auto & manIt : manifolds) {
+			if (manIt.obj1 == collision->objects[0] && manIt.obj2 == collision->objects[1]) {
+				manifold = &manIt;
+			}
 		}
+
+		/* if there's no manifold for this pair of objects, try again with reversed order */
+		if (manifold == NULL) {
+			for (auto & manIt : manifolds) {
+				if (manIt.obj1 == collision->objects[1] && manIt.obj2 == collision->objects[0]) {
+					manifold = &manIt;
+					ContactInfo reversedContact = collision->reverse();
+
+					addContactToManifold(*manifold, reversedContact);
+					continue;
+				}
+			}
+			if (manifold == NULL) {
+				/* create new manifold for this object pair */
+				manifolds.emplace_back(collision->objects[0], collision->objects[1]);
+				manifold = &manifolds.back();
+			}
+		}
+
+		addContactToManifold(*manifold, *collision);
+	}
+
+	/* remove old contact manifolds that were not updated */
+	for (auto manIt = manifolds.begin(); manIt != manifolds.end();) {
+
+		if (manIt->timestamp < timestamp) {
+			for (uint8_t c = 0; c < manIt->contacts.size(); c++) {
+				contacts.remove(*(manIt->contacts[c]));
+			}
+
+			manIt = manifolds.erase(manIt);
+			continue;
+		}
+
+		PhysicsObject *obj1 = manIt->obj1;
+		PhysicsObject *obj2 = manIt->obj2;
+
+		/* check for old contacts in this manifold*/
+		for (uint8_t c = 0; c < manIt->contacts.size();) {
+			Contact *contact = manIt->contacts[c];
+
+			if (contact->timestamp < timestamp) {
+				/* new world positions */
+				glm::vec3 worldPoint1 = glm::vec3(obj1->getTransformMatrix() * glm::vec4(contact->localPoints[0], 1));
+				glm::vec3 worldPoint2 = glm::vec3(obj2->getTransformMatrix() * glm::vec4(contact->localPoints[1], 1));
+			
+				/* recompute penetration distance */
+				const float penetration = glm::dot(worldPoint2 - worldPoint1, contact->normal);
+
+				/* compute the ﻿﻿projection of the world-space point#2 on the normal */
+				glm::vec3 projectedPoint2 = worldPoint1 + contact->normal * penetration;
+				glm::vec3 tangentVector = projectedPoint2 - worldPoint2;
+				float tangentDistanceSquared = glm::dot(tangentVector, tangentVector);
+
+				/* Check to see if this contact should be removed.
+				This occurrs if the distance becomes positive (objects are no
+				longer colliding) or if the distance between the collision points in the plane
+				perpendicular to the normal vector becomes too large. */
+				if (penetration > 0.0001f || tangentDistanceSquared > 0.0001f) {
+					contacts.remove(*(manIt->contacts[c]));
+
+					manIt->contacts.erase(manIt->contacts.begin() + c);
+					continue;
+				}
+
+				/* update the contact with its new data */
+				contact->points[0] = worldPoint1;
+				contact->points[1] = worldPoint2;
+				contact->penetration = penetration;
+				contact->timestamp = timestamp;
+			}
+			c++;
+		}
+		manIt++;
 	}
 }
 
 
-void addContactToManifold(ContactManifold & manifold, const Contact & newContact)
+void ImpulseContactResolver::addContactToManifold(ContactManifold & manifold, const ContactInfo & newContact)
 {
-	manifold.timestamp = glfwGetTime();
+	manifold.timestamp = timestamp;
 	const PhysicsObject *obj1 = manifold.obj1;
 	const PhysicsObject *obj2 = manifold.obj2;
 
 	const glm::vec3 worldPoint1 = newContact.points[0];
 	const glm::vec3 worldPoint2 = newContact.points[1];
+
+	const glm::vec3 localPoint1 = glm::vec3(glm::inverse(obj1->getTransformMatrix()) * glm::vec4(worldPoint1, 1));
+	const glm::vec3 localPoint2 = glm::vec3(glm::inverse(obj2->getTransformMatrix()) * glm::vec4(worldPoint2, 1));
+
 	const float toleranceSquared = 0.001f;
 
 	for (uint8_t i = 0; i < manifold.contacts.size(); i++) {
 		Contact *contact = manifold.contacts[i];
 
-		const glm::vec3 delta1 = worldPoint1 - contact->points[0];
-		const glm::vec3 delta2 = worldPoint2 - contact->points[1];
+		const glm::vec3 delta1 = localPoint1 - contact->localPoints[0];
+		const glm::vec3 delta2 = localPoint2 - contact->localPoints[1];
 		const float distance1Squared = glm::dot(delta1, delta1);
 		const float distance2Squared = glm::dot(delta2, delta2);
-		const int closeEnough = distance1Squared < toleranceSquared & distance2Squared < toleranceSquared;
+		const int closeEnough = (distance1Squared < toleranceSquared) & (distance2Squared < toleranceSquared);
 
 		if (closeEnough)
 		{
-			contact->points[0] = worldPoint1;
-			contact->points[1] = worldPoint2;
-			contact->normal = newContact.normal;
-			contact->penetration = newContact.penetration;
-			contact->objects[0] = newContact.objects[0];
-			contact->objects[1] = newContact.objects[1];
-
-			contact->restitutionCoef = 0.25f;
-			contact->frictionCoef = 0.00001f;
-			contact->invalid = false;
-
-			contact->timestamp = glfwGetTime();
+			contact->setContactInfo(newContact);
+			contact->timestamp = timestamp;
 			return;
 		}
 	}
@@ -324,27 +361,17 @@ void addContactToManifold(ContactManifold & manifold, const Contact & newContact
 	if (manifold.contacts.size() == MAX_MANIFOLD_SIZE) {
 		/* Replace the worst contact point from the manifold with the new one */
 		uint8_t index = findWorstContact(manifold);
-		contact = manifold.contacts[index];
-	} else{
-		manifold.contacts.emplace_back();
-		contact = manifold.contacts.back();
-	}
+		manifold.contacts.erase(manifold.contacts.begin() + index);
+	} 
+	contacts.emplace_back();
+	contact = &contacts.back();
+	manifold.contacts.push_back(contact);
 
-	contact->points[0] = worldPoint1;
-	contact->points[1] = worldPoint2;
-	contact->normal = newContact.normal;
-	contact->penetration = newContact.penetration;
-	contact->objects[0] = newContact.objects[0];
-	contact->objects[1] = newContact.objects[1];
-
-	contact->restitutionCoef = 0.25f;
-	contact->frictionCoef = 0.00001f;
-	contact->invalid = false;
-
-	contact->timestamp = glfwGetTime();
+	contact->setContactInfo(newContact);
+	contact->timestamp = timestamp;
 }
 
-uint8_t findWorstContact(ContactManifold & manifold)
+uint8_t ImpulseContactResolver::findWorstContact(ContactManifold & manifold)
 {
 	uint8_t lowestPenetrationIdx = 0;
 	float lowestPenetration = manifold.contacts[0]->penetration;

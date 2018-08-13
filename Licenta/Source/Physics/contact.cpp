@@ -31,6 +31,32 @@ static glm::mat3 makeOrthonormalBasis(const glm::vec3 & contactNormal)
 	}
 	return glm::mat3(contactNormal, contactTangent[0], contactTangent[1]);
 }
+void Contact::setContactInfo(const glm::vec3 point1, const glm::vec3 point2,
+	const glm::vec3 normal,
+	const float penetration,
+	PhysicsObject *obj1, PhysicsObject *obj2)
+{
+	this->points[0] = point1;
+	this->points[1] = point2;
+	this->localPoints[0] = glm::vec3(glm::inverse(obj1->getTransformMatrix()) * glm::vec4(this->points[0], 1));
+	this->localPoints[1] = glm::vec3(glm::inverse(obj2->getTransformMatrix()) * glm::vec4(this->points[1], 1));
+
+	this->normal = normal;
+	this->penetration = penetration;
+	this->objects[0] = obj1;
+	this->objects[1] = obj2;
+}
+void Contact::setContactInfo(const ContactInfo & contactInfo)
+{
+	this->points[0] = contactInfo.points[0];
+	this->points[1] = contactInfo.points[1];
+	this->localPoints[0] = glm::vec3(glm::inverse(contactInfo.objects[0]->getTransformMatrix()) * glm::vec4(this->points[0], 1));
+	this->localPoints[1] = glm::vec3(glm::inverse(contactInfo.objects[1]->getTransformMatrix()) * glm::vec4(this->points[1], 1));
+	this->normal = contactInfo.normal;
+	this->penetration = contactInfo.penetration;
+	this->objects[0] = contactInfo.objects[0];
+	this->objects[1] = contactInfo.objects[1];
+}
 void Contact::computeDerivedData()
 {
 	matContactToWorld = makeOrthonormalBasis(normal);
@@ -54,7 +80,7 @@ void Contact::computeDerivedData()
 
 std::string Contact::toString()
 {
-	return std::string("") + "\Contact {" + "\n\t\t"
+	return std::string("") + "\tContact {" + "\n\t\t"
 		"ContactInfo {" + "\n\t\t"
 		+ "pointA = " + to_string(points[0]) + "\n\t\t"
 		+ "pointB = " + to_string(points[1]) + "\n\t\t"

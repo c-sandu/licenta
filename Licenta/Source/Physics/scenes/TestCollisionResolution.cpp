@@ -179,7 +179,7 @@ void TestCollisionResolution::Init()
 
 	{
 		boxExtra = new RigidBody(glm::vec3(3, 3, -2));
-		boxExtra->setMass(1024.0f);
+		boxExtra->setMass(32.0f);
 		boxExtra->updateTransformMatrix();
 		boxExtra->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5f) * boxExtra->scale));
 		PhysicsObject *obj = new PhysicsObject();
@@ -319,14 +319,7 @@ void TestCollisionResolution::Update(float deltaTime)
 		}
 	}*/
 
-	ImpulseContactResolver *icr = new ImpulseContactResolver(cg.contacts);
-	if (icr->contacts.size() > 0) {
-		//DEBUG_PRINT("Before resolution: \n");
-		//DEBUG_PRINT(boxAbove->toString());
-		icr->solve();
-		//DEBUG_PRINT(boxAbove->toString());
-	}
-	delete icr;
+	icr.solve(cg.collisions);
 }
 
 void TestCollisionResolution::FrameEnd()
