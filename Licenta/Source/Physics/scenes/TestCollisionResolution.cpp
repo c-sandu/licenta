@@ -157,7 +157,7 @@ void TestCollisionResolution::Init()
 	//}
 
 	{
-		boxBelow = new RigidBody(glm::vec3(0, 1, 1), glm::vec3(2, 1, 2));
+		boxBelow = new RigidBody(glm::vec3(0, 0, 0), glm::vec3(32, 1, 32));
 		boxBelow->setMass(0.0f, true);
 		boxBelow->updateTransformMatrix();
 		boxBelow->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxBelow->scale));
@@ -178,8 +178,8 @@ void TestCollisionResolution::Init()
 	}
 
 	{
-		boxExtra = new RigidBody(glm::vec3(3, 1, -2));
-		boxExtra->setMass(32.0f);
+		boxExtra = new RigidBody(glm::vec3(3, 3, -2));
+		boxExtra->setMass(1024.0f);
 		boxExtra->updateTransformMatrix();
 		boxExtra->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5f) * boxExtra->scale));
 		PhysicsObject *obj = new PhysicsObject();
@@ -209,6 +209,7 @@ void TestCollisionResolution::Init()
 	}
 
 	selectedObjIndex = 0;
+	cg.potentialCollisions = &pcd.potentialCollisions;
 
 	PRINT_APP("Positions = {\n\t");
 	for (glm::vec3 &p : meshes["box"]->positions)
@@ -288,7 +289,10 @@ void TestCollisionResolution::Update(float deltaTime)
 
 	//PRINT_APP(pcd.potentialCollisions.size() << " potential collisions\n");
 
-	std::vector<Contact*> contacts;
+	cg.clearContacts();
+	cg.fillContacts();
+
+	/*std::vector<Contact*> contacts;
 
 	for (auto & col : pcd.potentialCollisions) {
 		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
@@ -313,9 +317,9 @@ void TestCollisionResolution::Update(float deltaTime)
 				PRINT_APP("penetration = " << contactInfo.penetration << "\n}\n");
 			}
 		}
-	}
+	}*/
 
-	ImpulseContactResolver *icr = new ImpulseContactResolver(contacts);
+	ImpulseContactResolver *icr = new ImpulseContactResolver(cg.contacts);
 	if (icr->contacts.size() > 0) {
 		//DEBUG_PRINT("Before resolution: \n");
 		//DEBUG_PRINT(boxAbove->toString());

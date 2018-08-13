@@ -112,6 +112,7 @@ static glm::vec3 computeImpulse(Contact *contact)
 	return contact->matContactToWorld * impulseContact;
 }
 
+
 void ImpulseContactResolver::solveContactManifold(const std::list<Contact*> &manifold)
 {
 	const unsigned int PEN_MAX_ITERATIONS = 5;
@@ -278,4 +279,114 @@ void ImpulseContactResolver::solve()
 			solveContactManifold(manifold);
 		}
 	}
+}
+
+
+void addContactToManifold(ContactManifold & manifold, const Contact & newContact)
+{
+	manifold.timestamp = glfwGetTime();
+	const PhysicsObject *obj1 = manifold.obj1;
+	const PhysicsObject *obj2 = manifold.obj2;
+
+	const glm::vec3 worldPoint1 = newContact.points[0];
+	const glm::vec3 worldPoint2 = newContact.points[1];
+	const float toleranceSquared = 0.001f;
+
+	for (uint8_t i = 0; i < manifold.contacts.size(); i++) {
+		Contact *contact = manifold.contacts[i];
+
+		const glm::vec3 delta1 = worldPoint1 - contact->points[0];
+		const glm::vec3 delta2 = worldPoint2 - contact->points[1];
+		const float distance1Squared = glm::dot(delta1, delta1);
+		const float distance2Squared = glm::dot(delta2, delta2);
+		const int closeEnough = distance1Squared < toleranceSquared & distance2Squared < toleranceSquared;
+
+		if (closeEnough)
+		{
+			contact->points[0] = worldPoint1;
+			contact->points[1] = worldPoint2;
+			contact->normal = newContact.normal;
+			contact->penetration = newContact.penetration;
+			contact->objects[0] = newContact.objects[0];
+			contact->objects[1] = newContact.objects[1];
+
+			contact->restitutionCoef = 0.25f;
+			contact->frictionCoef = 0.00001f;
+			contact->invalid = false;
+
+			contact->timestamp = glfwGetTime();
+			return;
+		}
+	}
+
+	Contact *contact;
+
+	if (manifold.contacts.size() == MAX_MANIFOLD_SIZE) {
+		/* Replace the worst contact point from the manifold with the new one */
+		uint8_t index = findWorstContact(manifold);
+		contact = manifold.contacts[index];
+	} else{
+		manifold.contacts.emplace_back();
+		contact = manifold.contacts.back();
+	}
+
+	contact->points[0] = worldPoint1;
+	contact->points[1] = worldPoint2;
+	contact->normal = newContact.normal;
+	contact->penetration = newContact.penetration;
+	contact->objects[0] = newContact.objects[0];
+	contact->objects[1] = newContact.objects[1];
+
+	contact->restitutionCoef = 0.25f;
+	contact->frictionCoef = 0.00001f;
+	contact->invalid = false;
+
+	contact->timestamp = glfwGetTime();
+}
+
+uint8_t findWorstContact(ContactManifold & manifold)
+{
+	uint8_t lowestPenetrationIdx = 0;
+	float lowestPenetration = manifold.contacts[0]->penetration;
+
+	for (uint8_t i = 1; i < manifold.contacts.size(); i++) {
+		Contact *contact = manifold.contacts[i];
+
+		if (contact->penetration < lowestPenetration) {
+			lowestPenetration = contact->penetration;
+			lowestPenetrationIdx = i;
+		}
+	}
+
+	// Compute the areas of all possible triangle permutations.
+
+	const glm::vec3 v0v1 = manifold.contacts[0]->points[0] - manifold.contacts[1]->points[0];
+	const glm::vec3 v0v2 = manifold.contacts[0]->points[0] - manifold.contacts[2]->points[0];
+	const glm::vec3 v0v3 = manifold.contacts[0]->points[0] - manifold.contacts[3]->points[0];
+	const glm::vec3 v1v2 = manifold.contacts[1]->points[0] - manifold.contacts[2]->points[0];
+	const glm::vec3 v1v3 = manifold.contacts[1]->points[0] - manifold.contacts[3]->points[0];
+	const glm::vec3 v2v3 = manifold.contacts[2]->points[0] - manifold.contacts[3]->points[0];
+
+	float areas[MAX_MANIFOLD_SIZE];
+
+	// Compute the areas for each triangle formed by excluding the vertex at the area index.
+	areas[0] = (lowestPenetrationIdx != 0) ? glm::length(glm::cross(v1v2, v1v3)) : 0.0f;
+	areas[1] = (lowestPenetrationIdx != 1) ? glm::length(glm::cross(v0v2, v0v3)) : 0.0f;
+	areas[2] = (lowestPenetrationIdx != 2) ? glm::length(glm::cross(v0v1, v0v3)) : 0.0f;
+	areas[3] = (lowestPenetrationIdx != 3) ? glm::length(glm::cross(v0v1, v0v2)) : 0.0f;
+
+	// Find the index of the largest area and remove the vertex at that index.
+	uint8_t maxAreaIndex = 0;
+	float maxArea = areas[0];
+
+	for (uint8_t i = 1; i < manifold.contacts.size(); i++)
+	{
+		if (areas[i] > maxArea)
+		{
+			maxAreaIndex = i;
+			maxArea = areas[i];
+		}
+	}
+
+	return maxAreaIndex;
 }

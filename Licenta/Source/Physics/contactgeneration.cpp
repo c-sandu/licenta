@@ -562,3 +562,24 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 	DEBUG_PRINT("EPA max iterations reached\n");
 	return false;
 }
+
+void ContactGenerator::fillContacts()
+{
+	for (auto & col : (*potentialCollisions)) {
+		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
+
+		if (cg.testIntersection()) {
+			ContactInfo contactInfo;
+			bool ok = cg.createContact(&contactInfo);
+			if (ok) {
+
+				contacts.push_back(new Contact(contactInfo));
+			}
+		}
+	}
+}
+
+void ContactGenerator::clearContacts()
+{
+	contacts.clear();
+}

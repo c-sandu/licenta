@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
 #include "object.h"
@@ -33,6 +34,8 @@ public:
 	float frictionCoef;
 	float desiredDeltaVelocity;
 
+	double timestamp;
+
 	std::vector<Contact*> *contactManifold;
 
 	Contact(const ContactInfo &contactInfo)
@@ -47,6 +50,8 @@ public:
 		this->restitutionCoef = 0.25f;
 		this->frictionCoef = 0.00001f;
 		this->invalid = false;
+
+		timestamp = glfwGetTime();
 	}
 
 	void computeDerivedData();

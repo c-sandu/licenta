@@ -5,6 +5,8 @@
 #include "object.h"
 #include "contact.h"
 
+#include "broadphase.h"
+
 namespace GJK
 {
 	class SupportPoint {
@@ -97,3 +99,17 @@ namespace GJK
 		bool createContact(ContactInfo *contact);
 	};
 }
+
+class ContactGenerator
+{
+public:
+	std::vector<PotentialCollision*> *potentialCollisions;
+	std::vector<Contact*> contacts;
+
+	ContactGenerator() {};
+	ContactGenerator(std::vector<PotentialCollision*> *potentialCollisions)
+		: potentialCollisions(potentialCollisions) {};
+
+	void fillContacts();
+	void clearContacts();
+};
