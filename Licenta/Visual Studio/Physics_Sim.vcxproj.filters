@@ -73,14 +73,33 @@
       <Filter>include</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Main.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\TestApp.cpp">
-      <Filter>Physics\scenes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Physics\rigidbody.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Physics\broadphase.cpp" />
-    <ClCompile Include="..\Source\Physics\object.cpp" />
+    <ClCompile Include="..\Source\Physics\shapes.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\object.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\broadphase.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\contactgeneration.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\contactresolution.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\TestCollisionDetection.cpp">
+      <Filter>Physics\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\TestCollisionResolution.cpp">
+      <Filter>Physics\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\contact.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h">
@@ -137,9 +156,6 @@
     <ClInclude Include="..\Source\include\utils.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\TestApp.h">
-      <Filter>Physics\scenes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Physics\rigidbody.h">
       <Filter>Physics</Filter>
     </ClInclude>
@@ -147,6 +163,27 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Physics\object.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\shapes.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\contactgeneration.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\contactresolution.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\contact.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\TestCollisionResolution.h">
+      <Filter>Physics\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\TestCollisionDetection.h">
+      <Filter>Physics\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\debug.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

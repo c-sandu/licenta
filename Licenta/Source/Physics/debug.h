@@ -6,7 +6,7 @@
 /* level 1: + app messages */
 /* level 2: + warnings */
 /* level 3: + infos */
-#define PHYSICS_PRINT_DEBUG_LEVEL	0
+#define PHYSICS_PRINT_DEBUG_LEVEL	1
 
 #define PRINT_ERR(x) do { std::cout << x; } while (0)
 

@@ -35,9 +35,14 @@
     <ClCompile Include="..\Source\include\gl.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
     <ClCompile Include="..\Source\Physics\broadphase.cpp" />
+    <ClCompile Include="..\Source\Physics\contact.cpp" />
+    <ClCompile Include="..\Source\Physics\contactgeneration.cpp" />
+    <ClCompile Include="..\Source\Physics\contactresolution.cpp" />
     <ClCompile Include="..\Source\Physics\object.cpp" />
     <ClCompile Include="..\Source\Physics\rigidbody.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\TestApp.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\TestCollisionDetection.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\TestCollisionResolution.cpp" />
+    <ClCompile Include="..\Source\Physics\shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h" />
@@ -59,6 +64,10 @@
     <ClInclude Include="..\Source\include\math.h" />
     <ClInclude Include="..\Source\include\utils.h" />
     <ClInclude Include="..\Source\Physics\broadphase.h" />
+    <ClInclude Include="..\Source\Physics\contact.h" />
+    <ClInclude Include="..\Source\Physics\contactgeneration.h" />
+    <ClInclude Include="..\Source\Physics\contactresolution.h" />
+    <ClInclude Include="..\Source\Physics\debug.h" />
     <ClInclude Include="..\Source\Physics\object.h" />
     <ClInclude Include="..\Source\Physics\rigidbody.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -66,7 +75,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\TestApp.h" />
+    <ClInclude Include="..\Source\Physics\scenes\TestCollisionDetection.h" />
+    <ClInclude Include="..\Source\Physics\scenes\TestCollisionResolution.h" />
+    <ClInclude Include="..\Source\Physics\shapes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Physics\shaders\FragmentShader.glsl" />
