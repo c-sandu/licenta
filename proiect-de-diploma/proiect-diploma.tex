@@ -155,7 +155,7 @@ TODO: rezultate obținute pe scurt (o aplicație cu interfață grafică în sta
 %Sinopsisul proiectului are rol de introducere, conținând atât o descriere pe scurt a problemei abordate cât și o enumerare sumară a rezultatelor și a concluziilor. Se recomandă ca sinopsisul să fie redactat într-un limbaj accesibil unei persoane nefamiliarizate cu domeniul, dar în același timp destul de specific pentru a oferi rapid o vedere de ansamblu asupra proiectului prezentat.
 %Sinopsisul proiectului va fi redactat atât în română cât și în engleză. Ca dimensiunea recomandată aceasta secțiune va avea maxim 200 de cuvinte pentru fiecare variantă. Împreună, ambele variante se vor încadra într-o singură pagină.}
 
-\newcommand{\AbstractEN}{This aim of this thesis is to provide a closer look at a series of physical phenomena pertaining to the motion of solid objects, as well as to describe various algorithms and numerical methods used in motion simulation and implementing them inside a physics engine able to approximate and render the realistic motion of a number of objects in real time.
+\newcommand{\AbstractEN}{The aim of this thesis is to provide a closer look at a series of physical phenomena pertaining to the motion of solid objects, as well as to describe various algorithms and numerical methods used in motion simulation and implementing them inside a physics engine able to approximate and render the realistic motion of a number of objects in real time.
 TODO: rezultate obținute pe scurt (o aplicație cu interfață grafică în stare să ruleze niște demo-uri + modificarea unor scenarii stabilite de dinainte)}
 %The abstract has an introductory role and should engulf both a brief description of the issue at hand, as well as an overview of the obtained results and conclusions. The abstract should be formulated such that even somebody that is unfamiliar with the projects’ domain can grasp the objectives of the thesis while, at the same time, retaining a specificity level offering a bird’s eye view of the project.
 %The projects’ abstract will be elaborated in both Romanian and English. The recommended size for this section is limited to 200 words for each version. Together, both versions will fit in one page.}
@@ -241,7 +241,7 @@ Se disting, prin urmare, două subprobleme de rezolvat:
 \section{Soluția propusă} 
 %Descrierea pe scurt a soluției implementate; ce abordare este propusă (nu detalierea utilitarelor și a tehnologiilor, ci abordarea și ideea propusă de către autor).
 În vederea atingerii tuturor obiectivelor de mai sus, este propusă o aplicație OpenGL, capabilă să preia input-ul utilizatorului și să deseneze un număr de scenarii demonstrative.
-Backend-ul (motorul de fizică în sine) va urmări o arhitectură clasică, folosită cu succes în alte proiecte asemănătoare(ex: \cite{box2D}, \cite{bullet}). Funcționarea simulatorului este asigurată de o buclă infinită în care la fiecare iterație sunt realizate, pe rând: tratarea input-ului utilizatorului, integrarea corpurilor solide,
+Backend-ul (motorul de fizică în sine) va urmări o arhitectură clasică, folosită cu succes în alte proiecte asemănătoare(ex: \cite{box2D}, \cite{bullet}). Funcționarea simulatorului este asigurată de o buclă infinită în care la fiecare iterație sunt realizate, pe rând: tratarea input-ului utilizatorului, integrarea(actualizarea stării) corpurilor solide,
 detecția coliziunilor, rezolvarea lor, desenarea în contextul OpenGL.
 \section{Rezultatele obținute}
 TODO:Descriere pe scurt a rezultatelor obținute, eventual de ce acestea sunt importante față de alte soluții sau studii.
@@ -260,34 +260,55 @@ TODO:Descriere pe scurt a rezultatelor obținute, eventual de ce acestea sunt im
 
 
 
-\chapter{Analiza Cerințelor / Motivație}
-\dezvoltare Acest capitol va analiza cerințele produsului din prisma potențialilor clienți și a scenariilor de utilizare preconizate, urmând a fi generată o lista de funcționalități. 
+\chapter{Motivație}
+Motivația proiectului de față este una personală, aceea de a aprofunda tehnicile matematice și programatice folosite într-o simulare realistică a interacțiunilor mecanice dintre corpuri 3D. În plus, am avut în vedere și posibilitatea îmbunătățirii uneia sau mai multora dintre aceste tehnici.
 
-\cercetare Acest capitol va introduce motivația realizării proiectului propus.
+Proiectul poate fi considerat, în fapt, o "testare a apelor" în domeniul simulării de fizică în timp real, un exercițiu pentru abilitățile mele de programare eficientă, robustă, orientată pe obiecte, dar și o îmbunătățire a cunoștințelor mele de C++.
 
-Dacă proiectul de licență face parte dintr-un proiect mai amplu (de exemplu un proiect complex, la care lucrează 2 studenți (ex: 1 student la front-end-ul aplicației, 1 student la back-end-ul aplicației), în acest capitol va fi explicat pe scurt ansamblul proiectului și ce parte din proiect este adresată de lucrarea propusă. 
-
-Criterii pentru calificativul \textit{Ne\textit{Satisfăcător}}: 
-\begin{itemize}
-	\item \dezvoltare Cerințele sunt imaginate de student pe baza unei analize a pieței;
-	\item \cercetare Nu se oferă o motivație valida.
-\end{itemize}
-
-Criterii pentru calificativul \textit{Satisfăcător}: 
-\begin{itemize}
-	\item \dezvoltare Există un interviu, un client, analiza cerințelor este elaborată pe baza interviului;
-	\item \cercetare Motivația este doar personala.
-\end{itemize}
+Consider că cunoștințele dobândite în urma realizării acestui proiect mă vor ajuta să înțeleg mai bine subtilitățile din spatele unui motor de fizică, astfel încât, pe viitor, să fiu capabil de a contribui la proiecte open-source deja existente(bullet\cite{bullet}) sau, de ce nu, să efectuez muncă în cercetare sau industrie în acest domeniu, la un nivel mai modern sau actual.
 
 
-Criterii pentru calificativul \textit{Bine}: 
-\begin{itemize}
-	\item	 \dezvoltare Proces iterativ pe baza unor interviuri cu mai mulți clienți, dezvoltare MVP, reevaluare cerințe;
-	\item	 \cercetare Motivația este legata de o necesitate științifica / tehnica explicită.
-\end{itemize}
+%\dezvoltare Acest capitol va analiza cerințele produsului din prisma potențialilor clienți și a scenariilor de utilizare preconizate, urmând a fi generată o lista de funcționalități. 
+%
+%\cercetare Acest capitol va introduce motivația realizării proiectului propus.
+%
+%Dacă proiectul de licență face parte dintr-un proiect mai amplu (de exemplu un proiect complex, la care lucrează 2 studenți (ex: 1 student la front-end-ul aplicației, 1 student la back-end-ul aplicației), în acest capitol va fi explicat pe scurt ansamblul proiectului și ce parte din proiect este adresată de lucrarea propusă. 
+%
+%Criterii pentru calificativul \textit{Ne\textit{Satisfăcător}}: 
+%\begin{itemize}
+%	\item \dezvoltare Cerințele sunt imaginate de student pe baza unei analize a pieței;
+%	\item \cercetare Nu se oferă o motivație valida.
+%\end{itemize}
+%
+%Criterii pentru calificativul \textit{Satisfăcător}: 
+%\begin{itemize}
+%	\item \dezvoltare Există un interviu, un client, analiza cerințelor este elaborată pe baza interviului;
+%	\item \cercetare Motivația este doar personala.
+%\end{itemize}
+%
+%
+%Criterii pentru calificativul \textit{Bine}: 
+%\begin{itemize}
+%	\item	 \dezvoltare Proces iterativ pe baza unor interviuri cu mai mulți clienți, dezvoltare MVP, reevaluare cerințe;
+%	\item	 \cercetare Motivația este legata de o necesitate științifica / tehnica explicită.
+%\end{itemize}
 
 
 \chapter{Studiu de Piață / Metode Existente}
+Pentru început, ar trebui menționat că un motor de fizică este foarte rar întâlnit de sine stătător, el constituind de cele mai multe ori o parte esențială a unei aplicații mult mai complexe(care cuprinde și alte motoare/instrumente necesare funcționării). De aceea, voi ignora sisteme precum motoarele pentru dezvoltarea jocurilor(Unreal Engine, Source, Unity etc.) sau simulatoare științifice și mă voi concentra strict pe expunerea particularităților motoarelor de fizică de sine stătătoare.
+\section{Aplicații similare}
+\begin{itemize}
+	\item Box2D\cite{box2D} este un motor de fizică open source, capabil să simuleze corpuri solide în 2D. Oferă suport pentru detecție continuă a coliziunilor, poligoane convexe și cercuri, corpuri compuse, soluționarea contactelor cu frecare, articulațiilor etc. TODO: menționează arbore dinamic pentru broadphase. 
+	Scris în C++, a fost ulterior portat și în alte limbaje și este apreciat pentru simplitatea lui și folosit de dezvoltatori independenți, și a fost inclus chiar și în Unity ca opțiune pentru motorul de fizică 2D.
+	\item Bullet\cite{bullet} este probabil cel mai cunoscut motor de fizică open source în lumea 3D. Oferă suport pentru detecția discretă sau continuă a coliziunilor pentru toate primitivele de bază, dar și meshe convexe, simularea corpurilor deformabile, articulații și constrângeri complexe, mișcarea vehiculelor etc. Este folosit în jocuri, efecte speciale în filme, robotică, ca sistem  
+\end{itemize}
+\section{Soluții curente}
+\subsection{Detecție coliziuni}
+\subsection{Rezolvare coliziuni}
+\subsection{Integrare numerică}
+\subsection{Interfață grafică}
+\section{Alegeri pentru lucrarea de față}
+
 \dezvoltare Ce soluții similare există pe piață? Care sunt limitările lor / pentru ce cazuri de utilizare sau pentru ce tip de clienți produsele existente pe piață nu răspund cerințelor? Care sunt indicatorii pe baza cărora sunt evaluate aceste produse, de către potențiali clienți, și unde sunt lipsurile/ care este oportunitatea generată de lipsurile acestea?
 
 \cercetare Metode existente (sau ``State of the Art'') se referă, de regulă, la nivelul curent de dezvoltare: care este starea curentă a domeniului, unde ne găsim, care este contextul. Care sunt soluțiile actuale prezente în literatura de specialitate și care sunt limitările lor? Ce direcții de explorare sunt recomandate în literatura de specialitate? Literatura de specialitate se refera la articole științifice recente, publicate în reviste cu factor de impact mare, sau în volumele unor conferințe de top, sau în cărți.
