@@ -6,12 +6,13 @@
 
 \usepackage[margin=2.54cm]{geometry}	% dimensiuni pagină și margini
 \usepackage{graphicx} % support the \includegraphics command and options
+\usepackage{subcaption} % subfiguri
 
 % formatting sections and subsections
 \usepackage{textcase}
 \usepackage[titletoc, title]{appendix}
 \usepackage{titlesec}
-\titleformat{\chapter}{\large\bfseries\MakeUppercase}{\thechapter}{2ex}{}[\vspace*{-1.5cm}]
+\titleformat{\chapter}{\large\bfseries}{\thechapter}{2ex}{\MakeUppercase}[\vspace*{-1.5cm}]
 \titleformat*{\section}{\large\bfseries}
 \titleformat*{\subsection}{\large\bfseries}
 \titleformat*{\subsubsection}{\large\bfseries}
@@ -28,9 +29,46 @@
 \usepackage{array} % for better arrays (eg matrices) in maths
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
-\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+%\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
 \usepackage{enumitem}
 \setlist{noitemsep}
+
+\usepackage{tikz} % figure drawing
+\usepackage{listings} % code snippets
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{myC++}{ %
+	language=C++,
+	backgroundcolor=\color{white},   % choose the background color
+	basicstyle=\footnotesize,        % size of fonts used for the code
+	breaklines=true,                 % automatic line breaking only at whitespace
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	keywordstyle=\color{blue},       % keyword style
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=4,
+	morekeywords={Obj,obj,vec3},
+}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\makeatletter
+\renewcommand{\ALG@name}{Algoritmul}
+\makeatother
+
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Teorema}[]
 
 %%% HEADERS & FOOTERS
 \usepackage{fancyhdr}
@@ -184,7 +222,6 @@ TODO: rezultate obținute pe scurt (o aplicație cu interfață grafică în sta
 % Textul licentei incepe de aici 
 
 
-
 \chapter{Introducere}\pagestyle{fancy}
 % * <marios.choudary@gmail.com> 2018-02-28T11:38:18.106Z:
 % 
@@ -250,12 +287,12 @@ TODO:Descriere pe scurt a rezultatelor obținute, eventual de ce acestea sunt im
 În continuare voi prezenta pe scurt fiecare secțiune a acestei lucrări, care urmărește, în mare, șablonul oficial.
 \begin{enumerate}
 	\setcounter{enumi}{1}
-	\item \textbf{Motivație și analiza cerințelor}: vor fi detaliate atât motivația realizării proiectului propus, cât și funcționalitățile oferite de aplicație, în raport cu cerințele care trebuie acoperite.
-	\item \textbf{Metode existente}: vor fi analizate metodele disponibile pentru atingerea fiecăruia dintre obiectivele propuse, modul în care acestea sunt folosite în soluții similare și o evaluare a acestor metode. Fiecare subproces al simulatorului va avea propria subsecțiune.
-	\item \textbf{Soluția propusă}: vor fi motivate alegerile și deciziile luate la nivel structural, iar soluția va fi descrisă pe larg, din punct de vedere teoretic.
-	\item \textbf{Detalii de implementare}: va fi prezentată arhitectura aplicației și orice detalii de implementare considerate a fi relevante(algoritmi folosiți, etapele dezvoltării - cu dificultăți întâmpinate și soluții descoperite)
+	\item \textbf{Motivație și analiza cerințelor}: sunt detaliate atât motivația realizării proiectului propus, cât și funcționalitățile oferite de aplicație, în raport cu cerințele care trebuie acoperite.
+	\item \textbf{Metode existente}: sunt analizate metodele disponibile pentru atingerea fiecăruia dintre obiectivele propuse, modul în care acestea sunt folosite în soluții similare și o evaluare a acestor metode. Fiecare subproces al simulatorului va avea propria subsecțiune.
+	\item \textbf{Soluția propusă}: sunt motivate alegerile și deciziile luate la nivel structural, iar soluția va fi descrisă pe larg, din punct de vedere teoretic.
+	\item \textbf{Detalii de implementare}: este prezentată arhitectura aplicației și orice detalii de implementare considerate a fi relevante(algoritmi folosiți, etapele dezvoltării - cu dificultăți întâmpinate și soluții descoperite)
 	\item \textbf{Evaluare}: analiză a performanțelor aplicației și a gradului de atingere a obiectivelor propuse
-	\item \textbf{Concluzii}: este sumarizat întreg proiectul, trecând din nou peste elementele constituente(obiective, implementare, rezultate obținute); în plus, sunt oferite perspective pentru dezvoltarea ulterioară a proiectului.
+	\item \textbf{Concluzii}: este sumarizat întregul proiect, trecând din nou peste elementele constituente(obiective, implementare, rezultate obținute); în plus, sunt oferite perspective pentru dezvoltarea ulterioară a proiectului.
 \end{enumerate}
 
 
@@ -297,66 +334,289 @@ Consider că cunoștințele dobândite în urma realizării acestui proiect mă 
 \chapter{Studiu de Piață / Metode Existente}
 Pentru început, ar trebui menționat că un motor de fizică este foarte rar întâlnit de sine stătător, el constituind de cele mai multe ori o parte esențială a unei aplicații mult mai complexe(care cuprinde și alte motoare/instrumente necesare funcționării). De aceea, voi ignora sisteme precum motoarele pentru dezvoltarea jocurilor(Unreal Engine, Source, Unity etc.) sau simulatoare științifice și mă voi concentra strict pe expunerea particularităților motoarelor de fizică de sine stătătoare.
 \section{Aplicații similare}
+Deoarece cele mai multe aplicații nu au nevoie de toate particularitățile unui motor de fizică complex și foarte general, o practică des întâlnită este ca companiile să își implementeze unul propriu, optimizat pentru cerințele specifice ale aplicațiilor dezvoltate. Chiar și așa, putem aminti câteva dintre cele mai populare middleware-uri: 
 \begin{itemize}
 	\item Box2D\cite{box2D} este un motor de fizică open source, capabil să simuleze corpuri solide în 2D. Oferă suport pentru detecție continuă a coliziunilor, poligoane convexe și cercuri, corpuri compuse, soluționarea contactelor cu frecare, articulațiilor etc. TODO: menționează arbore dinamic pentru broadphase. 
 	Scris în C++, a fost ulterior portat și în alte limbaje și este apreciat pentru simplitatea lui și folosit de dezvoltatori independenți, și a fost inclus chiar și în Unity ca opțiune pentru motorul de fizică 2D.
-	\item Bullet\cite{bullet} este probabil cel mai cunoscut motor de fizică open source în lumea 3D. Oferă suport pentru detecția discretă sau continuă a coliziunilor pentru toate primitivele de bază, dar și meshe convexe, simularea corpurilor deformabile, articulații și constrângeri complexe, mișcarea vehiculelor etc. Este folosit în jocuri, efecte speciale în filme, robotică, ca sistem  
+	\item Bullet\cite{bullet} este probabil cel mai cunoscut motor de fizică open source în lumea 3D. Oferă suport pentru detecția discretă sau continuă a coliziunilor pentru toate primitivele de bază, dar și meshe convexe, simularea corpurilor deformabile, articulații și constrângeri complexe, mișcarea vehiculelor etc. Este folosit în jocuri, robotică, efecte speciale în filme și este inclus în software precum Godot, Blender Game Engine sau Unity 3D.
+	\item Din sfera closed source, poate fi amintit NVIDIA PhysX, unul dintre cele mai populare motoare de fizică în industria jocurilor video - inclus în Unreal Engine 3+, Unity 3D și folosit de companii ca EA, THQ, 2K Games. Physx folosește accelerare hardware pe GPU, plăcile video GeForce de la NVIDIA fiind capabile să ofere o creștere exponențială a puterii de procesare a simulărilor fizice.  
 \end{itemize}
 \section{Soluții curente}
+\subsection{Câteva noțiuni matematice referite și utilizate de algoritmii de mai jos}
+\begin{itemize}
+	\item O funcție suport a unei mulțimi pe o direcție este definită ca:
+	$$ h_A:\mathbb{R}^{n} \mapsto \mathbb{R} \textrm{, cu }A \subset \mathbb{R}^{n}\textrm{,  } h_A(d) = \sup \left\lbrace d\cdot a\ |\ a\in A\right\rbrace $$
+	Este utilizată în determinarea punctelor suport(cel mai îndepărtat punct al unui obiect într-o anumită direcție). Formele elementare(cub, sferă, con etc.) au funcții suport foarte ușor de calculat.
+	\item Suma Minkowski a două mulțimi de puncte $A$ și $B$ este mulțimea
+	$$ A \oplus B = \left\lbrace a + b\ |\ a \in A, b \in B \right\rbrace $$
+	și este puțin interesantă în cazul de față.
+	\item Diferența Minkowski a două mulțimi de puncte $A$ și $B$ este mulțimea
+	$$ A \ominus B = \left\lbrace a - b\ |\ a \in A, b \in B \right\rbrace $$
+	și are o proprietate remarcabilă. Mulțimile $A$ și $B$ se află în coliziune(au cel puțin un punct în comun) dacă $A \ominus B$ conține originea spațiului geometric. în plus, distanța dintre acestea, în cazul în care nu se intersectează este:
+	$$ \centering dist(A, B) = \min \left\lbrace \left\Vert a - b \right\Vert\ |\ a \in A, b \in B \right\rbrace = \min \left\lbrace \left\Vert c \right\Vert\ |\ c \in A \ominus B \right\rbrace $$
+	\item În geometrie, un simplex este o generalizare a noțiunii de triunghi în spații de dimensiune arbitrară. Simplex-urile întâlnite în cadrul algoritmilor de detecție a coliziunii sunt punctul, muchia, triunghiul și tetraedrul.
+	
+\end{itemize}
+
 \subsection{Detecție coliziuni}
+Detecția coliziunilor se realizează de obicei în două etape: una preliminară(broad phase) și una precisă(near phase). Motivul este unul evident - algoritmii folosiți în a doua etapă sunt semnificativ mai intensivi computațional decât cei din prima.
+
+\subsubsection{Etapa preliminară}
+Pentru prima fază, fiecare corp din simulare are atașat un volum încadrator sub forma unei primitive(de regulă sferă sau paralelipiped, în cazul 3D) care să îl cuprindă în întregime. Dacă 2 corpuri sunt în coliziune(se intersectează), atunci este sigur că și volumele lor încadratoare se întrepătrund. Testele de intersecție pentru primitive sunt ușor de implementat și computat.
+Cele mai uzuale volume încadratoare sunt:
+\begin{itemize}
+	\item Sfera încadratoare(bounding sphere): este definită de o poziție și o rază. Testul de intersecție este banal: două sfere se intersectează dacă distanța dintre centrele lor este mai mică sau egală cu suma razelor. Este o soluție eficientă ca memorie și ca test de intersecție, dar este inexactă și conduce la multe verificări inutile în faza fină a detecției.
+	\item Axis-aligned bounding box(AABB): este definit de o poziție și de lungimea paralelipipedului pe fiecare dintre cele 3 axe ale sistemului global de coordonate(uzual, se reține jumătatea lungimii fiecărei laturi). Testul de intersecție este din nou destul de banal - se verifică întrepătrunderea celor două AABB-uri pe fiecare dintre cele 3 axe. Este mai precis decât sfera încadratoare, dar dezavantajul este că trebuie recalculat de fiecare dată când corpul este rotit, astfel încât volumul să rămână minim.
+	\item Oriented bounding box(OBB): este definit de o poziție, lungimile paralelipipedului pe fiecare dintre cele 3 axe ale sistemului de coordonate local obiectului și o orientare. Este asemănător unui AABB, dar în loc de axele sistemului global de coordonate, sunt folosite axele sistemului de coordonate locale obiectului. Astfel, el nu trebuie recalculat, atât timp cât obiectul nu este deformabil și este mai precis decât un AABB. Dezavantajul este că testul de intersecție devine mai complicat și se bazează pe aplicarea Teoremei axei separatoare(SAT, descrisă mai jos TODO: link la SAT de mai jos) pentru 15 axe posibile de separare.
+\end{itemize}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{pics/cap3_00.png}
+	\label{fig:cap3_00}
+	\caption[volume încadratoare uzuale]{bounding sphere, AABB, OBB}
+\end{figure}
+Până acum am acoperit doar coliziunea în cazul unei perechi de obiecte, însă în cadrul unei simulări pot exista un număr foarte mare de obiecte. Abordarea $O(n^2)$, de a verifica fiecare pereche de obiecte din scenă este ineficientă.
+
+O posibilă soluție este aranjarea obiectelor într-un arbore de volume încadratoare(eng. bounding volume hierarchy), care să fie actualizat pe parcursul simulării(odată la una sau mai multe etape ale acesteia). Frunzele arborelui vor fi chiar obiectele individuale ale scenei, iar restul nodurilor vor constitui volumul minim care încadrează toate nodurile copii. Astfel, dacă arborele este menținut echilibrat, timpul de verificare a perechilor de obiecte devine logaritmic, întrucât nodurile copii nu trebuie verificate pentru coliziune dacă părinții lor nu se intersectează.
+
+Un alt tip de arbori folosiți sunt cei care partiționează întreg spațiul scenei, pe baza unor planuri alese astfel încât împărțirea obiectelor să fie cât mai uniformă. Exemple de astfel de arbori sunt arborii BSP(eng. binary space-partitioning tree) sau octrees(și variații ale acestora -- quadtrees). O resursă foarte bună pentru mai multe detalii despre aceștia o reprezintă \cite[Cap. 6. Bounding Volume Hierarchies]{real_time_collision_detection} și \cite[Cap. 7. Spatial Partitioning]{real_time_collision_detection} din cartea lui Christer Ericson.
+
+\subsubsection{Etapa exactă}
+A doua parte a detecției de coliziuni o consider ușor mai interesantă, deoarece este responsabilă de stabilirea punctelor de contact dintre corpurile aflate în coliziune. Un exemplu de caracterizare a unui astfel de punct poate fi:
+\begin{lstlisting}[style=myC++]
+struct ContactPoint {
+	vec3 positionA; // pozitia celui mai adanc punct de interpenetrare
+	vec3 positionB; // in coordonatele locale ale fiecarui obiect
+	vec3 normal; // normala contactului (directia de separare)
+	float penetration; // distanta de interpenetrare
+	Obj *objA; // pointer catre fiecare dintre obiecte, pentru a accesa
+	Obj *objB; // matricele de modelare, functii suport etc.
+}
+\end{lstlisting}
+Spre acest scop, au fost definiți mai mulți algoritmi care preiau o pereche de obiecte și stabilesc definitiv dacă acestea se intersectează, punctul cel mai adânc de interpenetrare, normala sau direcția de separare și penetrarea în sine.
+
+Teorema axei separatoare derivă din teorema hiperplanului separator:
+\begin{theorem}[Teorema hiperplanului separator]
+	Dacă A și B sunt două submulțimi disjuncte nevide ale lui $\mathbb{R}^n$, atunci există $v\in\mathbb{R}^n, v\neq0, c\in\mathbb{R}$, astfel încât $v^{T}x\leq c, \forall x\in A$ și $v^{T}x\geq b, \forall x\in B.$
+\end{theorem}
+Adaptată pentru cerințele noastre, ea ne spune că două corpuri se intersectează dacă nu există nicio axă pe care intervalele formate de proiecțiile punctelor celor două corpuri pe acea axă să se intersecteze.
+\begin{figure}
+	\centering
+	\begin{subfigure}[th]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{pics/cap3_01.eps}
+		\label{fig:cap3_01}
+		\caption{hiperplanul de separație $P$, axa separatoare $v$ și razele de proiecție $r_A$ și $r_B$ a două corpuri care nu se intersectează}
+		\vfill
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{pics/cap3_02.eps}
+		\label{fig:cap3_02}
+		\caption{o axă arbitrară $v$ și vectorul minim de translație pentru această axă($MTV$) în cazul intersecției}
+	\end{subfigure}
+	\caption{Teorema axei separatoare}
+\end{figure}
+Astfel, două obiecte nu se intersectează(pe o axă) dacă suma razelor lor de proiecție este mai mică decât distanța dintre proiecțiile centrelor lor pe acea axă. În cazul poliedrelor convexe, intersecția poate fi de 3 tipuri: față-față, față-muchie, muchie-muchie (vârfurile pot fi considerate muchii degenerate) și este suficient să testăm doar următoarele posibile axe de separare:
+\begin{itemize}
+	\item axele paralele cu normalele fețelor obiectului A
+	\item axele paralele cu normalele fețelor obiectului B
+	\item axele paralele cu vectorii rezultați în urma produsului vectorial al tuturor muchiilor lui A cu toate muchiile lui B
+\end{itemize}
+Normala de coliziune este chiar axa care a rezultat într-o penetrare minimă, distanța de separare este chiar lungimea vectorului minim de translație ($min_B - max_A$ sau $min_A - max_B$), iar pentru determinarea punctelor de contact, se vor calcula pentru ambele obiecte, punctele suport TODO: link la puncte suport în direcția de separare.
+
+
+Algoritmul Gilbert-Johnson-Keerthi(GJK) este o altă metodă de a determina cu precizie dacă două obiecte se intersectează. A fost propus inițial în 1988\cite{gjk_original}, ca metodă de a determina distanța euclidiană între două mulțimi convexe din $\mathbb{R}^n$, iar o implementare eficientă și robustă a fost propusă de Gino van den Bergen în 1998\cite{gjk_gino}.
+\begin{algorithm}[H]
+	\footnotesize
+	\linespread{1.0}\selectfont
+	\caption{Testul de intersecție Gilbert-Johnson-Keerthi}
+	\label{gjk_intersection_test}
+	\begin{algorithmic}[0]
+		\Function {GJKTestIntersection}{$shape\_A$, $shape\_B$, $init\_dir$}
+			\State $new\_point \gets \textproc{Support}(shape\_A, init\_dir) - \textproc{Support}(shape\_B, -initial\_dir)$
+			\State $simplex \gets \left\lbrace new\_support\_point \right\rbrace $
+			\State $dir \gets -new\_point$
+			\Loop
+				\State $new\_point \gets \textproc{Support}(shape\_A, dir) - \textproc{Support}(shape\_B, -dir)$
+				\If{$\textproc{dot}(new\_point, dir) < 0$}
+					\State $\textbf{return}\ False$
+				\EndIf
+				\State $simplex \gets simplex\ \cup\ new\_point $
+				\State $simplex, dir, contains\_origin \gets \textproc{DoSimplex}(simplex) $
+				\If{$contains\_origin$}
+					\State $\textbf{return}\ True$
+				\EndIf
+			\EndLoop
+		\EndFunction
+		\Statex
+		\Function {DoSimplex}{$simplex$}
+			
+			1. determină simplex-ul cel mai apropiat de origine care se poate forma din cât mai puține din punctele simplex-ului dat ca parametru
+			
+			2. direcția de căutare devine normala către origine a noului simplex
+			
+			3. în cazul tetraedru, întoarce True dacă simplex-ul conține originea
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+Practic, la fiecare iterație, simplexul încearcă să se extindă și să cuprindă originea, adăugând mereu un punct suport de pe diferența Minkowski a celor două obiecte, aflat în direcția originii, până când aceasta este cuprinsă în simplex sau nu se mai apropie de acesta.
+
+
+În cazul în care algoritmul GJK a stabilit că există o coliziune, pentru determinarea normalei, distanței de penetrare și a punctelor de contact, algoritmul EPA\cite{epa_gino}(eng. expanding polytope algorithm) este continuarea firească. Acesta preia simplex-ul rezultat în urma aplicării GJK și îl extinde iterativ cu puncte suport de pe frontiera diferenței Minkowski, până când distanța minimă dintre politopul rezultat și origine nu se mai modifică. Odată întâlnită această situație, coordonatele baricentrice ale proiecției originii pe triunghiul(în cazul 3D) sau dreapta(în cazul 2D) cele mai apropiate de origine pot fi folosite pentru determinarea punctelor de contact, iar distanța de la origine la triunghi(sau dreaptă) este chiar distanța de penetrare și normala contactului. Expansiunea politopului se face prin divizarea feței celei mai apropiate și crearea de noi triunghiuri sau laturi folosind punctul nou ales și punctele rămase.
+
+\begin{algorithm}[H]
+	\footnotesize
+	\linespread{1.0}\selectfont
+	\caption{Expanding Polytope Algorithm și determinarea punctelor de contact}
+	\label{epa}
+	\begin{algorithmic}[0]
+		\Function {EPACreateContact}{$shape\_A$, $shape\_B$, $simplex$}
+			\State $ polytope \gets simplex.triangles $
+			\Loop
+				\State $ closest\_triangle \gets \argmin_tr \textproc{distance}(tr, origin), tr \in polytope $
+				\State $ distance \gets \textproc{distance}(closest\_triangle, origin) $
+				\State $ normal \gets closest\_triangle.normal $
+				\State $ new\_point \gets \textproc{Support}(shape\_A, normal) - \textproc{Support}(shape\_B, -normal) $
+				\State $ new\_distance \gets \textproc{distance}(new\_point, origin) $
+				\If{$ new_distance - distance < threshold $}
+					\State $ coords \gets \textproc{barycentric}(origin, closest\_triangle) $
+					
+				\State	$ contact\_points \gets $ pentru fiecare obiect, se calculează punctul de contact în funcție de corespondențele fiecărui punct al triunghiului din mulțimea de puncte a obiectului respectiv
+				\State $ \textbf{return}\ contact\_points, normal, distance $
+				\EndIf
+				\State $ polytope \gets polytope \setminus \left\lbrace closest\_triangle \right\rbrace $
+				\State creează triunghiuri noi folosind $ new\_point $ în spațiul lăsat descoperit
+			\EndLoop
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
 \subsection{Rezolvare coliziuni}
+În esență, rezolvarea coliziunilor implică aplicarea unui răspuns asupra corpurilor aflate în contact, care să conducă la separarea acestora. În lumea reală, răspunsul vine sub forma forțelor elastice care se opun comprimării(oricât de mică) corpurilor aflate în contact, care determină o accelerație care reduce viteza de ciocnire până la valori negative, când corpurile se separă. În cadrul unui motor de fizică, acest fenomen este simulat cu ajutorul impulsurilor -- modificări bruște a vitezelor obiectelor aflate în coliziune, astfel încât acestea să tindă spre separare. În general, sunt suficiente două impulsuri -- cel liniar și cel unghiular, fiecare modificând viteza corespondentă.
+
+Soluționarea unei coliziuni este de regulă realizată cu ajutorul conceptului mult mai general de \textbf{constrângeri fizice}, definite ca o serie de ecuații și inecuații care trebuie să fie satisfăcute. În cazul rezolvării unei coliziuni, constrângerea care trebuie satisfăcută de vitezele celor două corpuri este:
+$$ \dot{C} \colon \left( -\vec{V_A} - \vec{\omega_A} \times \vec{r_A} + \vec{V_B} + \vec{\omega_B} \times \vec{r_B} \right) \cdot \vec{n} + b\geq 0 $$unde:
+\begin{itemize}
+	\item $\vec{V_A}, \vec{V_B}$ sunt vitezele liniare ale celor două corpuri
+	\item $\vec{\omega_A}, \vec{\omega_B}$ sunt vitezele unghiulare ale celor două corpuri
+	\item $\vec{r_A}, \vec{r_B}$ sunt definite ca $P_A - C_A$ și $P_B - C_B$, cu $P_A,P_B$ punctele cele mai adânci de interpenetrare și $C_A, C_B$ centrele de masă ale corpurilor
+	\item $\vec{n}$ este normala contactului
+	\item $b$ este un termen de bias, care corespunde vitezei de separare a celor două corpuri și este influențat de coeficientul de restituire al ciocnirii: $$b = C_R\left( -\vec{V_A} - \vec{\omega_A} \times \vec{r_A} + \vec{V_B} + \vec{\omega_B} \times \vec{r_B} \right) \cdot \vec{n} $$
+\end{itemize}
+
+Frecările sunt rezolvate sub forma unor impulsuri tangențiale, care vor modifica viteza corpurilor în două direcții perpendiculare pe normala de contact, în plus față de impulsul normal.
+
+La calculul impulsurilor se ține cont și de masele celor două corpuri și de tensorii de inerție. O derivare a formulei poate fi urmărită în prezentarea lui Erin Catto\cite{constraints_catto}.
+
+O simulare va conține un număr mare de contacte, care se pot afecta unele pe altele(de ex. în cazul unei stive de obiecte), motiv pentru care rezolvarea acestora se face iterativ, până la convergență. Astfel, dacă rezolvarea unui contact va afecta un altul (este modificată distanța de penetrare, normala sau viteza de întâlnire), acest lucru se va reflecta în iterațiile succesive și sistemul poate găsi soluția corectă. În realitate, într-o simulare, acest lucru se întâmplă destul de rar, dar rezultatele obținute sunt satisfăcătoare, imperfecțiunile fiind neglijabile.
+
+Realistic vorbind, o coliziune este deseori formată din mai multe puncte de contact, care împreună formează un manifold care trebuie rezolvat.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{pics/cap3_03.png}
+	\label{fig:cap3_03}
+	\caption[]{3 cazuri de contact și manifold-urile lor}
+\end{figure}
+În acest scop, există 2 posibile abordări \cite[Secțiunea 6.6.2~\textit{Collision response for colliding contact}]{game_physics_eberly}:
+\begin{enumerate}
+	\item Metoda impulsurilor secvențiale -- impulsurile sunt calculate și aplicate iterativ în fiecare dintre punctele de contact.
+	\item Metoda contactelor simultane -- Jacobian-ul folosit pentru calculul impulsurilor este determinat pe baza tuturor punctelor din manifold-ul de contact, iar impulsurile sunt aplicate o singură dată per manifold.
+\end{enumerate}
+
 \subsection{Integrare numerică}
+Într-un motor de fizică, etapa de integrare constă în actualizarea stării obiectelor, prin integrarea în raport cu timpul a mărimilor fizice derivate. Ne amintim de la orele de fizică din liceu că accelerația unui corp este dată de formula $ a = \frac{F}{m} $, unde $F$ este rezultanta forțelor care acționează asupra corpului și $m$ este masa acestuia. Într-o simulare, accelerația este considerată o mărime fizică primară și este cea dintâi calculată în fiecare cadru. Accelerația este totodată definită și ca variația vitezei în timp, iar viteza este variația poziției în timp, ceea ce ne permite să calculăm atât viteza $\dot{p}'$, cât și poziția $p'$, prin integrarea accelerației $\ddot{p}$, respectiv vitezei $\dot{p}$:
+$$ \dot{p}' = \dot{p} + \ddot{p}t $$
+$$ p' = p + \dot{p}t + \ddot{p}\frac{t^2}{2} \approx p + \dot{p}t $$
+Deoarece într-o simulare avem de-a face cu momente discrete de timp(dictate de diferența de timp dintre două cadre -- \textbf{deltatime}, aceste valori trebuie aproximate, de unde rezultă nevoia folosirii unor metode de integrare numerică cu pas de timp discret.
+Se disting o serie de metode, mai mult sau mai puțin precise\cite{integration_gaffer}:
+\begin{itemize}
+	\item Metoda Euler explicită presupune determinarea, în ordine, mai întâi a noii poziții și apoi a noii viteze, dar are dezavantajul că pierde din precizie dacă există variații mari ale mărimilor de la un cadru la altul, cu eroare de ordinul $O(deltaTime)$
+	\begin{lstlisting}[style=myC++]
+		position = position + velocity * deltaTime;
+		velocity = velocity + acceleration * deltaTime;
+	\end{lstlisting}
+	\item Metoda Euler semi-implicită presupune folosirea noii viteze la determinarea noii poziții și este considerabil mai precisă, cu eroare de ordinul $O(deltaTime^2)$
+	\begin{lstlisting}[style=myC++]
+	velocity = velocity + acceleration * deltaTime;
+	position = position + velocity * deltaTime;
+	\end{lstlisting}
+	\item Metoda Runge-Kutta 4 evaluează derivata stării în 4 puncte diferite din cadrul intervalului de derivare, folosind ca feedback rezultatele anterioare și este mult mai precisă, ceea ce conduce la o eroare de ordinul $O(deltaTime^4)$
+\end{itemize}
+
 \subsection{Interfață grafică}
 \section{Alegeri pentru lucrarea de față}
 
-\dezvoltare Ce soluții similare există pe piață? Care sunt limitările lor / pentru ce cazuri de utilizare sau pentru ce tip de clienți produsele existente pe piață nu răspund cerințelor? Care sunt indicatorii pe baza cărora sunt evaluate aceste produse, de către potențiali clienți, și unde sunt lipsurile/ care este oportunitatea generată de lipsurile acestea?
+Dintre soluțiile menționate în subsecțiunile de mai sus, am fost nevoit să fac niște alegeri, pe care urmează să le prezint și să le motivez în continuare.
 
-\cercetare Metode existente (sau ``State of the Art'') se referă, de regulă, la nivelul curent de dezvoltare: care este starea curentă a domeniului, unde ne găsim, care este contextul. Care sunt soluțiile actuale prezente în literatura de specialitate și care sunt limitările lor? Ce direcții de explorare sunt recomandate în literatura de specialitate? Literatura de specialitate se refera la articole științifice recente, publicate în reviste cu factor de impact mare, sau în volumele unor conferințe de top, sau în cărți.
+\subsection{Detecție coliziuni}
 
-\ambele În încheierea acestui capitol se dorește descrierea tehnologiilor folosite în lucrare, cu alternative și cu argumente convingătoare calitative și cantitative.  
+Deoarece scenele cu care am testat simulatorul sunt de dimensiuni relativ mici(sub 100 de obiecte), am decis că o ierarhie de volume încadratoare nu aduce o îmbunătățire semnificativă în raport cu overhead-ul pe care l-ar aduce etapei de implementare a soluției. La fel, o partiționare a spațiului scenei în arbori, folosind BSP mi s-a considerat nejustificată. Astfel, m-am utilizat doar de un detector $O(n^2)$, care testează intersecția dintre OBB-urile obiectelor folosind Teorema axei separatoare.
 
-Criterii pentru calificativul \textit{Ne\textit{Satisfăcător}}: 
-\begin{itemize}
-	\item \dezvoltare Sunt analizate superficial câteva produse de pe piață; 
-	\item \cercetare analiza literaturii limitata la grupuri de cercetare din România;
-	\item \ambele Sunt descrise tehnologiile folosite în lucrare. 
-\end{itemize}
+Pentru că obiectele din scenă sunt doar corpuri geometrice elementare pentru care nu stochez liste de vârfuri, muchii și fețe, ci doar descrierea geometrică a formei acestora, Teorema axei separatoare nu se pretează pentru determinarea punctelor de contact. În plus, corpurile rotunde(cilindru, con, sferă, capsulă) ar pune probleme în realizarea testului de separare, deoarece ar avea nevoie de un număr foarte mare de axe care să fie testate. În schimb, am ales să folosesc algoritmul GJK, care se putea folosi de descrierea geometrică a formei corpurilor pentru calculul facil al punctelor de suport necesare la determinarea simplex-ului final.
 
-Criterii pentru calificativul \textit{Satisfăcător}:
-\begin{itemize}
-	\item \dezvoltare Există un interviu, un client, analiza cerințelor este elaborată pe baza interviului.
-	\item \cercetare analiza literaturii de specialitate din lume, fără poziționarea precisă a lucrării în peisajului domeniului studiat;
-	\item \ambele Sunt descrise câteva tehnologii alternative pentru fiecare din tehnologiile folosite în lucrare. Există o argumentare referitoare la alegere.
-\end{itemize}
+Și, în mod evident, algoritmul GJK se potrivește de minune cu EPA, având în comun o bună parte dintre metode și structuri de date.
 
-Criterii pentru calificativul \textit{Bine}:
-\begin{itemize}
-	\item \dezvoltare Proces iterativ pe baza unor interviuri cu mai mulți clienți, dezvoltare MVP, reevaluare cerințe;
-	\item \cercetare analiza literaturii de specialitate din lume, cu poziționarea precisă a lucrării în peisajul actual al domeniului studiat; 
-	\item \ambele Sunt descrise tehnologii alternative. Sunt analizate cantitativ și calitativ, folosite benchmarkuri și teste efectuate de student. Analiza este rezumată prin tabele și grafice.
-\end{itemize}
+\subsection{Rezolvare coliziuni}
 
-\section{Indicații formatare figuri}
+Complexitatea pe care ar fi adus-o implementarea metodei rezolvării simultane a contactelor nu este justificată în cazul de față. Ar fi fost nevoie de un redesign al structurilor de date folosite adus de necesitatea operațiilor dintre matrice și vectori de dimensiuni mari, direct proporționale cu numărul de contacte din manifold -- ar fi trebuit să îmi scriu propria implementare pentru structurile geometrice de date - vectori și matrice de dimensiuni mai mari decât 4x4. Am ales, astfel, să utilizez metoda impulsurilor secvențiala, care produce rezultate acceptabile pentru o simulare care nu se vrea a fi hiper-exactă.
 
-Figurile utilizate în document vor fi centrate și numerotate (de exemplu Figura~\ref{fig:pic1}). 
-Orice figură ce nu este realizată de către autorul lucrării va fi în mod obligatoriu citată fie la final (de exemplu Figura ~\ref{fig:pic2} este preluată din documentul \cite{}), fie cel puțin într-o notă de subsol (a se vedea Figura~\ref{fig:pic2}). Orice figură ce depășește ca dimensiune 50\% dintr-o pagină, va fi mutată la anexe. Toate figurile din cadrul tezei vor fi referite în text. Exemplu: Figura~\ref{fig:pic1} prezintă o schemă de principiu pentru un amplificator inversor cu AO. 
+De asemenea, am decis să nu generalizez contactele la constrângeri fizice și am ales să introduc în schimb alte optimizări, descrise în capitolele ulterioare.
 
-\begin{figure}[th]
-\centering
-\includegraphics{pics/Pic1.png}
-  \caption{Amplificator inversor}
-  \label{fig:pic1}
-\end{figure}
+\subsection{Integrare numerică}
 
-\newpage
-
-\begin{figure}[th]
-\centering
-\includegraphics{pics/Pic2.png}
-  \caption[Amplificator de instrumentație cu 3 AO-uri]{Amplificator de instrumentație cu 3 AO-uri\protect\footnotemark}
-  \label{fig:pic2}
-\end{figure}
-\footnotetext{© http://www.ece.tamu.edu/sspalermo/ecen3205/Secton\%201III.pdf}
+În cazul unei simulări, metoda Euler explicită este inferioară din toate punctele de vedere celei Euler implicită, iar precizia altor metode de ordin superior ar fi combătute oricum de micile imperfecțiuni apărute în urma rezolvării coliziunilor. Am ales să păstrez lucrurile simple și să folosesc a doua metodă prezentată mai sus.
+% 
+%\dezvoltare Ce soluții similare există pe piață? Care sunt limitările lor / pentru ce cazuri de utilizare sau pentru ce tip de clienți produsele existente pe piață nu răspund cerințelor? Care sunt indicatorii pe baza cărora sunt evaluate aceste produse, de către potențiali clienți, și unde sunt lipsurile/ care este oportunitatea generată de lipsurile acestea?
+%
+%\cercetare Metode existente (sau ``State of the Art'') se referă, de regulă, la nivelul curent de dezvoltare: care este starea curentă a domeniului, unde ne găsim, care este contextul. Care sunt soluțiile actuale prezente în literatura de specialitate și care sunt limitările lor? Ce direcții de explorare sunt recomandate în literatura de specialitate? Literatura de specialitate se refera la articole științifice recente, publicate în reviste cu factor de impact mare, sau în volumele unor conferințe de top, sau în cărți.
+%
+%\ambele În încheierea acestui capitol se dorește descrierea tehnologiilor folosite în lucrare, cu alternative și cu argumente convingătoare calitative și cantitative.  
+%
+%Criterii pentru calificativul \textit{Ne\textit{Satisfăcător}}: 
+%\begin{itemize}
+%	\item \dezvoltare Sunt analizate superficial câteva produse de pe piață; 
+%	\item \cercetare analiza literaturii limitata la grupuri de cercetare din România;
+%	\item \ambele Sunt descrise tehnologiile folosite în lucrare. 
+%\end{itemize}
+%
+%Criterii pentru calificativul \textit{Satisfăcător}:
+%\begin{itemize}
+%	\item \dezvoltare Există un interviu, un client, analiza cerințelor este elaborată pe baza interviului.
+%	\item \cercetare analiza literaturii de specialitate din lume, fără poziționarea precisă a lucrării în peisajului domeniului studiat;
+%	\item \ambele Sunt descrise câteva tehnologii alternative pentru fiecare din tehnologiile folosite în lucrare. Există o argumentare referitoare la alegere.
+%\end{itemize}
+%
+%Criterii pentru calificativul \textit{Bine}:
+%\begin{itemize}
+%	\item \dezvoltare Proces iterativ pe baza unor interviuri cu mai mulți clienți, dezvoltare MVP, reevaluare cerințe;
+%	\item \cercetare analiza literaturii de specialitate din lume, cu poziționarea precisă a lucrării în peisajul actual al domeniului studiat; 
+%	\item \ambele Sunt descrise tehnologii alternative. Sunt analizate cantitativ și calitativ, folosite benchmarkuri și teste efectuate de student. Analiza este rezumată prin tabele și grafice.
+%\end{itemize}
+%
+%\section{Indicații formatare figuri}
+%
+%Figurile utilizate în document vor fi centrate și numerotate (de exemplu Figura~\ref{fig:pic1}). 
+%Orice figură ce nu este realizată de către autorul lucrării va fi în mod obligatoriu citată fie la final (de exemplu Figura ~\ref{fig:pic2} este preluată din documentul \cite{}), fie cel puțin într-o notă de subsol (a se vedea Figura~\ref{fig:pic2}). Orice figură ce depășește ca dimensiune 50\% dintr-o pagină, va fi mutată la anexe. Toate figurile din cadrul tezei vor fi referite în text. Exemplu: Figura~\ref{fig:pic1} prezintă o schemă de principiu pentru un amplificator inversor cu AO. 
+%
+%\begin{figure}[th]
+%\centering
+%\includegraphics{pics/Pic1.png}
+%  \caption{Amplificator inversor}
+%  \label{fig:pic1}
+%\end{figure}
+%
+%\newpage
+%
+%\begin{figure}[th]
+%\centering
+%\includegraphics{pics/Pic2.png}
+%  \caption[Amplificator de instrumentație cu 3 AO-uri]{Amplificator de instrumentație cu 3 AO-uri\protect\footnotemark}
+%  \label{fig:pic2}
+%\end{figure}
+%\footnotetext{© http://www.ece.tamu.edu/sspalermo/ecen3205/Secton\%201III.pdf}
 
 \chapter{Soluția Propusă}
 Capitolul conține o privire de ansamblu a soluției ce rezolvă problema, prin prezentarea structurii / arhitecturii acesteia. În funcție de tipul lucrării acest capitol poate conține diagrame (clase, distribuție, workflow, entitate-relație), demonstrații de corectitudine pentru algoritmii propuși de autor, abordări teoretice (modelare matematică), structura hardware, arhitectura aplicației.
