@@ -3,30 +3,16 @@
 #include <list>
 #include <limits>
 #include <glm/gtx/matrix_decompose.hpp>
-#include "debug.h"
+#include <Physics/debug.h>
 
-GJK::GJKContactGenerator::GJKContactGenerator(PhysicsObject *objA, PhysicsObject *objB)
+GJKEPA::GJKEPACollisionPointGenerator::GJKEPACollisionPointGenerator(PhysicsObject *objA, PhysicsObject *objB)
 	: objA(objA), objB(objB)
 {
-	transformA = objA->getTransformMatrix();
-	transformB = objB->getTransformMatrix();
-
-	meshA = objA->mesh;
-	meshB = objB->mesh;
-
-	/* TODO: see if removing duplicates helps a great deal */
-	for (glm::vec3 &v : meshA->positions)
-		verticesA.push_back(glm::vec3(transformA * glm::vec4(v, 1)));
-
-	for (glm::vec3 &v : meshB->positions)
-		verticesB.push_back(glm::vec3(transformB * glm::vec4(v, 1)));
 }
 
-GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool initialSupport)
+GJKEPA::MinkowskiDiffPt GJKEPA::GJKEPACollisionPointGenerator::support(const glm::vec3 & dir)
 {
 	/* TODO: http://uu.diva-portal.org/smash/get/diva2:343820/FULLTEXT01 slide 16 for accurate support mappings */
-	if (initialSupport)
-		return SupportPoint(verticesA[0] - verticesB[0], verticesA[0], verticesB[0]);
 
 	glm::vec3 dirNormalized = glm::normalize(dir);
 
@@ -54,11 +40,11 @@ GJK::SupportPoint GJK::GJKContactGenerator::support(const glm::vec3 & dir, bool 
 	maxAWorld = objA->body->transform * glm::vec4(maxALocal, 1);
 	maxBWorld = objB->body->transform * glm::vec4(maxBLocal, 1);
 
-	return SupportPoint(maxAWorld - maxBWorld, maxAWorld, maxBWorld);
+	return MinkowskiDiffPt(maxAWorld - maxBWorld, maxAWorld, maxBWorld);
 	//return SupportPoint(maxA - maxB, maxA, maxB);
 }
 
-void GJK::GJKContactGenerator::doSimplex2()
+void GJKEPA::GJKEPACollisionPointGenerator::doSimplex2()
 {
 	/* simplex is an edge \vec{AB}, A was just added */
 	glm::vec3 vecAO = -simplex.a.v;
@@ -74,7 +60,7 @@ void GJK::GJKContactGenerator::doSimplex2()
 	}
 }
 
-void GJK::GJKContactGenerator::doSimplex3()
+void GJKEPA::GJKEPACollisionPointGenerator::doSimplex3()
 {
 	/* simplex is a triangle {\triangle}ABC, A was just added */
 	glm::vec3 vecAO = -simplex.a.v;
@@ -121,7 +107,7 @@ void GJK::GJKContactGenerator::doSimplex3()
 	}
 }
 
-bool GJK::GJKContactGenerator::doSimplex4()
+bool GJKEPA::GJKEPACollisionPointGenerator::doSimplex4()
 {
 	glm::vec3 vecAO = -simplex.a.v;
 	glm::vec3 vecAB = simplex.b.v - simplex.a.v;
@@ -310,7 +296,7 @@ bool GJK::GJKContactGenerator::doSimplex4()
 	return false;
 }
 
-bool GJK::GJKContactGenerator::doSimplex()
+bool GJKEPA::GJKEPACollisionPointGenerator::doSimplex()
 {
 	switch (simplex.numVertices) {
 	case 2: {
@@ -330,7 +316,7 @@ bool GJK::GJKContactGenerator::doSimplex()
 	return false;
 }
 
-bool GJK::GJKContactGenerator::testIntersection()
+bool GJKEPA::GJKEPACollisionPointGenerator::testIntersection()
 {
 	const unsigned int GJK_MAX_ITERATIONS = 100;
 	const float GJK_EPSILON = 0.0001f;
@@ -339,7 +325,7 @@ bool GJK::GJKContactGenerator::testIntersection()
 	simplex.clear();
 
 	searchDir = glm::vec3(0, 1, 0);
-	SupportPoint initialPoint = support(searchDir);
+	MinkowskiDiffPt initialPoint = support(searchDir);
 
 	if (glm::abs(glm::dot(searchDir, initialPoint.v)) >= initialPoint.v.length() * 0.8f) {
 		searchDir = glm::vec3(1, 0, 0);
@@ -367,15 +353,15 @@ bool GJK::GJKContactGenerator::testIntersection()
 		if (searchDir.length() <= GJK_EPSILON)
 			return false;
 
-		SupportPoint supPt = support(searchDir);
+		MinkowskiDiffPt newPt = support(searchDir);
 		//DEBUG_PRINT("supPt = {\n\tsupPt.v = " << supPt.v << "\n\tsupPt.supA = " << supPt.supA << "\n\tsupPt.supB = " << supPt.supB << "\n}\n");
 		/* new point is not past the origin */
-		if (glm::dot(supPt.v, searchDir) < -GJK_EPSILON) {
+		if (glm::dot(newPt.v, searchDir) < -GJK_EPSILON) {
 			DEBUG_PRINT("new point is not past the origin \n");
 			return false;
 		}
 
-		simplex.pushVertex(supPt);
+		simplex.pushVertex(newPt);
 
 		if (doSimplex()) {
 			DEBUG_PRINT("origin inside tetrahedron \n");
@@ -387,17 +373,18 @@ bool GJK::GJKContactGenerator::testIntersection()
 	return false;
 }
 
-static void addRemoveEdge(std::list<GJK::Edge> &edges, const GJK::SupportPoint &a, const GJK::SupportPoint &b)
+/* adds an edge to the list of edges or removes it, if it is already there, but reversed */
+static void addRemoveEdge(std::list<GJKEPA::Edge> &edges, const GJKEPA::MinkowskiDiffPt &a, const GJKEPA::MinkowskiDiffPt &b)
 {
 	for (auto it = edges.begin(); it != edges.end(); it++) {
-		if (it->supA.v == b.v && it->supB.v == a.v) {
+		if (it->a.v == b.v && it->b.v == a.v) {
 			/* found reversed edge, just remove it */
 			it = edges.erase(it);
 			return;
 		}
 	}
 	if (edges.size() < 50)
-		edges.push_back(GJK::Edge(a, b));
+		edges.push_back(GJKEPA::Edge(a, b));
 }
 
 /* Compute barycentric coordinates barCoords(u, v, w) for point p
@@ -418,7 +405,7 @@ static void computeBarycentricCoords(const glm::vec3 &a, const glm::vec3 &b, con
 	barCoords.z = (d00 * d21 - d01 * d20) * inverseDenom;
 	barCoords.x = 1.0f - barCoords.y - barCoords.z;
 }
-bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
+bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint *contact)
 {
 	const float EPA_GROWTH_THRESHOLD = 0.001f;
 	const unsigned int EPA_MAX_ITERATIONS = 50;
@@ -430,17 +417,17 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 	float test1, test2, test3, test4;
 	triangles.push_back(Triangle(simplex.a, simplex.b, simplex.c));
-	test1 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
+	test1 = glm::dot(triangles.back().a.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.a, simplex.d, simplex.b));
-	test2 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
+	test2 = glm::dot(triangles.back().a.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.a, simplex.c, simplex.d));
-	test3 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
+	test3 = glm::dot(triangles.back().a.v, triangles.back().vecABC);
 	triangles.push_back(Triangle(simplex.b, simplex.d, simplex.c));
-	test4 = glm::dot(triangles.back().supA.v, triangles.back().vecABC);
+	test4 = glm::dot(triangles.back().a.v, triangles.back().vecABC);
 
 	std::vector<float> dotProducts;
 	for (Triangle & t : triangles) {
-		dotProducts.push_back(glm::dot(-t.supA.v, t.vecABC));
+		dotProducts.push_back(glm::dot(-t.a.v, t.vecABC));
 		if (dotProducts[dotProducts.size() - 1] > 0)
 			DEBUG_PRINT(" NOT OKAY");
 	}
@@ -457,7 +444,7 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 		for (auto t = triangles.begin(); t != triangles.end(); t++) {
 			/* distance to origin */
 			//float distance = glm::length(t.supA.v - glm::dot(t.vecABC, t.supA.v) * t.vecABC);
-			float distance = glm::dot(t->vecABC, t->supA.v);
+			float distance = glm::dot(t->vecABC, t->a.v);
 			if (distance < minDistance) {
 				/*glm::vec3 vecAB = t.supB.v - t.supA.v;
 				glm::vec3 vecBC = t.supC.v - t.supB.v;
@@ -473,7 +460,7 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 		}
 
 		/* get furthest point in the triangle's normal direction, opposite to the origin */
-		SupportPoint nextSup = support(closestTriangleIt->vecABC);
+		MinkowskiDiffPt nextSup = support(closestTriangleIt->vecABC);
 		/* distance from origin to the next point to be added to the expanding polytope */
 		float nextSupDist = glm::dot(nextSup.v, closestTriangleIt->vecABC);
 
@@ -487,9 +474,9 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 
 			/* compute barycentric coordinates of origin's projection on the triangle with respect to this
 			closest triangle */
-			computeBarycentricCoords(closestTriangleIt->supA.v,
-				closestTriangleIt->supB.v,
-				closestTriangleIt->supC.v,
+			computeBarycentricCoords(closestTriangleIt->a.v,
+				closestTriangleIt->b.v,
+				closestTriangleIt->c.v,
 				closestTriangleIt->vecABC * minDistance,
 				barCoords);
 
@@ -499,13 +486,13 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 			if (glm::abs(barCoords.x) > 1.0f || glm::abs(barCoords.y) > 1.0f || glm::abs(barCoords.z) > 1.0f)
 				return false;
 			contact->points[0] = glm::vec3(
-				barCoords.x * closestTriangleIt->supA.supA +
-				barCoords.y * closestTriangleIt->supB.supA +
-				barCoords.z * closestTriangleIt->supC.supA);
+				barCoords.x * closestTriangleIt->a.supA +
+				barCoords.y * closestTriangleIt->b.supA +
+				barCoords.z * closestTriangleIt->c.supA);
 			contact->points[1] = glm::vec3(
-				barCoords.x * closestTriangleIt->supA.supB +
-				barCoords.y * closestTriangleIt->supB.supB +
-				barCoords.z * closestTriangleIt->supC.supB);
+				barCoords.x * closestTriangleIt->a.supB +
+				barCoords.y * closestTriangleIt->b.supB +
+				barCoords.z * closestTriangleIt->c.supB);
 
 			contact->normal = -closestTriangleIt->vecABC;
 
@@ -518,17 +505,17 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 			return true;
 		}
 
-		if (glm::dot(closestTriangleIt->vecABC, nextSup.v - closestTriangleIt->supA.v) < 0) {
+		if (glm::dot(closestTriangleIt->vecABC, nextSup.v - closestTriangleIt->a.v) < 0) {
 			DEBUG_PRINT("NOT OK");
 			return false;
 		}
 
 		for (auto it = triangles.begin(); it != triangles.end();) {
-			if (glm::dot(it->vecABC, nextSup.v - it->supA.v) > -EPA_EPSILON) {
+			if (glm::dot(it->vecABC, nextSup.v - it->a.v) > -EPA_EPSILON) {
 				/* update the edge list in order to remove the triangles facing this point */
-				addRemoveEdge(edges, it->supA, it->supC);
-				addRemoveEdge(edges, it->supC, it->supB);
-				addRemoveEdge(edges, it->supB, it->supA);
+				addRemoveEdge(edges, it->a, it->c);
+				addRemoveEdge(edges, it->c, it->b);
+				addRemoveEdge(edges, it->b, it->a);
 				it = triangles.erase(it);
 				continue;
 			}
@@ -536,16 +523,16 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 		}
 		/* re-create the triangles from the remaining edges */
 		for (Edge e : edges) {
-			glm::vec3 normal = glm::normalize(glm::cross(e.supA.v - nextSup.v, e.supB.v - nextSup.v));
+			glm::vec3 normal = glm::normalize(glm::cross(e.a.v - nextSup.v, e.b.v - nextSup.v));
 			if (glm::isnan(glm::dot(nextSup.v, normal)) || triangles.size() > 64)
 				continue;
 			if (glm::dot(normal, nextSup.v) > 0) {
-				triangles.push_back(Triangle(nextSup, e.supA, e.supB));
+				triangles.push_back(Triangle(nextSup, e.a, e.b));
 				float test = glm::dot(nextSup.v, triangles.back().vecABC);
 				int g = 0;
 			}
 			else {
-				triangles.push_back(Triangle(nextSup, e.supB, e.supA));
+				triangles.push_back(Triangle(nextSup, e.b, e.a));
 				float test = glm::dot(nextSup.v, triangles.back().vecABC);
 				int g = 0;
 			}
@@ -563,27 +550,27 @@ bool GJK::GJKContactGenerator::createContact(ContactInfo *contact)
 	return false;
 }
 
-void ContactGenerator::fillContacts()
+void CollisionsGenerator::fillCollisions()
 {
 	for (auto & col : (*potentialCollisions)) {
-		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
+		GJKEPA::GJKEPACollisionPointGenerator cg = GJKEPA::GJKEPACollisionPointGenerator(col->one, col->two);
 
 		if (cg.testIntersection()) {
-			ContactInfo contactInfo;
-			bool ok = cg.createContact(&contactInfo);
+			CollisionPoint contactInfo;
+			bool ok = cg.createCollisionPoint(&contactInfo);
 			if (ok) {
-				collisions.push_back(new ContactInfo(contactInfo));
+				collisionsPoints.push_back(new CollisionPoint(contactInfo));
 			}
 		}
 	}
 }
 
-void ContactGenerator::clearContacts()
+void CollisionsGenerator::clearCollisions()
 {
-	auto collisionIt = collisions.begin();
-	while (collisionIt != collisions.end()) {
+	auto collisionIt = collisionsPoints.begin();
+	while (collisionIt != collisionsPoints.end()) {
 		delete *collisionIt;
 		collisionIt++;
 	}
-	collisions.clear();
+	collisionsPoints.clear();
 }

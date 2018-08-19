@@ -34,15 +34,15 @@
     <ClCompile Include="..\Source\Core\World.cpp" />
     <ClCompile Include="..\Source\include\gl.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
-    <ClCompile Include="..\Source\Physics\broadphase.cpp" />
-    <ClCompile Include="..\Source\Physics\contact.cpp" />
-    <ClCompile Include="..\Source\Physics\contactgeneration.cpp" />
-    <ClCompile Include="..\Source\Physics\contactresolution.cpp" />
-    <ClCompile Include="..\Source\Physics\object.cpp" />
-    <ClCompile Include="..\Source\Physics\rigidbody.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\TestCollisionDetection.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\TestCollisionResolution.cpp" />
-    <ClCompile Include="..\Source\Physics\shapes.cpp" />
+    <ClCompile Include="..\Source\Physics\body\rigidbody.cpp" />
+    <ClCompile Include="..\Source\Physics\body\shapes.cpp" />
+    <ClCompile Include="..\Source\Physics\collision\contact.cpp" />
+    <ClCompile Include="..\Source\Physics\collision\detection\broadphase.cpp" />
+    <ClCompile Include="..\Source\Physics\collision\detection\contactgeneration.cpp" />
+    <ClCompile Include="..\Source\Physics\collision\resolution\contactresolution.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionDetection.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionResolution.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h" />
@@ -63,25 +63,21 @@
     <ClInclude Include="..\Source\include\glm.h" />
     <ClInclude Include="..\Source\include\math.h" />
     <ClInclude Include="..\Source\include\utils.h" />
-    <ClInclude Include="..\Source\Physics\broadphase.h" />
-    <ClInclude Include="..\Source\Physics\contact.h" />
-    <ClInclude Include="..\Source\Physics\contactgeneration.h" />
-    <ClInclude Include="..\Source\Physics\contactresolution.h" />
+    <ClInclude Include="..\Source\Physics\body\rigidbody.h" />
+    <ClInclude Include="..\Source\Physics\body\shapes.h" />
+    <ClInclude Include="..\Source\Physics\collision\contact.h" />
+    <ClInclude Include="..\Source\Physics\collision\detection\broadphase.h" />
+    <ClInclude Include="..\Source\Physics\collision\detection\contactgeneration.h" />
+    <ClInclude Include="..\Source\Physics\collision\resolution\contactresolution.h" />
     <ClInclude Include="..\Source\Physics\debug.h" />
-    <ClInclude Include="..\Source\Physics\object.h" />
-    <ClInclude Include="..\Source\Physics\rigidbody.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\TestCollisionDetection.h" />
-    <ClInclude Include="..\Source\Physics\scenes\TestCollisionResolution.h" />
-    <ClInclude Include="..\Source\Physics\shapes.h" />
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionDetection.h" />
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionResolution.h" />
+    <ClInclude Include="..\Source\Physics\scenes\object.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Physics\shaders\FragmentShader.glsl" />
     <None Include="..\Source\Physics\shaders\VertexShader.glsl" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>

@@ -1,12 +1,12 @@
 ﻿#include "contactresolution.h"
-#include "contact.h"
-#include "object.h"
+#include <Physics/body/rigidbody.h>
+#include <Physics/scenes/object.h>
 
 #include <glm/gtx/matrix_cross_product.hpp>
-#include "debug.h"
+#include <Physics/debug.h>
 
 
-static float computeDesiredDeltaVelocity(Contact *contact)
+float SequentialImpulseContactResolver::computeDesiredDeltaVelocity(Contact *contact)
 {
 	const float MIN_VELOCITY_FOR_RESTITUTION = 0.1f;
 
@@ -22,7 +22,7 @@ static float computeDesiredDeltaVelocity(Contact *contact)
 	return -contact->closingVelocityContact.x - (effectiveRestitution * (contact->closingVelocityContact.x - velocityFromAcceleration));
 }
 
-static glm::vec3 computeImpulse(Contact *contact)
+glm::vec3 SequentialImpulseContactResolver::computeImpulse(Contact *contact)
 {
 	float totalInvMass = 0;
 	glm::mat3 rotationalInertiaInvWorld(0);
@@ -67,7 +67,7 @@ static glm::vec3 computeImpulse(Contact *contact)
 }
 
 
-void ImpulseContactResolver::solveContactManifold(ContactManifold &manifold)
+void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &manifold)
 {
 	const unsigned int PEN_MAX_ITERATIONS = 5;
 	const unsigned int VEL_MAX_ITERATIONS = 5;
@@ -224,7 +224,7 @@ void ImpulseContactResolver::solveContactManifold(ContactManifold &manifold)
 	PRINT_WARN("AFTER " << penetrationIterations << "penIters and " << velocityIterations << "velIters\n");
 }
 
-void ImpulseContactResolver::solve(const std::vector<ContactInfo*> &collisions)
+void SequentialImpulseContactResolver::solve(const std::vector<CollisionPoint*> &collisions)
 {
 	updateContacts(collisions);
 
@@ -233,12 +233,12 @@ void ImpulseContactResolver::solve(const std::vector<ContactInfo*> &collisions)
 	}
 }
 
-void ImpulseContactResolver::updateContacts(const std::vector<ContactInfo*> & collisions)
+void SequentialImpulseContactResolver::updateContacts(const std::vector<CollisionPoint*> & collisions)
 {
 	timestamp++;
 
 	for (unsigned int i = 0; i < collisions.size(); i++) {
-		const ContactInfo *collision = collisions[i];
+		const CollisionPoint *collision = collisions[i];
 
 		ContactManifold *manifold = NULL;
 
@@ -253,7 +253,7 @@ void ImpulseContactResolver::updateContacts(const std::vector<ContactInfo*> & co
 			for (auto & manIt : manifolds) {
 				if (manIt.obj1 == collision->objects[1] && manIt.obj2 == collision->objects[0]) {
 					manifold = &manIt;
-					ContactInfo reversedContact = collision->reverse();
+					CollisionPoint reversedContact = collision->reverse();
 
 					addContactToManifold(*manifold, reversedContact);
 					continue;
@@ -325,7 +325,7 @@ void ImpulseContactResolver::updateContacts(const std::vector<ContactInfo*> & co
 }
 
 
-void ImpulseContactResolver::addContactToManifold(ContactManifold & manifold, const ContactInfo & newContact)
+void SequentialImpulseContactResolver::addContactToManifold(ContactManifold & manifold, const CollisionPoint & newContact)
 {
 	manifold.timestamp = timestamp;
 	const PhysicsObject *obj1 = manifold.obj1;
@@ -371,7 +371,7 @@ void ImpulseContactResolver::addContactToManifold(ContactManifold & manifold, co
 	contact->timestamp = timestamp;
 }
 
-uint8_t ImpulseContactResolver::findWorstContact(ContactManifold & manifold)
+uint8_t SequentialImpulseContactResolver::findWorstContact(ContactManifold & manifold)
 {
 	uint8_t lowestPenetrationIdx = 0;
 	float lowestPenetration = manifold.contacts[0]->penetration;

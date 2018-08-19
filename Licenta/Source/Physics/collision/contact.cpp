@@ -1,6 +1,6 @@
 #include "contact.h"
 
-#include "rigidbody.h"
+#include <Physics/body/rigidbody.h>
 #include <glm/gtx/string_cast.hpp>
 
 /* From Ian Millington - Game Physics Engine Development (2007) - chapter 14.1.2 */
@@ -46,7 +46,7 @@ void Contact::setContactInfo(const glm::vec3 point1, const glm::vec3 point2,
 	this->objects[0] = obj1;
 	this->objects[1] = obj2;
 }
-void Contact::setContactInfo(const ContactInfo & contactInfo)
+void Contact::setContactInfo(const CollisionPoint & contactInfo)
 {
 	this->points[0] = contactInfo.points[0];
 	this->points[1] = contactInfo.points[1];
@@ -95,9 +95,9 @@ std::string Contact::toString()
 		+ "desiredDeltaVelocity = " + std::to_string(desiredDeltaVelocity) + "\n\t}\n";
 }
 
-std::string ContactInfo::toString()
+std::string CollisionPoint::toString()
 {
-	return std::string("") + "ContactInfo {" + "\n\t"
+	return std::string("") + "CollisionPoint {" + "\n\t"
 		+ "pointA = " + to_string(points[0]) + "\n\t"
 		+ "pointB = " + to_string(points[1]) + "\n\t"
 		+ "normal = " + to_string(normal) + "\n\t"

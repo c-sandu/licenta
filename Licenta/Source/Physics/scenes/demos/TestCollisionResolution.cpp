@@ -1,20 +1,23 @@
-#include "TestCollisionDetection.h"
+#include "TestCollisionResolution.h"
 
 #include <Core/Engine.h>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/random.hpp>
 
-#include "../debug.h"
-#include "../contactgeneration.h"
+#include <Physics/debug.h>
+#include <Physics/collision/detection/contactgeneration.h>
+#include <Physics/collision/resolution/contactresolution.h>
 
-TestCollisionDetection::TestCollisionDetection()
+TestCollisionResolution::TestCollisionResolution()
 {
 }
 
-TestCollisionDetection::~TestCollisionDetection()
+TestCollisionResolution::~TestCollisionResolution()
 {
 }
 
-void TestCollisionDetection::Init()
+void TestCollisionResolution::Init()
 {
 
 	/* load meshes */
@@ -34,6 +37,12 @@ void TestCollisionDetection::Init()
 		{
 			Mesh* mesh = new Mesh("plane");
 			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "plane50.obj");
+			meshes[mesh->GetMeshID()] = mesh;
+		}
+
+		{
+			Mesh* mesh = new Mesh("cylinder");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "cylinder.obj");
 			meshes[mesh->GetMeshID()] = mesh;
 		}
 	}
@@ -61,25 +70,27 @@ void TestCollisionDetection::Init()
 	polygonMode = GL_FILL;
 
 	{
-		boxDefault = new RigidBody(glm::vec3(0, 2, 0), glm::vec3(1));
-		boxDefault->setMass(16.0f);
-		boxDefault->updateTransformMatrix();
-		boxDefault->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
-		boxDefault->orientation = glm::normalize(glm::rotate(boxDefault->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1)));
-		/*boxDefault->applyForce(glm::vec3(0, 8, 0));
-		boxDefault->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+		boxAbove = new RigidBody(glm::vec3(0, 4, 0), glm::vec3(1));
+		boxAbove->setMass(32.0f);
+		boxAbove->updateTransformMatrix();
+		boxAbove->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxAbove->scale));
+		boxAbove->orientation = glm::rotate(boxAbove->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1));
+		/*boxAbove->applyForce(glm::vec3(0, 8, 0));
+		boxAbove->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxDefault;
+		obj->body = boxAbove;
 		obj->mesh = meshes["box"];
 		obj->color = glm::vec3(1, 1, 0);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
-		obj->name.assign("boxDefault");
+		obj->name.assign("boxAbove");
 		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
+
+
 	//{
 	//	boxSmall = new RigidBody(glm::vec3(-8, 0, 0), glm::vec3(0.25f));
 	//	boxSmall->setMass(32.0f);
@@ -154,21 +165,39 @@ void TestCollisionDetection::Init()
 	//}
 
 	{
-		boxTall = new RigidBody(glm::vec3(0, 3, -3), glm::vec3(1, 2, 1));
-		boxTall->setMass(32.0f);
-		boxTall->updateTransformMatrix();
-		boxTall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxTall->scale));
-		//boxTall->orientation = glm::rotate(boxTall->orientation, 0.1f, glm::vec3(0, 1, 0));
-		/*boxTall->applyForce(glm::vec3(0, 8, 0));
-		boxTall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+		boxBelow = new RigidBody(glm::vec3(0, 0, 0), glm::vec3(32, 1, 32));
+		boxBelow->setMass(0.0f, true);
+		boxBelow->updateTransformMatrix();
+		boxBelow->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxBelow->scale));
+		//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
+		/*boxBelow->applyForce(glm::vec3(0, 8, 0));
+		boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
-		obj->body = boxTall;
+		obj->body = boxBelow;
 		obj->mesh = meshes["box"];
 		obj->color = glm::vec3(1, 0, 1);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
-		obj->name.assign("boxTall");
+		obj->name.assign("boxBelow");
+		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
+		objects.push_back(obj);
+		pcd.addCollider((OBBCollider*)obj->collider);
+	}
+
+	{
+		boxExtra = new RigidBody(glm::vec3(3, 3, -2));
+		boxExtra->setMass(32.0f);
+		boxExtra->updateTransformMatrix();
+		boxExtra->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5f) * boxExtra->scale));
+		PhysicsObject *obj = new PhysicsObject();
+		obj->body = boxExtra;
+		obj->mesh = meshes["box"];
+		obj->color = glm::vec3(0, 1, 1);
+		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
+		obj->collider->setRigidBody(obj->body);
+		obj->collider->updateInternals();
+		obj->name.assign("boxExtra");
 		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
@@ -179,7 +208,7 @@ void TestCollisionDetection::Init()
 		obj->body = NULL;
 		obj->mesh = meshes["plane"];
 		obj->color = glm::vec3(1, 1, 1);
-		obj->collider = new PlaneCollider(glm::vec3(0, 1, 0), -0.1f, obj);
+		obj->collider = new PlaneCollider(glm::vec3(0, 1, 0), -0.1f, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->name.assign("planeXoZ");
 		obj->shape = new Plane(25.0f, 25.0f);
@@ -188,6 +217,7 @@ void TestCollisionDetection::Init()
 	}
 
 	selectedObjIndex = 0;
+	cg.potentialCollisions = &pcd.potentialCollisions;
 
 	PRINT_APP("Positions = {\n\t");
 	for (glm::vec3 &p : meshes["box"]->positions)
@@ -196,7 +226,7 @@ void TestCollisionDetection::Init()
 
 	PRINT_APP("Vertices = {\n\t");
 	for (VertexFormat &p : meshes["box"]->vertices)
-		PRINT_APP("pos = " << glm::to_string(p.position) << ", normal = " << glm::to_string(p.normal) <<"\n\t");
+		PRINT_APP("pos = " << glm::to_string(p.position) << ", normal = " << glm::to_string(p.normal) << "\n\t");
 	PRINT_APP("}\n");
 
 	PRINT_APP("Indices = {\n\t");
@@ -205,7 +235,7 @@ void TestCollisionDetection::Init()
 	PRINT_APP("\n}\n");
 }
 
-void TestCollisionDetection::FrameStart()
+void TestCollisionResolution::FrameStart()
 {
 	// clears the color buffer (using the previously set color) and depth buffer
 	glClearColor(0, 0, 0, 1);
@@ -216,7 +246,7 @@ void TestCollisionDetection::FrameStart()
 	glViewport(0, 0, resolution.x, resolution.y);
 }
 
-void TestCollisionDetection::Update(float deltaTime)
+void TestCollisionResolution::Update(float deltaTime)
 {
 	glLineWidth(3);
 	glPointSize(5);
@@ -230,16 +260,16 @@ void TestCollisionDetection::Update(float deltaTime)
 
 	// Render ground
 	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0, -0.1, 0));
-		RenderSimpleMesh(meshes["plane"], shaders["phong"], modelMatrix);
+	glm::mat4 modelMatrix = glm::mat4(1);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(0, -0.1, 0));
+	RenderSimpleMesh(meshes["plane"], shaders["phong"], modelMatrix);
 	}
 	*/
 
 	for (auto & obj : objects) {
 		RenderSimpleMesh(obj->mesh, shaders["phong"], obj->getTransformMatrix(), obj->color);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		RenderSimpleMesh(meshes[obj->collider->meshName], shaders["phong"], obj->getColTransformMatrix(), glm::vec3(1) - obj->color);
+		RenderSimpleMesh(obj->collider->mesh, shaders["phong"], obj->getColTransformMatrix(), glm::vec3(1) - obj->color);
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 	}
 	// Render the point light in the scene
@@ -256,12 +286,19 @@ void TestCollisionDetection::Update(float deltaTime)
 	boxHeavy->integrate(deltaTime);
 	boxSmallHeavy->integrate(deltaTime);
 	*/
-	for (auto & obj : objects)
+	for (auto & obj : objects) {
+		///* apply gravity */
+		//if (obj->body != NULL)
+		//	obj->body->applyForce(glm::vec3(0, -10.0f, 0));
 		obj->update(deltaTime);
-
-	pcd.fillPotentialCollisions();
+	}
 
 	//PRINT_APP(pcd.potentialCollisions.size() << " potential collisions\n");
+
+	cg.clearCollisions();
+	cg.fillCollisions();
+
+	/*std::vector<Contact*> contacts;
 
 	for (auto & col : pcd.potentialCollisions) {
 		GJK::GJKContactGenerator cg = GJK::GJKContactGenerator(col->one, col->two);
@@ -269,28 +306,51 @@ void TestCollisionDetection::Update(float deltaTime)
 		if (cg.testIntersection()) {
 			PRINT_APP("found intersection found between " << col->one->name << " and " << col->two->name << "\n");
 
-			ContactInfo contact;
-			if (cg.createContact(&contact)) {
-				glm::mat4 t = glm::scale(glm::translate(glm::mat4(1), contact.points[0]), glm::vec3(0.25f));
+			ContactInfo contactInfo;
+			bool ok = cg.createContact(&contactInfo);
+
+			if (ok) {
+
+				contacts.push_back(new Contact(contactInfo));
+
+				glm::mat4 t = glm::scale(glm::translate(glm::mat4(1), contactInfo.points[0]), glm::vec3(0.25f));
 				RenderSimpleMesh(meshes["sphere"], shaders["phong"], t, glm::vec3(1.0f, 0.0f, 0.0f));
-				t = glm::scale(glm::translate(glm::mat4(1), contact.points[1]), glm::vec3(0.25f));
+				t = glm::scale(glm::translate(glm::mat4(1), contactInfo.points[1]), glm::vec3(0.25f));
 				RenderSimpleMesh(meshes["sphere"], shaders["phong"], t, glm::vec3(0.0f, 1.0f, 0.0f));
 				PRINT_APP("contact info = {\n\t");
-				PRINT_APP("point = " << contact.points[0] << "\n\t");
-				PRINT_APP("normal = " << contact.normal << "\n\t");
-				PRINT_APP("penetration = " << contact.penetration << "\n}\n");
+				PRINT_APP("point = " << contactInfo.points[0] << "\n\t");
+				PRINT_APP("normal = " << contactInfo.normal << "\n\t");
+				PRINT_APP("penetration = " << contactInfo.penetration << "\n}\n");
 			}
 		}
+	}*/
+
+	icr.solve(cg.collisionsPoints);
+
+	/*Cylinder cylinder;
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));
+		RenderSimpleMesh(meshes["cylinder"], shaders["phong"], modelMatrix);
 	}
+	{
+		glm::vec3 point = cylinder.getSupportPtInLocalSpace(glm::vec3(1, 0, 1));
+		std::cout << glm::to_string(point) << "\n";
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, point);
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
+		RenderSimpleMesh(meshes["sphere"], shaders["phong"], modelMatrix, glm::vec3(1, 0, 0));
+	}*/
 }
 
-void TestCollisionDetection::FrameEnd()
+void TestCollisionResolution::FrameEnd()
 {
 	DrawCoordinatSystem();
 }
 
 
-void TestCollisionDetection::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelMatrix, const glm::vec3 &color)
+void TestCollisionResolution::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelMatrix, const glm::vec3 &color)
 {
 	if (!mesh || !shader || !shader->GetProgramID())
 		return;
@@ -343,67 +403,67 @@ void TestCollisionDetection::RenderSimpleMesh(Mesh *mesh, Shader *shader, const 
 	glDrawElements(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_SHORT, 0);
 }
 
-void TestCollisionDetection::OnInputUpdate(float deltaTime, int mods)
+void TestCollisionResolution::OnInputUpdate(float deltaTime, int mods)
 {
 	if (!window->MouseHold(GLFW_MOUSE_BUTTON_2)) {
 		if (window->KeyHold(GLFW_KEY_W)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, -1) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_S)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, 0, +1) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_A)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(-1, 0, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_D)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(+1, 0, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_Q)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, -1, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_E)) {
 			objects[selectedObjIndex]->body->position += glm::vec3(0, +1, 0) * deltaTime;
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_SEMICOLON)) {
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, 1) * deltaTime, glm::vec3(0.5, 0, 0));
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 1, 0)));
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_APOSTROPHE)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 1, 0)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 0, -1) * deltaTime, glm::vec3(0.5, 0, 0));
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_LEFT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, 1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, 1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 		if (window->KeyHold(GLFW_KEY_RIGHT_BRACKET)) {
 			objects[selectedObjIndex]->body->orientation = glm::normalize(glm::rotate(objects[selectedObjIndex]->body->orientation, -1.0f * deltaTime, glm::vec3(0, 0, 1)));
 			//objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(0, -1, 0) * deltaTime, glm::vec3(0, 0, 0.5));
 			objects[selectedObjIndex]->body->isAwake = true;
-			objects[selectedObjIndex]->body->reset();
+			objects[selectedObjIndex]->body->resetMovement();
 		}
 	}
 }
 
-void TestCollisionDetection::OnKeyPress(int key, int mods)
+void TestCollisionResolution::OnKeyPress(int key, int mods)
 {
 	// add key press event
 	if (key == GLFW_KEY_P)
@@ -423,7 +483,7 @@ void TestCollisionDetection::OnKeyPress(int key, int mods)
 	}
 	else if (key == GLFW_KEY_Z)
 	{
-		boxDefault->applyForceAtWorldPoint(glm::vec3(12, 0, 8), glm::vec3(-0.5, 0.5, -0.5));
+		objects[selectedObjIndex]->body->applyForceAtWorldPoint(glm::vec3(12, 0, 8), glm::vec3(-0.5, 0.5, -0.5));
 	}
 	else if (key == GLFW_KEY_T)
 	{
@@ -441,31 +501,81 @@ void TestCollisionDetection::OnKeyPress(int key, int mods)
 	else if (key == GLFW_KEY_TAB) {
 		selectedObjIndex = (selectedObjIndex + 1) % (objects.size() - 1);
 		PRINT_APP("selected object = " << objects[selectedObjIndex]->name << "\n");
-	} else if (key == GLFW_KEY_SPACE) {
-		objects[selectedObjIndex]->body->isAwake = objects[selectedObjIndex]->body->isAwake ? false : true;
+	}
+	else if (key == GLFW_KEY_SPACE)
+	{
+		glm::vec3 position = GetSceneCamera()->transform->GetWorldPosition();
+		//glm::vec3 view = glm::normalize(glm::vec3(-glm::row(GetSceneCamera()->View, 2)));
+		//{
+		//	RigidBody *sphere;
+		//	sphere = new RigidBody(position);
+		//	sphere->setMass(2.0f);
+		//	sphere->updateTransformMatrix();
+		//	sphere->setInertiaTensor(RigidBody::inertiaTensorSphere(0.5f * sphere->scale.x));
+		//	sphere->isAwake = true;
+		//	//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
+		//	/*boxBelow->applyForce(glm::vec3(0, 8, 0));
+		//	boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+		//	sphere->applyForce(1000.0f * view);
+		//	PhysicsObject *obj = new PhysicsObject();
+		//	obj->body = sphere;
+		//	obj->mesh = meshes["sphere"];
+		//	obj->color = glm::vec3(1, 0, 1);
+		//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+		//	obj->collider->setRigidBody(obj->body);
+		//	obj->collider->updateInternals();
+		//	obj->name.assign("sphere");
+		//	obj->shape = new Sphere(0.5f * sphere->scale.x);
+		//	objects.push_back(obj);
+		//	pcd.addCollider((OBBCollider*)obj->collider);
+		//}
+		glm::vec3 view = glm::normalize(glm::vec3(-glm::row(GetSceneCamera()->View, 2)));
+		{
+			RigidBody *cylinder;
+			cylinder = new RigidBody(position, glm::vec3(1.0f));
+			cylinder->setMass(16.0f);
+			cylinder->updateTransformMatrix();
+			cylinder->setInertiaTensor(RigidBody::inertiaTensorCylinder(1.0f, 0.5f));
+			cylinder->isAwake = true;
+			//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
+			/*boxBelow->applyForce(glm::vec3(0, 8, 0));
+			boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+			cylinder->applyForce(1000.0f * view);
+			PhysicsObject *obj = new PhysicsObject();
+			obj->body = cylinder;
+			obj->mesh = meshes["cylinder"];
+			obj->color = glm::vec3(1, 0, 1);
+			obj->collider = new OBBCollider(glm::vec3(1.0f) * obj->body->scale, obj, meshes["box"]);
+			obj->collider->setRigidBody(obj->body);
+			obj->collider->updateInternals();
+			obj->name.assign("cylinder");
+			obj->shape = new Cylinder(2.0f * obj->body->scale.x, 1.0f * obj->body->scale.x);
+			objects.push_back(obj);
+			pcd.addCollider((OBBCollider*)obj->collider);
+		}
 	}
 }
 
-void TestCollisionDetection::OnKeyRelease(int key, int mods)
+void TestCollisionResolution::OnKeyRelease(int key, int mods)
 {
 }
 
-void TestCollisionDetection::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
+void TestCollisionResolution::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
 {
 }
 
-void TestCollisionDetection::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
+void TestCollisionResolution::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
 }
 
-void TestCollisionDetection::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
+void TestCollisionResolution::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
 {
 }
 
-void TestCollisionDetection::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
+void TestCollisionResolution::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 {
 }
 
-void TestCollisionDetection::OnWindowResize(int width, int height)
+void TestCollisionResolution::OnWindowResize(int width, int height)
 {
 }

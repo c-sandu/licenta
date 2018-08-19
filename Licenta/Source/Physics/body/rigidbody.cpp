@@ -3,13 +3,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-RigidBody::RigidBody(const glm::vec3 & position, glm::vec3 scale)
-	: position(position)
-	, scale(scale)
+RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const glm::quat & orientation)
+	: position(position),
+	scale(scale),
+	orientation(orientation)
 {
-	orientation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
-	orientation = glm::normalize(orientation);
-
 	linVelocity = glm::vec3(0);
 	angVelocity = glm::vec3(0);
 	linAcceleration = glm::vec3(0);
@@ -64,7 +62,7 @@ void RigidBody::clearAccumulators()
 	torqueAccumulator = glm::vec3(0);
 }
 
-void RigidBody::reset()
+void RigidBody::resetMovement()
 {
 	linVelocity = glm::vec3(0);
 	angVelocity = glm::vec3(0);
@@ -126,13 +124,37 @@ void RigidBody::applyTorqueAtLocalPoint(const glm::vec3 & torque, const glm::vec
 	torqueAccumulator += glm::cross(torqueWorld, pointWorld - position);
 }
 
+void RigidBody::applyLinearImpulse(const glm::vec3 & impulse)
+{
+	linVelocity += impulse;
+}
+
 
 glm::mat3 RigidBody::inertiaTensorCube(const glm::vec3 & halfSizes)
 {
 	/* mass is factored out */
-	return 1.0f / 3.0f * glm::mat3(halfSizes.y * halfSizes.y + halfSizes.z * halfSizes.z, 0, 0,
-								   0, halfSizes.x * halfSizes.x + halfSizes.z * halfSizes.z, 0,
-								   0, 0, halfSizes.y * halfSizes.y + halfSizes.x * halfSizes.x);
+	return 1.0f / 3.0f * glm::mat3(
+		halfSizes.y * halfSizes.y + halfSizes.z * halfSizes.z, 0, 0,
+		0, halfSizes.x * halfSizes.x + halfSizes.z * halfSizes.z, 0,
+		0, 0, halfSizes.y * halfSizes.y + halfSizes.x * halfSizes.x);
+}
+
+glm::mat3 RigidBody::inertiaTensorSphere(const float radius)
+{
+	/* mass is factored out */
+	return 2.0f / 5.0f * glm::mat3(
+		radius * radius, 0, 0,
+		0, radius * radius, 0,
+		0, 0, radius * radius);
+}
+
+glm::mat3 RigidBody::inertiaTensorCylinder(const float height, const float radius)
+{
+	/* mass is factored out */
+	return 1.0f / 12.0f * glm::mat3(
+		3.0f * radius * radius + height * height, 0, 0,
+		0, 6.0f * radius * radius, 0,
+		0, 0, 3.0f * radius * radius + height * height);
 }
 
 std::string RigidBody::toString()

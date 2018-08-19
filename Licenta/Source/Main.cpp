@@ -5,8 +5,8 @@ using namespace std;
 
 #include <Core/Engine.h>
 
-#include <Physics/scenes/TestCollisionDetection.h>
-#include <Physics/scenes/TestCollisionResolution.h>
+#include <Physics/scenes/demos/TestCollisionDetection.h>
+#include <Physics/scenes/demos/TestCollisionResolution.h>
 
 int main(int argc, char **argv)
 {

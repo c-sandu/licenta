@@ -4,7 +4,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
-#include "debug.h"
+#include <Physics/debug.h>
 
 
 void Collider::setRigidBody(RigidBody * body)
@@ -13,12 +13,11 @@ void Collider::setRigidBody(RigidBody * body)
 }
 
 
-OBBCollider::OBBCollider(const glm::vec3 & halfSizes, PhysicsObject * phyObject)
+OBBCollider::OBBCollider(const glm::vec3 & halfSizes, PhysicsObject * phyObject, Mesh * mesh)
 	: halfSizes(halfSizes)
 {
-	meshName.assign("box");
+	this->mesh = mesh;
 	this->phyObject = phyObject;
-	this->contactManifold = NULL;
 }
 
 void OBBCollider::updateInternals()
@@ -344,12 +343,11 @@ void PotentialCollisionDetector::fillPotentialCollisions()
 	}
 }
 
-PlaneCollider::PlaneCollider(glm::vec3 normal, float offset, PhysicsObject * phyObject)
+PlaneCollider::PlaneCollider(glm::vec3 normal, float offset, PhysicsObject * phyObject, Mesh * mesh)
 	: normal(normal), offset(offset)
 {
-	meshName.assign("plane");
+	this->mesh = mesh;
 	this->phyObject = phyObject;
-	this->contactManifold = NULL;
 }
 
 void PlaneCollider::updateInternals()
@@ -383,9 +381,3 @@ std::string OBBCollider::toString()
 		+ "position = " + to_string(position) + "\n\t\t"
 		+ "orientation = " + to_string(orientation) + "\n\t}\n";
 }
-
-PotentialCollision::PotentialCollision(PhysicsObject * one, PhysicsObject * two)
-	: one(one), two(two)
-{
-}
-

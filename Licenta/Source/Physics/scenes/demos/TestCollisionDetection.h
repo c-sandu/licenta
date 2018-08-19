@@ -6,16 +6,14 @@
 
 #include <vector>
 
-#include "../rigidbody.h"
-#include "../object.h"
-#include "../contactgeneration.h"
-#include "../contactresolution.h"
+#include <Physics/body/rigidbody.h>
+#include <Physics/scenes/object.h>
 
-class TestCollisionResolution : public SimpleScene
+class TestCollisionDetection : public SimpleScene
 {
 public:
-	TestCollisionResolution();
-	~TestCollisionResolution();
+	TestCollisionDetection();
+	~TestCollisionDetection();
 
 	void Init() override;
 
@@ -43,11 +41,9 @@ private:
 
 	GLenum polygonMode;
 
-	RigidBody *boxAbove, *boxBelow, *boxExtra;
+	RigidBody *boxDefault, *boxSmall, *boxLarge, *boxHeavy, *boxSmallHeavy, *boxTall;
 	std::vector <PhysicsObject*> objects;
 	PotentialCollisionDetector pcd;
-	ContactGenerator cg;
-	ImpulseContactResolver icr;
 
 	unsigned int selectedObjIndex;
 };
