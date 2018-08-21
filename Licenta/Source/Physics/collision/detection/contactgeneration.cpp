@@ -318,8 +318,6 @@ bool GJKEPA::GJKEPACollisionPointGenerator::doSimplex()
 
 bool GJKEPA::GJKEPACollisionPointGenerator::testIntersection()
 {
-	const unsigned int GJK_MAX_ITERATIONS = 100;
-	const float GJK_EPSILON = 0.0001f;
 	unsigned int iterations = 0;
 
 	simplex.clear();
@@ -336,7 +334,7 @@ bool GJKEPA::GJKEPACollisionPointGenerator::testIntersection()
 	searchDir = -initialPoint.v;
 
 	while (true) {
-		if (iterations++ > GJK_MAX_ITERATIONS) {
+		if (iterations++ > PhysicsSettings::get().gjkepa.gjkMaxIters) {
 			DEBUG_PRINT("max iterations reached\n");
 			DEBUG_PRINT("simplex = {\n\t");
 			if (simplex.numVertices > 0)
@@ -350,13 +348,13 @@ bool GJKEPA::GJKEPACollisionPointGenerator::testIntersection()
 			return false;
 		}
 
-		if (searchDir.length() <= GJK_EPSILON)
+		if (searchDir.length() <= PhysicsSettings::get().epsilons.gjkEpsilon)
 			return false;
 
 		MinkowskiDiffPt newPt = support(searchDir);
 		//DEBUG_PRINT("supPt = {\n\tsupPt.v = " << supPt.v << "\n\tsupPt.supA = " << supPt.supA << "\n\tsupPt.supB = " << supPt.supB << "\n}\n");
 		/* new point is not past the origin */
-		if (glm::dot(newPt.v, searchDir) < -GJK_EPSILON) {
+		if (glm::dot(newPt.v, searchDir) < -PhysicsSettings::get().epsilons.gjkEpsilon) {
 			DEBUG_PRINT("new point is not past the origin \n");
 			return false;
 		}
@@ -383,7 +381,7 @@ static void addRemoveEdge(std::list<GJKEPA::Edge> &edges, const GJKEPA::Minkowsk
 			return;
 		}
 	}
-	if (edges.size() < 50)
+	if (edges.size() < PhysicsSettings::get().gjkepa.epaMaxEdges)
 		edges.push_back(GJKEPA::Edge(a, b));
 }
 
@@ -407,9 +405,6 @@ static void computeBarycentricCoords(const glm::vec3 &a, const glm::vec3 &b, con
 }
 bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint *contact)
 {
-	const float EPA_GROWTH_THRESHOLD = 0.001f;
-	const unsigned int EPA_MAX_ITERATIONS = 50;
-	const float EPA_EPSILON = 0.001f;
 	unsigned int iterations = 0;
 
 	std::list<Triangle> triangles;
@@ -438,7 +433,7 @@ bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint 
 	DEBUG_PRINT("D = " << simplex.d.v << "\n}\n\n");
 
 
-	while (iterations < EPA_MAX_ITERATIONS) {
+	while (iterations < PhysicsSettings::get().gjkepa.epaMaxIters) {
 		auto closestTriangleIt = triangles.begin();
 		float minDistance = FLT_MAX;
 		for (auto t = triangles.begin(); t != triangles.end(); t++) {
@@ -466,7 +461,7 @@ bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint 
 
 		/* if the new point is not further from the origin than the face in whose direction we
 		are expanding the polytope, we can't expand anymore */
-		if (nextSupDist - minDistance < EPA_GROWTH_THRESHOLD) {
+		if (nextSupDist - minDistance < PhysicsSettings::get().gjkepa.epaGrowthThreshold) {
 			/* TODO: fill contact info */
 			glm::vec3 barCoords;
 
@@ -511,7 +506,7 @@ bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint 
 		}
 
 		for (auto it = triangles.begin(); it != triangles.end();) {
-			if (glm::dot(it->vecABC, nextSup.v - it->a.v) > -EPA_EPSILON) {
+			if (glm::dot(it->vecABC, nextSup.v - it->a.v) > -PhysicsSettings::get().epsilons.epaEpsilon) {
 				/* update the edge list in order to remove the triangles facing this point */
 				addRemoveEdge(edges, it->a, it->c);
 				addRemoveEdge(edges, it->c, it->b);
@@ -524,7 +519,7 @@ bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint 
 		/* re-create the triangles from the remaining edges */
 		for (Edge e : edges) {
 			glm::vec3 normal = glm::normalize(glm::cross(e.a.v - nextSup.v, e.b.v - nextSup.v));
-			if (glm::isnan(glm::dot(nextSup.v, normal)) || triangles.size() > 64)
+			if (glm::isnan(glm::dot(nextSup.v, normal)) || triangles.size() > PhysicsSettings::get().gjkepa.epaMaxTriangles)
 				continue;
 			if (glm::dot(normal, nextSup.v) > 0) {
 				triangles.push_back(Triangle(nextSup, e.a, e.b));

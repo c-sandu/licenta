@@ -45,6 +45,18 @@ void TestCollisionResolution::Init()
 			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "cylinder.obj");
 			meshes[mesh->GetMeshID()] = mesh;
 		}
+
+		{
+			Mesh* mesh = new Mesh("capsule");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "capsule.obj");
+			meshes[mesh->GetMeshID()] = mesh;
+		}
+
+		{
+			Mesh* mesh = new Mesh("cone");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "cone.obj");
+			meshes[mesh->GetMeshID()] = mesh;
+		}
 	}
 
 	// Create a shader program for drawing face polygon with the color of the normal
@@ -58,22 +70,22 @@ void TestCollisionResolution::Init()
 
 	//Light & material properties
 	{
-		lightPosition = glm::vec3(0, 16, 0);
-		lightDirection = glm::vec3(0, -1, 0);
-		materialShininess = 30;
-		materialKd = 0.5;
-		materialKs = 0.5;
+		lightPosition = PhysicsSettings::get().sceneProperties.lightning.lightPosition;
+		lightDirection = PhysicsSettings::get().sceneProperties.lightning.lightDirection;
+		materialShininess = PhysicsSettings::get().sceneProperties.lightning.materialShininess;
+		materialKd = PhysicsSettings::get().sceneProperties.lightning.materialKd;
+		materialKs = PhysicsSettings::get().sceneProperties.lightning.materialKs;
 	}
 
-	GetSceneCamera()->SetPosition(glm::vec3(0, 2, 10));
+	GetSceneCamera()->SetPosition(PhysicsSettings::get().sceneProperties.defaultCameraPosition);
 
 	polygonMode = GL_FILL;
 
 	{
 		boxAbove = new RigidBody(glm::vec3(0, 4, 0), glm::vec3(1));
-		boxAbove->setMass(32.0f);
+		boxAbove->setMass(PhysicsSettings::get().rigidBodies.defaultMass);
 		boxAbove->updateTransformMatrix();
-		boxAbove->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxAbove->scale));
+		boxAbove->setInertiaTensor(RigidBody::inertiaTensorCube(PhysicsSettings::get().shapes.box.halfSizes * boxAbove->scale));
 		boxAbove->orientation = glm::rotate(boxAbove->orientation, (float)M_PI * 0.5f, glm::vec3(1, 0, 1));
 		/*boxAbove->applyForce(glm::vec3(0, 8, 0));
 		boxAbove->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
@@ -81,11 +93,11 @@ void TestCollisionResolution::Init()
 		obj->body = boxAbove;
 		obj->mesh = meshes["box"];
 		obj->color = glm::vec3(1, 1, 0);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
+		obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
 		obj->name.assign("boxAbove");
-		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
+		obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
@@ -93,16 +105,16 @@ void TestCollisionResolution::Init()
 
 	//{
 	//	boxSmall = new RigidBody(glm::vec3(-8, 0, 0), glm::vec3(0.25f));
-	//	boxSmall->setMass(32.0f);
+	//	boxSmall->setMass(PhysicsSettings::get().rigidBodies.defaultMass);
 	//	boxSmall->updateTransformMatrix();
-	//	boxSmall->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxSmall->scale));
+	//	boxSmall->setInertiaTensor(RigidBody::inertiaTensorCube(PhysicsSettings::get().shapes.box.halfSizes * boxSmall->scale));
 	//	boxSmall->applyForce(glm::vec3(0, 8, 0));
 	//	boxSmall->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
 	//	PhysicsObject *obj = new PhysicsObject();
 	//	obj->body = boxSmall;
 	//	obj->mesh = meshes["box"];
 	//	obj->color = glm::vec3(1, 0, 0);
-	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj);
 	//	obj->collider->setRigidBody(obj->body);
 	//	obj->collider->updateInternals();
 	//	obj->name.assign("boxSmall");
@@ -111,16 +123,16 @@ void TestCollisionResolution::Init()
 	//}
 	//{
 	//	boxLarge = new RigidBody(glm::vec3(-4, 0, 0), glm::vec3(2.0f));
-	//	boxLarge->setMass(32.0f);
+	//	boxLarge->setMass(PhysicsSettings::get().rigidBodies.defaultMass);
 	//	boxLarge->updateTransformMatrix();
-	//	boxLarge->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
+	//	boxLarge->setInertiaTensor(RigidBody::inertiaTensorCube(PhysicsSettings::get().shapes.box.halfSizes * boxDefault->scale));
 	//	boxLarge->applyForce(glm::vec3(0, 8, 0));
 	//	boxLarge->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
 	//	PhysicsObject *obj = new PhysicsObject();
 	//	obj->body = boxLarge;
 	//	obj->mesh = meshes["box"];
 	//	obj->color = glm::vec3(0, 1, 0);
-	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj);
 	//	obj->collider->setRigidBody(obj->body);
 	//	obj->collider->updateInternals();
 	//	obj->name.assign("boxLarge");
@@ -129,7 +141,7 @@ void TestCollisionResolution::Init()
 	//}
 	//{
 	//	boxHeavy = new RigidBody(glm::vec3(4, 0, 0));
-	//	boxHeavy->setMass(128.0f);
+	//	boxHeavy->setMass(PhysicsSettings::get().rigidBodies.defaultMass * 4);
 	//	boxHeavy->updateTransformMatrix();
 	//	boxHeavy->setInertiaTensor(RigidBody::inertiaTensorCube());
 	//	boxHeavy->applyForce(glm::vec3(0, 8, 0));
@@ -138,7 +150,7 @@ void TestCollisionResolution::Init()
 	//	obj->body = boxHeavy;
 	//	obj->mesh = meshes["box"];
 	//	obj->color = glm::vec3(0, 0, 1);
-	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj);
 	//	obj->collider->setRigidBody(obj->body);
 	//	obj->collider->updateInternals();
 	//	obj->name.assign("boxHeavy");
@@ -147,16 +159,16 @@ void TestCollisionResolution::Init()
 	//}
 	//{
 	//	boxSmallHeavy = new RigidBody(glm::vec3(8, 0, 0), glm::vec3(0.25f));
-	//	boxSmallHeavy->setMass(128.0f);
+	//	boxSmallHeavy->setMass(PhysicsSettings::get().rigidBodies.defaultMass * 4);
 	//	boxSmallHeavy->updateTransformMatrix();
-	//	boxSmallHeavy->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxDefault->scale));
+	//	boxSmallHeavy->setInertiaTensor(RigidBody::inertiaTensorCube(PhysicsSettings::get().shapes.box.halfSizes * boxDefault->scale));
 	//	boxSmallHeavy->applyForce(glm::vec3(0, 8, 0));
 	//	boxSmallHeavy->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));
 	//	PhysicsObject *obj = new PhysicsObject();
 	//	obj->body = boxSmallHeavy;
 	//	obj->mesh = meshes["box"];
 	//	obj->color = glm::vec3(0, 1, 1);
-	//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+	//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj);
 	//	obj->collider->setRigidBody(obj->body);
 	//	obj->collider->updateInternals();
 	//	obj->name.assign("boxSmallHeavy");
@@ -167,54 +179,54 @@ void TestCollisionResolution::Init()
 	{
 		boxBelow = new RigidBody(glm::vec3(0, 0, 0), glm::vec3(32, 1, 32));
 		boxBelow->setMass(0.0f, true);
+		boxBelow->setInertiaTensor(RigidBody::inertiaTensorCube(PhysicsSettings::get().shapes.box.halfSizes * boxBelow->scale));
+		boxBelow->orientation = glm::rotate(boxBelow->orientation, RADIANS(30), glm::vec3(1, 0, 1));
 		boxBelow->updateTransformMatrix();
-		boxBelow->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5) * boxBelow->scale));
-		//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
 		/*boxBelow->applyForce(glm::vec3(0, 8, 0));
 		boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
 		PhysicsObject *obj = new PhysicsObject();
 		obj->body = boxBelow;
 		obj->mesh = meshes["box"];
 		obj->color = glm::vec3(1, 0, 1);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
+		obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
 		obj->name.assign("boxBelow");
-		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
+		obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
 
 	{
 		boxExtra = new RigidBody(glm::vec3(3, 3, -2));
-		boxExtra->setMass(32.0f);
+		boxExtra->setMass(PhysicsSettings::get().rigidBodies.defaultMass);
 		boxExtra->updateTransformMatrix();
-		boxExtra->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(0.5f) * boxExtra->scale));
+		boxExtra->setInertiaTensor(RigidBody::inertiaTensorCube(glm::vec3(PhysicsSettings::get().shapes.box.halfSizes) * boxExtra->scale));
 		PhysicsObject *obj = new PhysicsObject();
 		obj->body = boxExtra;
 		obj->mesh = meshes["box"];
 		obj->color = glm::vec3(0, 1, 1);
-		obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj, meshes["box"]);
+		obj->collider = new OBBCollider(glm::vec3(PhysicsSettings::get().shapes.box.halfSizes) * obj->body->scale, obj, meshes["box"]);
 		obj->collider->setRigidBody(obj->body);
 		obj->collider->updateInternals();
 		obj->name.assign("boxExtra");
-		obj->shape = new Box(0.5f * obj->body->scale.x, 0.5f * obj->body->scale.y, 0.5f * obj->body->scale.z);
+		obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 		objects.push_back(obj);
 		pcd.addCollider((OBBCollider*)obj->collider);
 	}
 
-	{
-		PhysicsObject *obj = new PhysicsObject();
-		obj->body = NULL;
-		obj->mesh = meshes["plane"];
-		obj->color = glm::vec3(1, 1, 1);
-		obj->collider = new PlaneCollider(glm::vec3(0, 1, 0), -0.1f, obj, meshes["box"]);
-		obj->collider->setRigidBody(obj->body);
-		obj->name.assign("planeXoZ");
-		obj->shape = new Plane(25.0f, 25.0f);
-		objects.push_back(obj);
-		pcd.addCollider((PlaneCollider*)obj->collider);
-	}
+	//{
+	//	PhysicsObject *obj = new PhysicsObject();
+	//	obj->body = NULL;
+	//	obj->mesh = meshes["plane"];
+	//	obj->color = glm::vec3(1, 1, 1);
+	//	obj->collider = new PlaneCollider(glm::vec3(0, 1, 0), -0.1f, obj, meshes["box"]);
+	//	obj->collider->setRigidBody(obj->body);
+	//	obj->name.assign("planeXoZ");
+	//	obj->shape = new Plane(25.0f, 25.0f);
+	//	objects.push_back(obj);
+	//	pcd.addCollider((PlaneCollider*)obj->collider);
+	//}
 
 	selectedObjIndex = 0;
 	cg.potentialCollisions = &pcd.potentialCollisions;
@@ -288,13 +300,15 @@ void TestCollisionResolution::Update(float deltaTime)
 	*/
 	for (auto & obj : objects) {
 		///* apply gravity */
-		//if (obj->body != NULL)
+		//if (obj->body != nullptr)
 		//	obj->body->applyForce(glm::vec3(0, -10.0f, 0));
 		obj->update(deltaTime);
 	}
 
 	//PRINT_APP(pcd.potentialCollisions.size() << " potential collisions\n");
 
+	pcd.clearPotentialCollisions();
+	pcd.fillPotentialCollisions();
 	cg.clearCollisions();
 	cg.fillCollisions();
 
@@ -483,7 +497,7 @@ void TestCollisionResolution::OnKeyPress(int key, int mods)
 	}
 	else if (key == GLFW_KEY_Z)
 	{
-		objects[selectedObjIndex]->body->applyForceAtWorldPoint(glm::vec3(12, 0, 8), glm::vec3(-0.5, 0.5, -0.5));
+		objects[selectedObjIndex]->body->applyTorqueAtLocalPoint(glm::vec3(12, 0, 8), glm::vec3(-0.5, 0.5, -0.5));
 	}
 	else if (key == GLFW_KEY_T)
 	{
@@ -509,7 +523,7 @@ void TestCollisionResolution::OnKeyPress(int key, int mods)
 		//{
 		//	RigidBody *sphere;
 		//	sphere = new RigidBody(position);
-		//	sphere->setMass(2.0f);
+		//	sphere->setMass(PhysicsSettings::get().rigidBodies.defaultMass / 16);
 		//	sphere->updateTransformMatrix();
 		//	sphere->setInertiaTensor(RigidBody::inertiaTensorSphere(0.5f * sphere->scale.x));
 		//	sphere->isAwake = true;
@@ -521,7 +535,7 @@ void TestCollisionResolution::OnKeyPress(int key, int mods)
 		//	obj->body = sphere;
 		//	obj->mesh = meshes["sphere"];
 		//	obj->color = glm::vec3(1, 0, 1);
-		//	obj->collider = new OBBCollider(glm::vec3(0.5) * obj->body->scale, obj);
+		//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.sphere.obbHalfSizes * obj->body->scale, obj);
 		//	obj->collider->setRigidBody(obj->body);
 		//	obj->collider->updateInternals();
 		//	obj->name.assign("sphere");
@@ -529,30 +543,79 @@ void TestCollisionResolution::OnKeyPress(int key, int mods)
 		//	objects.push_back(obj);
 		//	pcd.addCollider((OBBCollider*)obj->collider);
 		//}
+		//glm::vec3 view = glm::normalize(glm::vec3(-glm::row(GetSceneCamera()->View, 2)));
+		//{
+		//	RigidBody *cylinder;
+		//	cylinder = new RigidBody(position, glm::vec3(1.0f));
+		//	cylinder->setMass(PhysicsSettings::get().rigidBodies.defaultMass);
+		//	cylinder->updateTransformMatrix();
+		//	cylinder->setInertiaTensor(RigidBody::inertiaTensorCylinder(2.0f, 0.5f));
+		//	cylinder->isAwake = true;
+		//	//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
+		//	/*boxBelow->applyForce(glm::vec3(0, 8, 0));
+		//	boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+		//	cylinder->applyForce(1000.0f * view);
+		//	PhysicsObject *obj = new PhysicsObject();
+		//	obj->body = cylinder;
+		//	obj->mesh = meshes["cylinder"];
+		//	obj->color = glm::vec3(1, 0, 1);
+		//	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.cylinder.obbHalfSizes * obj->body->scale, obj, meshes["box"]);
+		//	obj->collider->setRigidBody(obj->body);
+		//	obj->collider->updateInternals();
+		//	obj->name.assign("cylinder");
+		//	obj->shape = new Cylinder(2.0f * obj->body->scale.y, 0.5f * obj->body->scale.x);
+		//	objects.push_back(obj);
+		//	pcd.addCollider((OBBCollider*)obj->collider);
+		//}
 		glm::vec3 view = glm::normalize(glm::vec3(-glm::row(GetSceneCamera()->View, 2)));
 		{
-			RigidBody *cylinder;
-			cylinder = new RigidBody(position, glm::vec3(1.0f));
-			cylinder->setMass(16.0f);
-			cylinder->updateTransformMatrix();
-			cylinder->setInertiaTensor(RigidBody::inertiaTensorCylinder(1.0f, 0.5f));
-			cylinder->isAwake = true;
+			RigidBody *capsule;
+			capsule = new RigidBody(position, glm::vec3(1.0f));
+			capsule->setMass(PhysicsSettings::get().rigidBodies.defaultMass / 2);
+			capsule->updateTransformMatrix();
+			capsule->setInertiaTensor(RigidBody::inertiaTensorCapsule(1.0f, 0.5f));
+			capsule->isAwake = true;
 			//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
 			/*boxBelow->applyForce(glm::vec3(0, 8, 0));
 			boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
-			cylinder->applyForce(1000.0f * view);
+			capsule->applyLinearImpulse(5.0f * view);
 			PhysicsObject *obj = new PhysicsObject();
-			obj->body = cylinder;
-			obj->mesh = meshes["cylinder"];
+			obj->body = capsule;
+			obj->mesh = meshes["capsule"];
 			obj->color = glm::vec3(1, 0, 1);
-			obj->collider = new OBBCollider(glm::vec3(1.0f) * obj->body->scale, obj, meshes["box"]);
+			obj->collider = new OBBCollider(PhysicsSettings::get().shapes.capsule.obbHalfSizes * obj->body->scale, obj, meshes["box"]);
 			obj->collider->setRigidBody(obj->body);
 			obj->collider->updateInternals();
-			obj->name.assign("cylinder");
-			obj->shape = new Cylinder(2.0f * obj->body->scale.x, 1.0f * obj->body->scale.x);
+			obj->name.assign("capsule");
+			obj->shape = new Capsule();
 			objects.push_back(obj);
 			pcd.addCollider((OBBCollider*)obj->collider);
 		}
+
+		//glm::vec3 view = glm::normalize(glm::vec3(-glm::row(GetSceneCamera()->View, 2)));
+		//{
+		//	RigidBody *cone;
+		//	cone = new RigidBody(position, glm::vec3(1.0f));
+		//	cone->setMass(PhysicsSettings::get().rigidBodies.defaultMass / 2);
+		//	cone->updateTransformMatrix();
+		//	cone->setInertiaTensor(RigidBody::inertiaTensorCone(2.0f, 1.0f));
+		//	cone->isAwake = true;
+		//	//boxBelow->orientation = glm::rotate(boxBelow->orientation, 0.1f, glm::vec3(0, 1, 0));
+		//	/*boxBelow->applyForce(glm::vec3(0, 8, 0));
+		//	boxBelow->applyForceAtLocalPoint(glm::vec3(8, 0, 4), glm::vec3(-0.5, 0.5, -0.5));*/
+		//	cone->applyLinearImpulse(5.0f * view);
+		//	PhysicsObject *obj = new PhysicsObject();
+		//	obj->body = cone;
+		//	obj->mesh = meshes["cone"];
+		//	obj->color = glm::vec3(0, 1, 0);
+		//	obj->collider = new OBBCollider(glm::vec3(1.0f) * obj->body->scale, glm::vec3(0, 0.5f * 2.0f * obj->body->scale.y, 0), obj, meshes["box"]);
+		//	obj->collider->setRigidBody(obj->body);
+		//	obj->collider->updateInternals();
+		//	obj->name.assign("cone");
+		//	obj->shape = new Cone(2.0f * obj->body->scale.y, 1.0f * obj->body->scale.x);
+		//	objects.push_back(obj);
+		//	pcd.addCollider((OBBCollider*)obj->collider);
+		//}
 	}
 }
 

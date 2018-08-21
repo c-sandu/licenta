@@ -28,7 +28,6 @@ class SequentialImpulseContactResolver
 {
 private:
 	unsigned int timestamp; /* internal timestamp */
-	static const uint8_t MAX_MANIFOLD_SIZE = 4;
 public:
 
 	std::list<Contact> contacts; /* all contacts maintained by this resolver */

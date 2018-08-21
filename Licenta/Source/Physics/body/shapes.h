@@ -2,6 +2,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <Physics/settings.h>
 
 class Shape {
 public:
@@ -10,6 +11,7 @@ public:
 	virtual glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir) = 0;
 };
 
+/*!!!!!!!!!!!!Not supported anymore */
 class Plane : public Shape {
 public:
 	float rx, rz;
@@ -21,9 +23,9 @@ public:
 
 class Box : public Shape {
 public:
-	float rx, ry, rz;
+	glm::vec3 halfSizes;
 
-	Box(float rx = 0.5f, float ry = 0.5f, float rz = 0.5f) : rx(rx), ry(ry), rz(rz) { this->type.assign("box"); }
+	Box(glm::vec3 halfSizes = PhysicsSettings::get().shapes.box.halfSizes) : halfSizes(halfSizes) { this->type.assign("box"); }
 
 	glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir);
 };
@@ -32,7 +34,7 @@ class Sphere : public Shape {
 public:
 	float radius;
 
-	Sphere(float radius = 0.5f) : radius(radius) { this->type.assign("sphere"); }
+	Sphere(float radius = PhysicsSettings::get().shapes.sphere.radius) : radius(radius) { this->type.assign("sphere"); }
 
 	glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir);
 };
@@ -42,17 +44,28 @@ public:
 	float height;
 	float radius;
 
-	Cylinder(float height = 2.0f, float radius = 1.0f) : height(height), radius(radius) { this->type.assign("cylinder"); }
+	Cylinder(float height = PhysicsSettings::get().shapes.cylinder.height, float radius = PhysicsSettings::get().shapes.cylinder.radius) : height(height), radius(radius) { this->type.assign("cylinder"); }
 
 	glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir);
 };
 
+/* not supported */
 class Cone : public Shape {
 public:
 	float height;
 	float radius;
 
-	Cone(float height, float radius) : height(height), radius(radius) { this->type.assign("cone"); }
+	Cone(float height = 1.0f, float radius = 0.5f) : height(height), radius(radius) { this->type.assign("cone"); }
+
+	glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir);
+};
+
+class Capsule : public Shape {
+public:
+	float height;
+	float radius;
+
+	Capsule(float height = PhysicsSettings::get().shapes.capsule.height, float radius = PhysicsSettings::get().shapes.capsule.radius) : height(height), radius(radius) { this->type.assign("capsule"); }
 
 	glm::vec3 getSupportPtInLocalSpace(glm::vec3 dir);
 };

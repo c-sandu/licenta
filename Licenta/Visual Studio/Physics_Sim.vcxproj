@@ -42,6 +42,7 @@
     <ClCompile Include="..\Source\Physics\collision\resolution\contactresolution.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionDetection.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionResolution.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\object.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +73,9 @@
     <ClInclude Include="..\Source\Physics\debug.h" />
     <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionDetection.h" />
     <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionResolution.h" />
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h" />
     <ClInclude Include="..\Source\Physics\scenes\object.h" />
+    <ClInclude Include="..\Source\Physics\settings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Physics\shaders\FragmentShader.glsl" />

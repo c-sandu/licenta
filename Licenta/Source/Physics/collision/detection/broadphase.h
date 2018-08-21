@@ -20,12 +20,15 @@ public:
 	PhysicsObject *phyObject; /* the object this collider is attached to */
 	RigidBody *body; /* the rigid body component of the object this collider is attached to */
 	Mesh *mesh; /* mesh used for drawing the collider */
+	bool markedForDeletion;
 
 	virtual void updateInternals() = 0;
 	void setRigidBody(RigidBody *body);
 
 	virtual glm::mat4 getTransformMatrix() = 0;
 	virtual std::string toString() = 0;
+
+	virtual ~Collider() = 0;
 };
 
 class PlaneCollider : public Collider
@@ -39,6 +42,8 @@ public:
 
 	glm::mat4 getTransformMatrix();
 	std::string toString();
+
+	~PlaneCollider() {}
 };
 
 
@@ -47,6 +52,7 @@ class OBBCollider : public Collider
 {
 public:
 	glm::vec3 halfSizes; /* halfsizes (width, height, depth) */
+	glm::vec3 offset; /* offset in local space */
 	
 private:
 	glm::vec3 position; /* position of the box's center in world coordinates */
@@ -54,17 +60,25 @@ private:
 
 public:
 	OBBCollider(const glm::vec3 & halfSizes, PhysicsObject *phyObject, Mesh * mesh);
+	OBBCollider(const glm::vec3 & halfSizes, const glm::vec3 &offset, PhysicsObject *phyObject, Mesh * mesh);
 
 	/* updates position and orientation of the collider */
 	void updateInternals();
 
 	/* tests intersection with another OBB */
 	bool testIntersectionOBB(OBBCollider & other);
+	/* tests intersection with a ray */
+	bool TestIntersectionRay(glm::vec3 origin, glm::vec3 direction);
+	bool TestIntersectionRay(glm::vec3 origin, glm::vec3 direction, float &intDistance, glm::vec3 &intPoint);
 	bool testIntersectionPlane(PlaneCollider & plane);
 
 	/* returns collider's trasnform matrix for rendering purposes */
 	glm::mat4 getTransformMatrix();
 	std::string toString();
+
+	~OBBCollider() {
+	
+	}
 };
 
 
@@ -82,12 +96,14 @@ class PotentialCollisionDetector
 {
 private:
 	std::vector<PlaneCollider*> planeVector; /* plane colliders assigned to this detector */
-	std::vector<OBBCollider*> obbVector; /* OBB colliders assigned to this detector */
 
 public:
+	std::vector<OBBCollider*> obbVector; /* OBB colliders assigned to this detector */
 	std::vector<PotentialCollision*> potentialCollisions;
 	void addCollider(PlaneCollider *plane);
 	void addCollider(OBBCollider *obb);
+
+	PhysicsObject *performRayIntersection(glm::vec3 origin, glm::vec3 direction);
 
 	void clearPotentialCollisions();
 	void fillPotentialCollisions();

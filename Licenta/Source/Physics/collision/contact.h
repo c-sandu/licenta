@@ -45,7 +45,9 @@ class Contact : public CollisionPoint
 private:
 	glm::vec3 localPoints[2]; /* points in the individual objects' local spaces */
 	/* derived data below */
+public:
 	glm::mat3 matContactToWorld; /* transform matrix from contact space to world space */
+private:
 	glm::mat3 matWorldToContact; /* transform matrix from world space to contact space */
 	glm::vec3 closingVelocityWorld; /* closing velocity in world space */
 	glm::vec3 closingVelocityContact; /* closing velocity in contact space */
@@ -64,8 +66,8 @@ private:
 public:
 	Contact()
 	{
-		this->restitutionCoef = 0.25f;
-		this->frictionCoef = 0.00001f;
+		this->restitutionCoef = PhysicsSettings::get().collisionResolution.defaultRestitutionCoef;
+		this->frictionCoef = PhysicsSettings::get().collisionResolution.defaultFrictionCoef;
 		this->invalid = false;
 
 		this->ContactID = globalContactID++;
@@ -84,8 +86,8 @@ public:
 		this->objects[0] = collisionPoint.objects[0];
 		this->objects[1] = collisionPoint.objects[1];
 
-		this->restitutionCoef = 0.25f;
-		this->frictionCoef = 0.00001f;
+		this->restitutionCoef = PhysicsSettings::get().collisionResolution.defaultRestitutionCoef;
+		this->frictionCoef = PhysicsSettings::get().collisionResolution.defaultFrictionCoef;
 		this->invalid = false;
 
 		this->ContactID = globalContactID++;

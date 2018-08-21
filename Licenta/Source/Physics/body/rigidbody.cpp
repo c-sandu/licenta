@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <Physics/settings.h>
 
 RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const glm::quat & orientation)
 	: position(position),
@@ -14,11 +15,15 @@ RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const 
 	angAcceleration = glm::vec3(0);
 	forceAccumulator = glm::vec3(0);
 	torqueAccumulator = glm::vec3(0);
-	linDamping = 0.9f;
+	linDamping = PhysicsSettings::get().damping.linear;
+	angDamping = PhysicsSettings::get().damping.angular;
 	angDamping = 0.9f;
 
 	isStatic = false;
 	isAwake = false;
+
+	mass = PhysicsSettings::get().rigidBodies.defaultMass;
+	invMass = 1.0f / mass;
 }
 
 void RigidBody::updateTransformMatrix()
@@ -74,7 +79,7 @@ void RigidBody::resetMovement()
 void RigidBody::integrate(float deltaTime)
 {
 	if (invMass != 0 && isAwake) {
-		lastFrameAcceleration = glm::vec3(0, -9.8, 0);
+		lastFrameAcceleration = PhysicsSettings::get().gravity;
 		lastFrameAcceleration += forceAccumulator * invMass;
 		lastFrameAcceleration *= deltaTime;
 
@@ -102,31 +107,37 @@ void RigidBody::integrate(float deltaTime)
 
 void RigidBody::applyForce(const glm::vec3 & force)
 {
-	forceAccumulator += force;
+	glm::vec3 adjustedForce = force * PhysicsSettings::get().forceMultipliers.force;
+	forceAccumulator += adjustedForce;
 }
 
 void RigidBody::applyForceAtWorldPoint(const glm::vec3 & force, const glm::vec3 & point)
 {
-	forceAccumulator += force;
-	torqueAccumulator += glm::cross(force, point - position);
+	glm::vec3 adjustedForce = force * PhysicsSettings::get().forceMultipliers.force;
+	forceAccumulator += adjustedForce;
+	torqueAccumulator += glm::cross(adjustedForce, point - position);
 }
 
 void RigidBody::applyForceAtLocalPoint(const glm::vec3 & force, const glm::vec3 & point)
 {
+	glm::vec3 adjustedForce = force * PhysicsSettings::get().forceMultipliers.force;
 	glm::vec3 pointWorld = transform * glm::vec4(point, 1);
-	applyForceAtWorldPoint(force, pointWorld);
+	applyForceAtWorldPoint(adjustedForce, pointWorld);
 }
 
 void RigidBody::applyTorqueAtLocalPoint(const glm::vec3 & torque, const glm::vec3 & point)
 {
+	glm::vec3 adjustedTorque = torque * PhysicsSettings::get().forceMultipliers.torque;
 	glm::vec3 pointWorld = transform * glm::vec4(point, 1);
-	glm::vec3 torqueWorld = transform * glm::vec4(torque * 10000.0f, 1);
+	glm::vec3 torqueWorld = transform * glm::vec4(adjustedTorque, 1);
 	torqueAccumulator += glm::cross(torqueWorld, pointWorld - position);
 }
 
 void RigidBody::applyLinearImpulse(const glm::vec3 & impulse)
 {
-	linVelocity += impulse;
+	isAwake = true;
+	glm::vec3 adjustedImpulse = impulse * PhysicsSettings::get().forceMultipliers.impulse;
+	linVelocity += adjustedImpulse;
 }
 
 
@@ -155,6 +166,19 @@ glm::mat3 RigidBody::inertiaTensorCylinder(const float height, const float radiu
 		3.0f * radius * radius + height * height, 0, 0,
 		0, 6.0f * radius * radius, 0,
 		0, 0, 3.0f * radius * radius + height * height);
+}
+
+glm::mat3 RigidBody::inertiaTensorCone(const float height, const float radius)
+{
+	return 1.0f / 20.0f * glm::mat3(
+		12.0f * height * height + 3.0f * radius * radius, 0, 0,
+		0, 6.0f * radius * radius, 0,
+		0, 0, 12.0f * height * height + 3.0f * radius * radius);
+}
+
+glm::mat3 RigidBody::inertiaTensorCapsule(const float height, const float radius)
+{
+	return inertiaTensorCylinder(height + radius + radius, radius);
 }
 
 std::string RigidBody::toString()

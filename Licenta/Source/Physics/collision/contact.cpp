@@ -67,7 +67,7 @@ void Contact::computeDerivedData()
 
 	for (uint8_t i = 0; i < 2; i++) {
 		relativeContactPositions[i] = points[i] - objects[i]->body->position;
-		if (objects[i]->body == NULL)
+		if (objects[i]->body == nullptr)
 			return;
 
 		glm::vec3 lastFramePlanarAcceleration = objects[i]->body->lastFrameAcceleration - glm::dot(objects[i]->body->lastFrameAcceleration, normal) * normal;

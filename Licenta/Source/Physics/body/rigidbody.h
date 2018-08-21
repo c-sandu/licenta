@@ -4,6 +4,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <string>
 
+#include <Physics/settings.h>
+
 class RigidBody
 {
 	friend class SequentialImpulseContactResolver;
@@ -74,11 +76,15 @@ public:
 	void applyLinearImpulse(const glm::vec3 & impulse);
 
 	/* basic moment of inertia of a cube(with mass factored out) */
-	static glm::mat3 inertiaTensorCube(const glm::vec3 & halfsizes = glm::vec3(0.5));
+	static glm::mat3 inertiaTensorCube(const glm::vec3 & halfsizes = PhysicsSettings::get().shapes.box.halfSizes);
 	/* basic moment of inertia of a sphere(with mass factored out) */
-	static glm::mat3 inertiaTensorSphere(const float radius = 0.5f);
+	static glm::mat3 inertiaTensorSphere(const float radius = PhysicsSettings::get().shapes.sphere.radius);
 	/* basic moment of inertia of a cylinder(with mass factored out) */
-	static glm::mat3 inertiaTensorCylinder(const float height = 2.0f, const float radius = 1.0f);
+	static glm::mat3 inertiaTensorCylinder(const float height = PhysicsSettings::get().shapes.cylinder.height, const float radius = PhysicsSettings::get().shapes.cylinder.radius);
+	/* basic moment of inertia of a cone(with mass factored out) NOT SUPPORTED YET */
+	static glm::mat3 inertiaTensorCone(const float height = 1.0f, const float radius = 0.5f);
+	/* basic moment of inertia of a capsule(with mass factored out) */
+	static glm::mat3 inertiaTensorCapsule(const float height = PhysicsSettings::get().shapes.capsule.height, const float radius = PhysicsSettings::get().shapes.capsule.radius);
 
 	std::string toString();
 };

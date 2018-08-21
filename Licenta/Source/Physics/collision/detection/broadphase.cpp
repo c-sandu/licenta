@@ -7,24 +7,45 @@
 #include <Physics/debug.h>
 
 
+#include <Physics/body/rigidbody.h>
+
+
 void Collider::setRigidBody(RigidBody * body)
 {
 	this->body = body;
+}
+
+Collider::~Collider()
+{
 }
 
 
 OBBCollider::OBBCollider(const glm::vec3 & halfSizes, PhysicsObject * phyObject, Mesh * mesh)
 	: halfSizes(halfSizes)
 {
+	this->offset = glm::vec3(0);
 	this->mesh = mesh;
 	this->phyObject = phyObject;
+	this->markedForDeletion = false;
+}
+
+OBBCollider::OBBCollider(const glm::vec3 & halfSizes, const glm::vec3 & offset, PhysicsObject * phyObject, Mesh * mesh)
+	: halfSizes(halfSizes),
+	offset(offset)
+{
+	this->mesh = mesh;
+	this->phyObject = phyObject;
+	this->markedForDeletion = false;
 }
 
 void OBBCollider::updateInternals()
 {
 	glm::vec3 _scale, _skew;
 	glm::vec4 _perspective;
-	glm::decompose(body->transform, _scale, orientation, position, _skew, _perspective);
+	
+	orientation = glm::normalize(body->orientation);
+	position = glm::vec3(body->transform * glm::vec4(offset, 1));
+	//glm::decompose(body->transform, _scale, orientation, position, _skew, _perspective);
 }
 
 //bool OBBCollider::testIntersectionOBB(OBBCollider & other)
@@ -206,14 +227,12 @@ void OBBCollider::updateInternals()
 bool OBBCollider::testIntersectionOBB(OBBCollider & other)
 {
 	/* Christer Ericson - Real Time Collision Detection - 4.4 Oriented Bounding Boxes(OBBs) */
-	const float EPSILON = 0.0001f;
-	
 	float ra, rb;
 	glm::mat3 R, AbsR;
 
 
-	glm::mat3 rotationMatA = glm::inverse(glm::mat3_cast(this->orientation));
-	glm::mat3 rotationMatB = glm::inverse(glm::mat3_cast(other.orientation));
+	glm::mat3 rotationMatA = glm::mat3_cast(this->orientation);
+	glm::mat3 rotationMatB = glm::mat3_cast(other.orientation);
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
@@ -224,7 +243,7 @@ bool OBBCollider::testIntersectionOBB(OBBCollider & other)
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
-			AbsR[i][j] = glm::abs(R[i][j]) + EPSILON;
+			AbsR[i][j] = glm::abs(R[i][j]) + PhysicsSettings::get().epsilons.globalEpsilon;
 
 	// Test axes L = A0, L = A1, L = A2
 	for (int i = 0; i < 3; i++) {
@@ -291,6 +310,100 @@ bool OBBCollider::testIntersectionOBB(OBBCollider & other)
 	return 1;
 }
 
+bool OBBCollider::TestIntersectionRay(glm::vec3 origin, glm::vec3 direction)
+{
+	float tMin = 0.0f;
+	float tMax = 10.0f;
+
+	glm::mat3 localAxes = glm::mat3_cast(orientation);
+
+	glm::vec3 farPoint = origin + tMax * glm::normalize(direction);
+	origin = glm::inverse(localAxes) * origin;
+	farPoint = glm::inverse(localAxes) * farPoint;
+
+	glm::vec3 midPoint = (origin + farPoint) * 0.5f;
+	glm::vec3 halfLengthV = farPoint - midPoint;
+	midPoint = midPoint - position; /* translate box and segment to origin */
+
+	float adx = glm::abs(halfLengthV.x);
+	if (glm::abs(midPoint.x) > halfSizes.x + adx)
+		return false;
+	float ady = glm::abs(halfLengthV.y);
+	if (glm::abs(midPoint.y) > halfSizes.y + ady)
+		return false;
+	float adz = glm::abs(halfLengthV.z);
+	if (glm::abs(midPoint.z) > halfSizes.z + adz)
+		return false;
+
+	adx += PhysicsSettings::get().epsilons.globalEpsilon;
+	ady += PhysicsSettings::get().epsilons.globalEpsilon;
+	adz += PhysicsSettings::get().epsilons.globalEpsilon;
+
+	if (glm::abs(midPoint.y * halfLengthV.z - midPoint.z * halfLengthV.y) > halfSizes.y * adz + halfSizes.z * ady)
+		return false;
+	if (glm::abs(midPoint.z * halfLengthV.x - midPoint.x * halfLengthV.z) > halfSizes.x * adz + halfSizes.z * adx)
+		return false;
+	if (glm::abs(midPoint.x * halfLengthV.y - midPoint.y * halfLengthV.x) > halfSizes.x * ady + halfSizes.y * adx)
+		return false;
+
+	return true;
+}
+
+/* sursa: https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp */
+bool OBBCollider::TestIntersectionRay(glm::vec3 origin, glm::vec3 direction, float & intDistance, glm::vec3 & intPoint)
+{
+	direction = glm::normalize(direction);
+
+	glm::mat3 o = glm::mat3_cast(orientation);
+
+	glm::vec3 p = position - origin;
+
+	glm::vec3 X(o[0]);
+	glm::vec3 Y(o[1]);
+	glm::vec3 Z(o[2]);
+
+	glm::vec3 f = o * direction;
+	glm::vec3 e = o * p;
+
+	float t[6] = { 0, 0, 0, 0, 0, 0 };
+	for (int i = 0; i < 3; ++i) {
+		if (glm::abs(f[i]) < PhysicsSettings::get().epsilons.globalEpsilon) {
+			if (-e[i] - halfSizes[i] > 0 || -e[i] + halfSizes[i] < 0) {
+				return false;
+			}
+			f[i] = 0.00001f; // Avoid div by 0!
+		}
+
+		t[i * 2 + 0] = (e[i] + halfSizes[i]) / f[i]; // tmin[x, y, z]
+		t[i * 2 + 1] = (e[i] - halfSizes[i]) / f[i]; // tmax[x, y, z]
+	}
+
+	float tmin = fmaxf(fmaxf(fminf(t[0], t[1]), fminf(t[2], t[3])), fminf(t[4], t[5]));
+	float tmax = fminf(fminf(fmaxf(t[0], t[1]), fmaxf(t[2], t[3])), fmaxf(t[4], t[5]));
+
+	// if tmax < 0, ray is intersecting AABB
+	// but entire AABB is behing it's origin
+	if (tmax < 0) {
+		return false;
+	}
+
+	// if tmin > tmax, ray doesn't intersect AABB
+	if (tmin > tmax) {
+		return false;
+	}
+
+	// If tmin is < 0, tmax is closer
+	float t_result = tmin;
+
+	if (tmin < 0.0f) {
+		t_result = tmax;
+	}
+
+	intDistance = t_result;
+	intPoint = origin + direction * t_result;
+	return true;
+}
+
 bool OBBCollider::testIntersectionPlane(PlaneCollider & plane)
 {
 	/* compute local axis */
@@ -317,6 +430,25 @@ void PotentialCollisionDetector::addCollider(OBBCollider * obb)
 	obbVector.push_back(obb);
 }
 
+PhysicsObject * PotentialCollisionDetector::performRayIntersection(glm::vec3 origin, glm::vec3 direction)
+{
+	OBBCollider *closestOBB = nullptr;
+	float minDistance = FLT_MAX;
+	float distance;
+	glm::vec3 point;
+	for (auto obb : obbVector) {
+		if (obb->TestIntersectionRay(origin, direction, distance, point)) {
+			PRINT_APP("gasit intersectie la " + glm::to_string(point) + "\n");
+			if (closestOBB == nullptr || distance < minDistance) {
+				closestOBB = obb;
+				minDistance = distance;
+			}
+		}
+	}
+
+	return closestOBB == nullptr ? nullptr : closestOBB->phyObject;
+}
+
 void PotentialCollisionDetector::clearPotentialCollisions()
 {
 	for (PotentialCollision *p : potentialCollisions)
@@ -329,18 +461,27 @@ void PotentialCollisionDetector::fillPotentialCollisions()
 {
 	clearPotentialCollisions();
 
-	for (unsigned int i = 0; i < obbVector.size() - 1; i++) {
+	/* delete dangling colliders */
+	for (unsigned int i = 0; i < obbVector.size();) {
+		if (obbVector[i]->markedForDeletion) {
+			delete obbVector[i];
+			obbVector.erase(obbVector.begin() + i);
+			continue;
+		}
+		i++;
+	}
+
+	for (unsigned int i = 0; i < obbVector.size() - 1;) {
 		/* look for OBB-OBB collisions */
-		for (unsigned int j = i + 1; j < obbVector.size(); j++)
+		for (unsigned int j = i + 1; j < obbVector.size();) {
 			if (obbVector[i]->testIntersectionOBB(*obbVector[j])) {
 				potentialCollisions.push_back(new PotentialCollision(obbVector[i]->phyObject, obbVector[j]->phyObject));
 			}
-		/* look for OBB-Plane collisions */
-		/*for (auto & p : planeVector)
-			if (i->testIntersectionPlane(*p)) {
-				potentialCollisions.push_back(new PotentialCollision(i->phyObject, p->phyObject));
-			}*/
+			j++;
+		}
+		i++;
 	}
+
 }
 
 PlaneCollider::PlaneCollider(glm::vec3 normal, float offset, PhysicsObject * phyObject, Mesh * mesh)
@@ -368,7 +509,7 @@ std::string PlaneCollider::toString()
 
 glm::mat4 OBBCollider::getTransformMatrix()
 {
-	glm::mat4 transform = body->transform;
+	glm::mat4 transform = glm::translate(body->transform, offset);
 	transform = glm::scale(transform, 1.0f / body->scale);
 	transform = glm::scale(transform, halfSizes / 0.5f);
 	return transform;

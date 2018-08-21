@@ -115,6 +115,9 @@
     <ClCompile Include="..\Source\Physics\scenes\object.cpp">
       <Filter>Physics\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp">
+      <Filter>Physics\scenes\demos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h">
@@ -200,6 +203,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\Physics\scenes\object.h">
       <Filter>Physics\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\settings.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h">
+      <Filter>Physics\scenes\demos</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
