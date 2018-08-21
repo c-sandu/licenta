@@ -438,7 +438,6 @@ PhysicsObject * PotentialCollisionDetector::performRayIntersection(glm::vec3 ori
 	glm::vec3 point;
 	for (auto obb : obbVector) {
 		if (obb->TestIntersectionRay(origin, direction, distance, point)) {
-			PRINT_APP("gasit intersectie la " + glm::to_string(point) + "\n");
 			if (closestOBB == nullptr || distance < minDistance) {
 				closestOBB = obb;
 				minDistance = distance;

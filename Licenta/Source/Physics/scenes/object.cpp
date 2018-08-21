@@ -100,7 +100,8 @@ void ObjectSpawner::spawnNewObject()
 		break;
 	}
 
-	nextObject = ObjectType(rand() % 5);
+	if (randomizeNextObject)
+		nextObject = ObjectType(rand() % 5);
 }
 
 void ObjectSpawner::spawnBoxDynamic()

@@ -332,12 +332,6 @@ void TestObjectSpawner::OnKeyPress(int key, int mods)
 	{
 		objSpawner->randomizeProperties = !objSpawner->randomizeProperties;
 	}
-	else if (key == GLFW_KEY_LEFT_SHIFT)
-	{
-		PhysicsObject *newSelectedObj = pcd.performRayIntersection(GetSceneCamera()->transform->GetWorldPosition(), glm::normalize(-glm::vec3(glm::row(GetSceneCamera()->View, 2))));
-		if (newSelectedObj != nullptr)
-			objSpawner->selectedObject = newSelectedObj;
-	}
 }
 
 void TestObjectSpawner::OnKeyRelease(int key, int mods)
@@ -350,6 +344,25 @@ void TestObjectSpawner::OnMouseMove(int mouseX, int mouseY, int deltaX, int delt
 
 void TestObjectSpawner::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
+	if (IS_BIT_SET(button, GLFW_MOUSE_BUTTON_LEFT)) {
+		/* try to select a new object */
+
+		/* compute normalised device coordinates */
+		float x = (2.0f * mouseX) / window->GetResolution().x - 1.0f;
+		float y = 1.0f - (2.0f * mouseY) / window->GetResolution().y;
+
+		/* compute camera coordinates */
+		glm::vec4 ray_eye = glm::inverse(GetSceneCamera()->GetProjectionMatrix()) * glm::vec4(x, y, -1.0f, 1.0f);
+		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0f, 0.0f);
+
+		/* world coordinates */
+		glm::vec3 ray_world = glm::inverse(GetSceneCamera()->GetViewMatrix()) * ray_eye;
+		ray_world = glm::normalize(ray_world);
+
+		PhysicsObject *newSelectedObj = pcd.performRayIntersection(GetSceneCamera()->transform->GetWorldPosition(), ray_world);
+		if (newSelectedObj != nullptr)
+			objSpawner->selectedObject = newSelectedObj;
+	}
 }
 
 void TestObjectSpawner::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
