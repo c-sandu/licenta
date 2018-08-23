@@ -30,6 +30,8 @@ public:
 	~PhysicsObject();
 };
 
+enum ObjectType { box = 0, longBox = 1, sphere = 2, cylinder = 3, capsule = 4 };
+
 class ObjectSpawner
 {
 public:
@@ -44,7 +46,6 @@ public:
 
 	PhysicsObject *selectedObject;
 
-	enum ObjectType { box=0, longBox=1, sphere=2, cylinder=3, capsule=4 };
 	ObjectType nextObject;
 	bool randomizeNextObject;
 	bool randomizeProperties;

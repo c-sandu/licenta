@@ -8,6 +8,7 @@ using namespace std;
 #include <Physics/scenes/demos/TestCollisionDetection.h>
 #include <Physics/scenes/demos/TestCollisionResolution.h>
 #include <Physics/scenes/demos/TestObjectSpawner.h>
+#include <Physics/scenes/demos/TestImGui.h>
 
 int main(int argc, char **argv)
 {
@@ -15,13 +16,13 @@ int main(int argc, char **argv)
 
 	// Create a window property structure
 	WindowProperties wp;
-	wp.resolution = glm::ivec2(1280, 720);
+	wp.resolution = glm::ivec2(1366, 768);
 
 	// Init the Engine and create a new window with the defined properties
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new TestObjectSpawner();
+	World *world = new TestImGui();
 	world->Init();
 	world->Run();
 

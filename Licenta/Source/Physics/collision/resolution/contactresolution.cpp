@@ -333,7 +333,7 @@ void SequentialImpulseContactResolver::addContactToManifold(ContactManifold & ma
 	const glm::vec3 localPoint1 = glm::vec3(glm::inverse(obj1->getTransformMatrix()) * glm::vec4(worldPoint1, 1));
 	const glm::vec3 localPoint2 = glm::vec3(glm::inverse(obj2->getTransformMatrix()) * glm::vec4(worldPoint2, 1));
 
-	const float toleranceSquared = PhysicsSettings::get().collisionResolution.oldContactDistanceThreshold;
+	const float toleranceSquared = PhysicsSettings::get().collisionResolution.PersistentContactDistanceThreshold;
 
 	for (uint8_t i = 0; i < manifold.contacts.size(); i++) {
 		Contact *contact = manifold.contacts[i];

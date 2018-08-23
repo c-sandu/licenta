@@ -43,6 +43,9 @@
     <Filter Include="Physics\collision\resolution">
       <UniqueIdentifier>{fa09634a-49d0-4a48-82d1-187d4e48ff2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\imgui">
+      <UniqueIdentifier>{0e738ea9-9fca-4bf2-a3b7-255395a8c9fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Component\CameraInput.cpp">
@@ -117,6 +120,27 @@
     </ClCompile>
     <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp">
       <Filter>Physics\scenes\demos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_draw.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_impl_glfw.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_impl_opengl3.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestImGui.cpp">
+      <Filter>Physics\scenes\demos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_demo.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\ui.cpp">
+      <Filter>Physics\scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +233,36 @@
     </ClInclude>
     <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h">
       <Filter>Physics\scenes\demos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imconfig.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui_impl_glfw.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui_impl_opengl3.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui_internal.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\stb_rect_pack.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\stb_textedit.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\stb_truetype.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestImGui.h">
+      <Filter>Physics\scenes\demos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\ui.h">
+      <Filter>Physics\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

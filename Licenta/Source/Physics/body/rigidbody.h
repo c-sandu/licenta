@@ -23,6 +23,8 @@ public:
 
 	glm::mat4 transform; /* local to world transform matrix */
 
+	float frictionCoef; /* body's friction coefficient */
+	float restitutionCoef; /* body's restitution coefficient */
 private:
 	glm::vec3 linVelocity; /* linear velocity in world space */
 	glm::vec3 angVelocity; /* angular velocity in world space */

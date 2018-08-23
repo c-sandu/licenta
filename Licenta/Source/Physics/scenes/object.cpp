@@ -64,7 +64,8 @@ void ObjectSpawner::updateObjects(float deltaTime)
 {
 	
 	for (auto objIt = objects.begin(); objIt != objects.end();) {
-		if (glm::length((*objIt)->body->position) > 100) {
+		float length = glm::length((*objIt)->body->position);
+		if (isnan(length) || length > 100) {
 			delete *objIt;
 			objIt = objects.erase(objIt);
 			continue;
@@ -78,6 +79,9 @@ void ObjectSpawner::updateObjects(float deltaTime)
 		spawnNewObject();
 		mustSpawnObject = false;
 	}
+
+	if (selectedObject == nullptr)
+		selectedObject = objects.front();
 }
 
 void ObjectSpawner::spawnNewObject()
@@ -149,7 +153,7 @@ void ObjectSpawner::spawnBoxDynamic()
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("dynamicBox" + std::to_string(dynamicBoxID));
+	obj->name.assign("dynamicBox" + std::to_string(dynamicBoxID++));
 	obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -182,7 +186,7 @@ void ObjectSpawner::spawnBoxStatic(glm::vec3 position, glm::vec3 scale, float ma
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("staticBox" + std::to_string(staticBoxID));
+	obj->name.assign("staticBox" + std::to_string(staticBoxID++));
 	obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -233,7 +237,7 @@ void ObjectSpawner::spawnLongBoxDynamic()
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("dynamicLongBox" + std::to_string(dynamicLongBoxID));
+	obj->name.assign("dynamicLongBox" + std::to_string(dynamicLongBoxID++));
 	obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -268,7 +272,7 @@ void ObjectSpawner::spawnLongBoxStatic(glm::vec3 position, glm::vec3 scale, floa
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("staticLongBox" + std::to_string(staticLongBoxID));
+	obj->name.assign("staticLongBox" + std::to_string(staticLongBoxID++));
 	obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -303,7 +307,7 @@ void ObjectSpawner::spawnWallStatic(glm::vec3 position, glm::vec3 scale, glm::qu
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("wall" + std::to_string(wallID));
+	obj->name.assign("wall" + std::to_string(wallID++));
 	obj->shape = new Box(PhysicsSettings::get().shapes.box.halfSizes * obj->body->scale);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -354,7 +358,7 @@ void ObjectSpawner::spawnSphereDynamic()
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.sphere.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("dynamicSphere" + std::to_string(dynamicSphereID));
+	obj->name.assign("dynamicSphere" + std::to_string(dynamicSphereID++));
 	obj->shape = new Sphere(PhysicsSettings::get().shapes.sphere.radius * sphere->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -388,7 +392,7 @@ void ObjectSpawner::spawnSphereStatic(glm::vec3 position, glm::vec3 scale, float
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.sphere.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("staticSphere" + std::to_string(staticSphereID));
+	obj->name.assign("staticSphere" + std::to_string(staticSphereID++));
 	obj->shape = new Sphere(PhysicsSettings::get().shapes.sphere.radius * sphere->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -439,7 +443,7 @@ void ObjectSpawner::spawnCylinderDynamic()
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.cylinder.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("dynamicCylinder" + std::to_string(dynamicCylinderID));
+	obj->name.assign("dynamicCylinder" + std::to_string(dynamicCylinderID++));
 	obj->shape = new Cylinder(PhysicsSettings::get().shapes.cylinder.height * cylinder->scale.y, PhysicsSettings::get().shapes.cylinder.radius * cylinder->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -473,7 +477,7 @@ void ObjectSpawner::spawnCylinderStatic(glm::vec3 position, glm::vec3 scale, flo
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.cylinder.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("staticCylinder" + std::to_string(staticCylinderID));
+	obj->name.assign("staticCylinder" + std::to_string(staticCylinderID++));
 	obj->shape = new Cylinder(PhysicsSettings::get().shapes.cylinder.height * cylinder->scale.y, PhysicsSettings::get().shapes.cylinder.radius * cylinder->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -524,7 +528,7 @@ void ObjectSpawner::spawnCapsuleDynamic()
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.capsule.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("dynamicCapsule" + std::to_string(dynamicCapsuleID));
+	obj->name.assign("dynamicCapsule" + std::to_string(dynamicCapsuleID++));
 	obj->shape = new Capsule(PhysicsSettings::get().shapes.capsule.height * capsule->scale.y, PhysicsSettings::get().shapes.capsule.radius * capsule->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);
@@ -558,7 +562,7 @@ void ObjectSpawner::spawnCapsuleStatic(glm::vec3 position, glm::vec3 scale, floa
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.capsule.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);
 	obj->collider->updateInternals();
-	obj->name.assign("staticCapsule" + std::to_string(staticCapsuleID));
+	obj->name.assign("staticCapsule" + std::to_string(staticCapsuleID++));
 	obj->shape = new Capsule(PhysicsSettings::get().shapes.capsule.height * capsule->scale.y, PhysicsSettings::get().shapes.capsule.radius * capsule->scale.x);
 	objects.push_back(obj);
 	pcd->addCollider((OBBCollider*)obj->collider);

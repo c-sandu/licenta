@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\libs\imgui\imgui.cpp" />
+    <ClCompile Include="..\libs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\libs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\libs\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\libs\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\Source\Component\CameraInput.cpp" />
     <ClCompile Include="..\Source\Component\SceneInput.cpp" />
     <ClCompile Include="..\Source\Component\SimpleScene.cpp" />
@@ -42,10 +47,20 @@
     <ClCompile Include="..\Source\Physics\collision\resolution\contactresolution.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionDetection.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionResolution.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\demos\TestImGui.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\object.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\libs\imgui\imconfig.h" />
+    <ClInclude Include="..\libs\imgui\imgui.h" />
+    <ClInclude Include="..\libs\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\libs\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\libs\imgui\imgui_internal.h" />
+    <ClInclude Include="..\libs\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\libs\imgui\stb_textedit.h" />
+    <ClInclude Include="..\libs\imgui\stb_truetype.h" />
     <ClInclude Include="..\Source\Component\CameraInput.h" />
     <ClInclude Include="..\Source\Component\SceneInput.h" />
     <ClInclude Include="..\Source\Component\SimpleScene.h" />
@@ -73,8 +88,10 @@
     <ClInclude Include="..\Source\Physics\debug.h" />
     <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionDetection.h" />
     <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionResolution.h" />
+    <ClInclude Include="..\Source\Physics\scenes\demos\TestImGui.h" />
     <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h" />
     <ClInclude Include="..\Source\Physics\scenes\object.h" />
+    <ClInclude Include="..\Source\Physics\scenes\ui.h" />
     <ClInclude Include="..\Source\Physics\settings.h" />
   </ItemGroup>
   <ItemGroup>

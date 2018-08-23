@@ -66,8 +66,8 @@ private:
 public:
 	Contact()
 	{
-		this->restitutionCoef = PhysicsSettings::get().collisionResolution.defaultRestitutionCoef;
-		this->frictionCoef = PhysicsSettings::get().collisionResolution.defaultFrictionCoef;
+		this->restitutionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
+		this->frictionCoef = PhysicsSettings::get().rigidBodies.defaultFrictionCoef;
 		this->invalid = false;
 
 		this->ContactID = globalContactID++;
@@ -86,8 +86,14 @@ public:
 		this->objects[0] = collisionPoint.objects[0];
 		this->objects[1] = collisionPoint.objects[1];
 
-		this->restitutionCoef = PhysicsSettings::get().collisionResolution.defaultRestitutionCoef;
-		this->frictionCoef = PhysicsSettings::get().collisionResolution.defaultFrictionCoef;
+		this->restitutionCoef = glm::mix(
+			std::min(objects[0]->body->restitutionCoef, objects[1]->body->restitutionCoef),
+			std::max(objects[0]->body->restitutionCoef, objects[1]->body->restitutionCoef),
+			PhysicsSettings::get().collisionResolution.coefInterpAlpha);
+		this->frictionCoef = glm::mix(
+			std::min(objects[0]->body->frictionCoef, objects[1]->body->frictionCoef),
+			std::max(objects[0]->body->frictionCoef, objects[1]->body->frictionCoef),
+			PhysicsSettings::get().collisionResolution.coefInterpAlpha);
 		this->invalid = false;
 
 		this->ContactID = globalContactID++;

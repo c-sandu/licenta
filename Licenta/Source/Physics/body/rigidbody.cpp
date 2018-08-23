@@ -24,6 +24,9 @@ RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const 
 
 	mass = PhysicsSettings::get().rigidBodies.defaultMass;
 	invMass = 1.0f / mass;
+
+	restitutionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
+	frictionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
 }
 
 void RigidBody::updateTransformMatrix()

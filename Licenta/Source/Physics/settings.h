@@ -16,8 +16,8 @@ public:
 	}
 
 	struct {
-		const float linear = 0.9f;
-		const float angular = 0.9f;
+		float linear = 0.9f;
+		float angular = 0.9f;
 	} damping;
 
 	struct {
@@ -56,27 +56,26 @@ public:
 	} epsilons;
 
 	struct {
-		const unsigned int gjkMaxIters = 100;
+		unsigned int gjkMaxIters = 100;
 		const unsigned int epaMaxEdges = 50;
 		const float epaGrowthThreshold = 0.001f;
-		const unsigned int epaMaxIters = 50;
+		unsigned int epaMaxIters = 50;
 		const unsigned int epaMaxTriangles = 64;
 	} gjkepa;
 
 	struct {
-		const unsigned int maxContactsPerManifold = 4;
+		unsigned int maxContactsPerManifold = 4;
 
-		const float minVelocityForRestitution = 0.25f;
+		float minVelocityForRestitution = 0.25f;
 
-		const unsigned int PEN_MAX_ITERATIONS = 5;
-		const unsigned int VEL_MAX_ITERATIONS = 5;
+		unsigned int PEN_MAX_ITERATIONS = 5;
+		unsigned int VEL_MAX_ITERATIONS = 5;
 
-		const float angularMovementLimitFactor = 0.2f;
+		float angularMovementLimitFactor = 0.2f;
 
-		const float oldContactDistanceThreshold = 0.001f;
+		float PersistentContactDistanceThreshold = 0.001f;
 
-		const float defaultRestitutionCoef = 0.1f;
-		const float defaultFrictionCoef = 0.6f;
+		float coefInterpAlpha = 0.5f;
 
 	} collisionResolution;
 
@@ -93,7 +92,9 @@ public:
 	} sceneProperties;
 
 	struct {
-		const float defaultMass = 32.0f;
+		float defaultMass = 32.0f;
+		float defaultRestitutionCoef = 0.1f;
+		float defaultFrictionCoef = 0.6f;
 	} rigidBodies;
 
 	struct {
@@ -104,4 +105,5 @@ public:
 		bool renderSelection = true;
 	} rendering;
 	glm::vec3 gravity = glm::vec3(0, -20.0f, 0);
+	float timeScale = 1.0f;
 };

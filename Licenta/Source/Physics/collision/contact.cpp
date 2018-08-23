@@ -3,6 +3,7 @@
 #include <Physics/body/rigidbody.h>
 #include <glm/gtx/string_cast.hpp>
 
+
 /* From Ian Millington - Game Physics Engine Development (2007) - chapter 14.1.2 */
 static glm::mat3 makeOrthonormalBasis(const glm::vec3 & contactNormal)
 {
