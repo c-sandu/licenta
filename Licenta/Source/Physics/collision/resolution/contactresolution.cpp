@@ -85,93 +85,93 @@ void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &man
 	const float penetrationQuotaPerIteration = 1.0f;
 
 
-	/* fix interpenetration */
-	for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS; penetrationIterations++) {
-		/* get the contact with deepest penetration */
-		Contact *deepestContact = nullptr;
-		for (auto & contact : manifold.contacts)
-			if (deepestContact == nullptr || contact->penetration > deepestContact->penetration)
-				deepestContact = contact;
+	///* fix interpenetration */
+	//for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS; penetrationIterations++) {
+	//	/* get the contact with deepest penetration */
+	//	Contact *deepestContact = nullptr;
+	//	for (auto & contact : manifold.contacts)
+	//		if (deepestContact == nullptr || contact->penetration > deepestContact->penetration)
+	//			deepestContact = contact;
 
-		if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.PEN_EPSILON) {
-			penetrationIterations++;
-			break;
-		}
+	//	if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.PEN_EPSILON) {
+	//		penetrationIterations++;
+	//		break;
+	//	}
 
-		float totalInertia = 0;
-		float linearInertias[2] = { 0, 0 };
-		float angularInertias[2] = { 0, 0 };
+	//	float totalInertia = 0;
+	//	float linearInertias[2] = { 0, 0 };
+	//	float angularInertias[2] = { 0, 0 };
 
-		for (uint8_t i = 0; i < 2; i++) {
-			if (deepestContact->objects[i]->body == nullptr || deepestContact->objects[i]->body->isStatic)
-				continue;
+	//	for (uint8_t i = 0; i < 2; i++) {
+	//		if (deepestContact->objects[i]->body == nullptr || deepestContact->objects[i]->body->isStatic)
+	//			continue;
 
-			glm::vec3 angularInertiaWorld = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-			angularInertiaWorld = deepestContact->objects[i]->body->invInertiaTensorWorld * angularInertiaWorld;
-			angularInertiaWorld = glm::cross(angularInertiaWorld, deepestContact->relativeContactPositions[i]);
-			angularInertias[i] = glm::dot(angularInertiaWorld, deepestContact->normal);
+	//		glm::vec3 angularInertiaWorld = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
+	//		angularInertiaWorld = deepestContact->objects[i]->body->invInertiaTensorWorld * angularInertiaWorld;
+	//		angularInertiaWorld = glm::cross(angularInertiaWorld, deepestContact->relativeContactPositions[i]);
+	//		angularInertias[i] = glm::dot(angularInertiaWorld, deepestContact->normal);
 
-			linearInertias[i] = deepestContact->objects[i]->body->invMass;
+	//		linearInertias[i] = deepestContact->objects[i]->body->invMass;
 
-			totalInertia += linearInertias[i] + angularInertias[i];
-		}
+	//		totalInertia += linearInertias[i] + angularInertias[i];
+	//	}
 
-		for (uint8_t i = 0; i < 2; i++) {
+	//	for (uint8_t i = 0; i < 2; i++) {
 
-			if (deepestContact->objects[i]->body->isStatic)
-				continue;
+	//		if (deepestContact->objects[i]->body->isStatic)
+	//			continue;
 
-			float linearMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * linearInertias[i] / totalInertia;
-			float angularMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * angularInertias[i] / totalInertia;
+	//		float linearMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * linearInertias[i] / totalInertia;
+	//		float angularMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * angularInertias[i] / totalInertia;
 
-			/* restrict angular movement for stability reasons */
-			glm::vec3 relativeContactPositionInNormalDirection =
-				deepestContact->relativeContactPositions[i] + deepestContact->normal * -glm::dot(deepestContact->relativeContactPositions[i], deepestContact->normal);
-			float angularMovementLimit = PhysicsSettings::get().collisionResolution.angularMovementLimitFactor * glm::length(relativeContactPositionInNormalDirection);
+	//		/* restrict angular movement for stability reasons */
+	//		glm::vec3 relativeContactPositionInNormalDirection =
+	//			deepestContact->relativeContactPositions[i] + deepestContact->normal * -glm::dot(deepestContact->relativeContactPositions[i], deepestContact->normal);
+	//		float angularMovementLimit = PhysicsSettings::get().collisionResolution.angularMovementLimitFactor * glm::length(relativeContactPositionInNormalDirection);
 
-			if (glm::abs(angularMovementMagnitude) > angularMovementLimit) {
-				float totalMove = linearMovementMagnitude + angularMovementMagnitude;
-				angularMovementMagnitude = glm::clamp(angularMovementMagnitude, -angularMovementLimit, angularMovementLimit);
-				linearMovementMagnitude = totalMove - angularMovementMagnitude;
-			}
+	//		if (glm::abs(angularMovementMagnitude) > angularMovementLimit) {
+	//			float totalMove = linearMovementMagnitude + angularMovementMagnitude;
+	//			angularMovementMagnitude = glm::clamp(angularMovementMagnitude, -angularMovementLimit, angularMovementLimit);
+	//			linearMovementMagnitude = totalMove - angularMovementMagnitude;
+	//		}
 
-			/* compute linear and angular deltas */
-			glm::vec3 linearDelta = deepestContact->normal * linearMovementMagnitude;
-			glm::vec3 angularDelta = glm::vec3(0);
+	//		/* compute linear and angular deltas */
+	//		glm::vec3 linearDelta = deepestContact->normal * linearMovementMagnitude;
+	//		glm::vec3 angularDelta = glm::vec3(0);
 
-			if (angularMovementMagnitude != 0) {
-				glm::vec3 rotationDirection = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-				angularDelta = (deepestContact->objects[i]->body->invInertiaTensorWorld * rotationDirection) * (angularMovementMagnitude / angularInertias[i]);
-			}
+	//		if (angularMovementMagnitude != 0) {
+	//			glm::vec3 rotationDirection = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
+	//			angularDelta = (deepestContact->objects[i]->body->invInertiaTensorWorld * rotationDirection) * (angularMovementMagnitude / angularInertias[i]);
+	//		}
 
-			/* apply the changes */
-			deepestContact->objects[i]->body->position += linearDelta;
-			glm::quat aux = glm::quat(0, angularDelta); aux *= deepestContact->objects[i]->body->orientation;
-			aux = deepestContact->objects[i]->body->orientation + 0.5f * aux;
-			deepestContact->objects[i]->body->orientation = glm::normalize(aux);
-			/*deepestContact->objects[i]->body->updateTransformMatrix();
-			deepestContact->objects[i]->body->updateInvInertiaTensorWorld();*/
+	//		/* apply the changes */
+	//		deepestContact->objects[i]->body->position += linearDelta;
+	//		glm::quat aux = glm::quat(0, angularDelta); aux *= deepestContact->objects[i]->body->orientation;
+	//		aux = deepestContact->objects[i]->body->orientation + 0.5f * aux;
+	//		deepestContact->objects[i]->body->orientation = glm::normalize(aux);
+	//		/*deepestContact->objects[i]->body->updateTransformMatrix();
+	//		deepestContact->objects[i]->body->updateInvInertiaTensorWorld();*/
 
-			/* TODO: other affected contacts??????? */
-			for (auto &contact : manifold.contacts) {
+	//		/* TODO: other affected contacts??????? */
+	//		for (auto &contact : manifold.contacts) {
 
-				const uint8_t colliderIdxInOtherContact = contact->objects[0] == deepestContact->objects[i] ? 0 : 1;
-				const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
+	//			const uint8_t colliderIdxInOtherContact = contact->objects[0] == deepestContact->objects[i] ? 0 : 1;
+	//			const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
 
-				const glm::vec3 deltaPosition = linearDelta + glm::cross(angularDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
-				contact->penetration += sign * glm::dot(deltaPosition, contact->normal);
+	//			const glm::vec3 deltaPosition = linearDelta + glm::cross(angularDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
+	//			contact->penetration += sign * glm::dot(deltaPosition, contact->normal);
 
-				contact->relativeContactPositions[1] += deltaPosition * sign;
+	//			contact->relativeContactPositions[1] += deltaPosition * sign;
 
-				if (colliderIdxInOtherContact == 0) {
-					contact->points[0] += deltaPosition;
-					contact->points[1] -= deltaPosition;
-				}
+	//			if (colliderIdxInOtherContact == 0) {
+	//				contact->points[0] += deltaPosition;
+	//				contact->points[1] -= deltaPosition;
+	//			}
 
-			}
-		}
-		
-	}
+	//		}
+	//	}
+	//	
+	//}
 
 	/* fix velocities */
 	for (velocityIterations = 0; velocityIterations < PhysicsSettings::get().collisionResolution.VEL_MAX_ITERATIONS; velocityIterations++) {
