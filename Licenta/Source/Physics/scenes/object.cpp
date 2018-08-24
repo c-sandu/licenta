@@ -37,6 +37,8 @@ PhysicsObject::~PhysicsObject()
 	collider->markedForDeletion = true;
 	delete body;
 	delete shape;
+	body = nullptr;
+	shape = nullptr;
 }
 
 ObjectSpawner::ObjectSpawner(std::unordered_map<std::string, Mesh*> *meshes, PotentialCollisionDetector *pcd)
@@ -66,8 +68,13 @@ void ObjectSpawner::updateObjects(float deltaTime)
 	for (auto objIt = objects.begin(); objIt != objects.end();) {
 		float length = glm::length((*objIt)->body->position);
 		if (isnan(length) || length > 100) {
+			bool isSelectedObject = false;
+			if (selectedObject == *objIt)
+				isSelectedObject = true;
 			delete *objIt;
 			objIt = objects.erase(objIt);
+			if (isSelectedObject)
+				selectedObject = objects.front();
 			continue;
 		}
 
@@ -79,9 +86,6 @@ void ObjectSpawner::updateObjects(float deltaTime)
 		spawnNewObject();
 		mustSpawnObject = false;
 	}
-
-	if (selectedObject == nullptr)
-		selectedObject = objects.front();
 }
 
 void ObjectSpawner::spawnNewObject()

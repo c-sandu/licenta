@@ -90,12 +90,16 @@ void TestImGui::Init()
 	objSpawner = new ObjectSpawner(&meshes, &pcd);
 
 	/* spawn floor */
-	objSpawner->spawnWallStatic(glm::vec3(0, -0.5, 0), glm::vec3(1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(1, 0, 0)));
+	objSpawner->spawnWallStatic(glm::vec3(0, -0.5, 0), glm::vec3(2, 2, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(1, 0, 0)));
 	objSpawner->selectedObject = objSpawner->objects.front();
 
 	/* spawn back walls */
-	objSpawner->spawnWallStatic(glm::vec3(-4.5, 4, 0), glm::vec3(1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)));
-	objSpawner->spawnWallStatic(glm::vec3(0, 4, -4.5), glm::vec3(1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(0), glm::vec3(0, 1, 0)));
+	/* left wall */
+	objSpawner->spawnWallStatic(glm::vec3(-8.6, 4, 0), glm::vec3(2, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)));
+	/* back wall */
+	objSpawner->spawnWallStatic(glm::vec3(4, 4, -8.6), glm::vec3(4, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(0), glm::vec3(0, 1, 0)));
+	/* ramp */
+	objSpawner->spawnWallStatic(glm::vec3(12.6, 4, 0), glm::vec3(2, 2, 1), glm::rotate(glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)), RADIANS(60), glm::vec3(1, 0, 0)));
 
 	PRINT_APP("" + std::string((char*)glGetString(GL_VERSION)) + "\n");
 	PRINT_APP("" + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)) + "\n");
@@ -179,7 +183,7 @@ void TestImGui::Update(float deltaTime)
 	cg.fillCollisions();
 
 	/* solve collisions */
-	icr.solve(cg.collisionsPoints);
+	icr.solve(cg.collisionsPoints, deltaTime);
 }
 
 void TestImGui::FrameEnd()
@@ -187,7 +191,7 @@ void TestImGui::FrameEnd()
 	DrawCoordinatSystem();
 
 	PhysicsUI::startUIFrame();
-	PhysicsUI::showDemoWindow();
+	//PhysicsUI::showDemoWindow();
 	PhysicsUI::showMainWindow(objSpawner);
 
 	PhysicsUI::renderUI();

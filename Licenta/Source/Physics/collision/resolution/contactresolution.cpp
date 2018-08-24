@@ -8,53 +8,137 @@
 
 float SequentialImpulseContactResolver::computeDesiredDeltaVelocity(Contact *contact)
 {
+	/* velocity built from acceleration should be removed to prevent bounciness of resting contacts 
+	before correction: v_sep = -(1 + restitution) * v_closing
+	after correction:  v_sep = -v_acc - (1 + restitution) * (v_closing - v_acc) */
 	float velocityFromAcceleration = 0;
 
 	const glm::vec3 &lastFrameAccelerationA = contact->objects[0]->body != nullptr ? contact->objects[0]->body->lastFrameAcceleration : glm::vec3(0);
 	const glm::vec3 &lastFrameAccelerationB = contact->objects[1]->body != nullptr ? contact->objects[1]->body->lastFrameAcceleration : glm::vec3(0);
 
+	/* final velocity from acceleration, in the direction of the contact's normal */
 	velocityFromAcceleration = glm::dot(lastFrameAccelerationA, contact->normal) - glm::dot(lastFrameAccelerationB, contact->normal);
 
-	const float effectiveRestitution = contact->closingVelocityContact.x - velocityFromAcceleration >= PhysicsSettings::get().collisionResolution.minVelocityForRestitution ? contact->restitutionCoef : 0.0f;
+	float effectiveRestitution = 0.0f;
+	if (contact->closingVelocityContact.x - velocityFromAcceleration >= PhysicsSettings::get().collisionResolution.minVelocityForRestitution) {
+		/* apply restitution only if the remaining closing velocity is greater than a threshold */
+		effectiveRestitution = contact->restitutionCoef;
+	}
 
-	return -contact->closingVelocityContact.x - (effectiveRestitution * (contact->closingVelocityContact.x - velocityFromAcceleration));
+	return -velocityFromAcceleration - (1.0f + effectiveRestitution) * (contact->closingVelocityContact.x - velocityFromAcceleration);
 }
 
-glm::vec3 SequentialImpulseContactResolver::computeImpulse(Contact *contact)
-{
-	float totalInvMass = 0;
-	glm::mat3 rotationalInertiaInvWorld(0);
+// // impulse calculation for further reference - not working
+//{
+//	float denoms[3];
+//	for (uint8_t axis = 0; axis < 3; axis++) {
+//		float totalInvMass = 0;
+//		float totalRotationalInertiaWorld = 0;
+//		for (uint8_t i = 0; i < 2; i++) {
+//			if (contact->objects[i]->body->invMass == 0)
+//				continue;
+//
+//			totalInvMass += contact->objects[i]->body->invMass;
+//			totalRotationalInertiaWorld += glm::dot(
+//				glm::cross(contact->relativeContactPositions[i], contact->matContactToWorld[axis]),
+//				contact->objects[i]->body->invInertiaTensorWorld * glm::cross(contact->relativeContactPositions[i], contact->matContactToWorld[axis])
+//			);
+//		}
+//		denoms[axis] = totalInvMass + totalRotationalInertiaWorld;
+//	}
+//	float nums[3];
+//	nums[0] = -contact->desiredDeltaVelocity;
+//	nums[1] = contact->closingVelocityContact.y;
+//	nums[2] = contact->closingVelocityContact.z;
+//
+//	float impulseMultipliers[3] = { nums[0] / denoms[0], nums[1] / denoms[1], nums[2] / denoms[2] };
+//	glm::vec3 impulseWorld =
+//		contact->matContactToWorld[0] * impulseMultipliers[0] +
+//		contact->matContactToWorld[1] * impulseMultipliers[1] +
+//		contact->matContactToWorld[2] * impulseMultipliers[2];
+//
+//	const float planarImpulse = glm::sqrt(impulseMultipliers[1] * impulseMultipliers[1] + impulseMultipliers[2] * impulseMultipliers[2]);
+//	if (planarImpulse > impulseMultipliers[0] * contact->frictionCoef) {
+//		impulseMultipliers[1] /= planarImpulse; /* normalize y component */
+//		impulseMultipliers[2] /= planarImpulse; /* normalize z component */
+//		impulseMultipliers[0] =
+//			(contact->matContactToWorld[0] * denoms[0]).x +
+//			(contact->matContactToWorld[0] * denoms[0]).y * contact->frictionCoef * impulseMultipliers[1] +
+//			(contact->matContactToWorld[0] * denoms[0]).z * contact->frictionCoef * impulseMultipliers[2];
+//
+//		impulseMultipliers[0] = contact->desiredDeltaVelocity / impulseMultipliers[0];
+//		impulseMultipliers[1] *= contact->frictionCoef * impulseMultipliers[0];
+//		impulseMultipliers[2] *= contact->frictionCoef * impulseMultipliers[0];
+//	}
+//
+//	glm::vec3 newImpulseWorld =
+//		contact->matContactToWorld[0] * impulseMultipliers[0] +
+//		contact->matContactToWorld[1] * impulseMultipliers[1] +
+//		contact->matContactToWorld[2] * impulseMultipliers[2];
+//	return newImpulseWorld;
+//}
 
+/*
+	                              -(1 + restitution) *  v_closing_linear
+	linear impulse magnitude j = ----------------------------------------
+	                                      inv_mass_a + inv_mass_b
+
+	v_relative_a_to_b = v_closing_linear + ang_velocity_a cross r_a - ang_velocity_b cross r_b
+	                                                     -(1 + restitution) * v_relative_a_to_b
+	impulse magnitude(incl. angular change) j = -------------------------------------------------------------------------------------------------------------------
+	                                            (   1        1    )   (                                                                                           )
+	                                            ( ------ + ------ ) + ( dot(r_a cross n, invI_a^-1 * (r_a cross n)) + dot(r_b cross n, invI_b^-1 * (r_b cross n)) )
+	                                            ( mass_a   mass_b )   (                                                                                           )
+
+	when working with frictions, in the denominator, the normal n would be replaced by all the three axes of the contact basis (matWorldToContact)
+*/
+glm::vec3 SequentialImpulseContactResolver::computeImpulse(Contact *contact)
+{	
+	float totalInvMass = 0; /* used for computing denominator left term */
+	glm::mat3 totalRotationalInertiaWorld(0); /* actual denominator right term */
+
+
+	/* start computing the denominator in world space */
 	for (uint8_t i = 0; i < 2; i++) {
 		if (contact->objects[i]->body->invMass == 0)
 			continue;
 
-		glm::mat3 impulseToTorque = glm::matrixCross3(contact->relativeContactPositions[i]);
-		glm::mat3 rotationalInertiaInvLocal = -1.0f * impulseToTorque * contact->objects[i]->body->invInertiaTensorWorld * impulseToTorque;
-		rotationalInertiaInvWorld += rotationalInertiaInvLocal;
 		totalInvMass += contact->objects[i]->body->invMass;
+		
+		/* instead of solving for each axis separately, use the matrix cross product trick */
+		/* impulseToTorque is actually holding all the (r_a cross n) products from the above formula for the 3 different contact basis axes:*/
+		glm::mat3 impulseToTorque = glm::matrixCross3(contact->relativeContactPositions[i]);
+		glm::mat3 tmpRotationalInertiaWorld = impulseToTorque * contact->objects[i]->body->invInertiaTensorWorld;
+		tmpRotationalInertiaWorld = -tmpRotationalInertiaWorld * impulseToTorque;
+		totalRotationalInertiaWorld += tmpRotationalInertiaWorld;
 	}
 
 
-	/* build change in velocity due to rotation and linear motion */
-	glm::mat3 totalInertiaInvContact = (contact->matWorldToContact * rotationalInertiaInvWorld) * contact->matContactToWorld;
-	totalInertiaInvContact += glm::mat3(totalInvMass);
+	/* transform to contact space to add the linear component along each of the 3 axes */
+	glm::mat3 totalInertiaContact = (contact->matWorldToContact * totalRotationalInertiaWorld) * contact->matContactToWorld;
+	/* add linear component of the demominator */
+	totalInertiaContact += glm::mat3(totalInvMass);
 
-	const glm::mat3 impulsePerUnitVelocity = glm::inverse(totalInertiaInvContact);
+	/* get inverse of the denominator so that we can multiply the numerator */
+	const glm::mat3 impulsePerUnitVelocity = glm::inverse(totalInertiaContact);
 
+	/* this is the numerator */
 	const glm::vec3 velocityToKill = glm::vec3(contact->desiredDeltaVelocity, -contact->closingVelocityContact.y, -contact->closingVelocityContact.z);
 
+	/* final form of the impulse in contact space */
 	glm::vec3 impulseContact = -impulsePerUnitVelocity * velocityToKill;
 
+	/* total planar impulse */
 	const float planarImpulse = glm::sqrt(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
+	/* check if we have dynamic friction  */
 	if (planarImpulse > impulseContact.x * contact->frictionCoef) {
 		PRINT_WARN("into planar if\n");
-		impulseContact.y /= planarImpulse;
-		impulseContact.z /= planarImpulse;
+		impulseContact.y /= planarImpulse; /* normalize y component */
+		impulseContact.z /= planarImpulse; /* normalize z component */
 		impulseContact.x =
-			totalInertiaInvContact[0][0] +
-			totalInertiaInvContact[1][0] * contact->frictionCoef * impulseContact.y +
-			totalInertiaInvContact[2][0] * contact->frictionCoef * impulseContact.z;
+			totalInertiaContact[0][0] +
+			totalInertiaContact[0][1] * contact->frictionCoef * impulseContact.y +
+			totalInertiaContact[0][2] * contact->frictionCoef * impulseContact.z;
 		impulseContact.x = contact->desiredDeltaVelocity / impulseContact.x;
 		impulseContact.y *= contact->frictionCoef * impulseContact.x;
 		impulseContact.z *= contact->frictionCoef * impulseContact.x;
@@ -63,11 +147,118 @@ glm::vec3 SequentialImpulseContactResolver::computeImpulse(Contact *contact)
 	}
 
 	return contact->matContactToWorld * impulseContact;
-	//return impulseContact;
 }
 
+void SequentialImpulseContactResolver::applyPositionUpdate(ContactManifold &manifold, Contact *deepestContact)
+{
+	/* compute linear and angular inertia for the deepest contact */
+	float totalInertia = 0;
+	float linearInertias[2] = { 0, 0 };
+	float angularInertias[2] = { 0, 0 };
+	for (uint8_t i = 0; i < 2; i++) {
+		if (deepestContact->objects[i]->body == nullptr || deepestContact->objects[i]->body->isStatic)
+			continue;
 
-void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &manifold)
+		/* angInertia = dot(r_a cross n, invI_a^-1 * (r_a cross n)) */
+		angularInertias[i] = glm::dot(
+			glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal),
+			deepestContact->objects[i]->body->invInertiaTensorWorld * glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal)
+		);
+
+		linearInertias[i] = deepestContact->objects[i]->body->invMass;
+
+		totalInertia += linearInertias[i] + angularInertias[i];
+	}
+
+	/* compute the desired movement */
+	float inverseInertia = 1.0f / totalInertia;
+	float linearMovement[2] = {
+		deepestContact->penetration * linearInertias[0] * inverseInertia,
+		-deepestContact->penetration * linearInertias[1] * inverseInertia
+	};
+	float angularMovement[2] = {
+		deepestContact->penetration * angularInertias[0] * inverseInertia,
+		-deepestContact->penetration * angularInertias[1] * inverseInertia
+	};
+
+	/* compute delta position and delta orientation and apply them */
+	for (uint8_t i = 0; i < 2; i++) {
+		if (deepestContact->objects[i]->body->isStatic)
+			continue;
+
+		/* restrict angular movement for stability reasons -- smaller objects should have smaller rotation */
+		/* limit wrt to the length of the relative contact position as an approximation of object's size */
+		float angularMovementLimit = PhysicsSettings::get().collisionResolution.angularMovementLimitFactor * glm::length(deepestContact->relativeContactPositions[i]);
+		if (glm::abs(angularMovement[i]) > angularMovementLimit) {
+			float totalMove = linearMovement[i] + angularMovement[i];
+			angularMovement[i] = glm::clamp(angularMovement[i], -angularMovementLimit, angularMovementLimit);
+			linearMovement[i] = totalMove - angularMovement[i];
+		}
+
+		/* compute linear and angular deltas */
+		glm::vec3 linearDelta = deepestContact->normal * linearMovement[i];
+		glm::vec3 angularDelta = glm::vec3(0);
+		glm::vec3 rotationDirection = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
+		angularDelta = (deepestContact->objects[i]->body->invInertiaTensorWorld * rotationDirection) * (angularMovement[i] / angularInertias[i]);
+
+		/* apply the changes to the object */
+		deepestContact->objects[i]->body->position += linearDelta;
+		glm::quat aux = glm::quat(0, angularDelta); aux *= deepestContact->objects[i]->body->orientation;
+		aux = deepestContact->objects[i]->body->orientation + 0.5f * aux;
+		deepestContact->objects[i]->body->orientation = glm::normalize(aux);
+		/*deepestContact->objects[i]->body->updateTransformMatrix();
+		deepestContact->objects[i]->body->updateInvInertiaTensorWorld();*/
+
+		/* apply the changes to this contact itself and all the other contacts in the manifold */
+		for (auto &contact : manifold.contacts) {
+			const uint8_t colliderIdxInOtherContact = contact->objects[0] == deepestContact->objects[i] ? 0 : 1;
+			const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
+
+			const glm::vec3 deltaPosition = linearDelta + glm::cross(angularDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
+			contact->penetration += sign * glm::dot(deltaPosition, contact->normal);
+
+			contact->relativeContactPositions[1] += deltaPosition * sign;
+
+			if (colliderIdxInOtherContact == 0) {
+				contact->points[0] += deltaPosition;
+				contact->points[1] -= deltaPosition;
+			}
+		}
+	}
+}
+
+void SequentialImpulseContactResolver::applyVelocityUpdate(ContactManifold & manifold, Contact * fastestContact)
+{
+	/* compute the required impulse to solve this contact */
+	glm::vec3 impulse = computeImpulse(fastestContact);
+
+	/* compute the delta velocities and apply them */
+	for (uint8_t i = 0; i < 2; i++) {
+		if (fastestContact->objects[i]->body->isStatic)
+			continue;
+
+		/* linear velocity delta */
+		const glm::vec3 velDelta = (i == 0 ? 1.0f : -1.0f) * impulse * fastestContact->objects[i]->body->invMass;
+		fastestContact->objects[i]->body->linVelocity += velDelta;
+
+		/* angular velocity delta */
+		glm::vec3 angVelDelta = fastestContact->objects[i]->body->invInertiaTensorWorld * (i == 0 ? 1.0f : -1.0f) * glm::cross(fastestContact->relativeContactPositions[i], impulse);
+		fastestContact->objects[i]->body->angVelocity += angVelDelta;
+
+		/* apply the changes to this contact itself and all the other contacts in the manifold */
+		for (auto &contact : manifold.contacts) {
+			const uint8_t colliderIdxInOtherContact = contact->objects[0] == fastestContact->objects[i] ? 0 : 1;
+			const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
+
+			const glm::vec3 delta = velDelta + glm::cross(angVelDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
+			contact->closingVelocityWorld += sign * delta;
+			contact->closingVelocityContact = contact->matWorldToContact * contact->closingVelocityWorld;
+			contact->desiredDeltaVelocity = computeDesiredDeltaVelocity(contact);
+		}
+	}
+}
+
+void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &manifold, float deltaTime)
 {
 	unsigned int penetrationIterations = 0;
 	unsigned int velocityIterations = 0;
@@ -78,154 +269,47 @@ void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &man
 				contact->objects[i]->collider->body->isAwake = true;
 		}
 
-		contact->computeDerivedData();
+		contact->computeDerivedData(deltaTime);
 		contact->desiredDeltaVelocity = computeDesiredDeltaVelocity(contact);
 	}
 
-	const float penetrationQuotaPerIteration = 1.0f;
 
 
-	///* fix interpenetration */
-	//for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS; penetrationIterations++) {
-	//	/* get the contact with deepest penetration */
-	//	Contact *deepestContact = nullptr;
-	//	for (auto & contact : manifold.contacts)
-	//		if (deepestContact == nullptr || contact->penetration > deepestContact->penetration)
-	//			deepestContact = contact;
+	/* fix interpenetration */
+	for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS; penetrationIterations++) {
+		/* get the contact with deepest penetration */
+		Contact *deepestContact = manifold.getDeepestContact();
 
-	//	if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.PEN_EPSILON) {
-	//		penetrationIterations++;
-	//		break;
-	//	}
+		if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.PEN_EPSILON) {
+			penetrationIterations++;
+			break;
+		}
 
-	//	float totalInertia = 0;
-	//	float linearInertias[2] = { 0, 0 };
-	//	float angularInertias[2] = { 0, 0 };
-
-	//	for (uint8_t i = 0; i < 2; i++) {
-	//		if (deepestContact->objects[i]->body == nullptr || deepestContact->objects[i]->body->isStatic)
-	//			continue;
-
-	//		glm::vec3 angularInertiaWorld = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-	//		angularInertiaWorld = deepestContact->objects[i]->body->invInertiaTensorWorld * angularInertiaWorld;
-	//		angularInertiaWorld = glm::cross(angularInertiaWorld, deepestContact->relativeContactPositions[i]);
-	//		angularInertias[i] = glm::dot(angularInertiaWorld, deepestContact->normal);
-
-	//		linearInertias[i] = deepestContact->objects[i]->body->invMass;
-
-	//		totalInertia += linearInertias[i] + angularInertias[i];
-	//	}
-
-	//	for (uint8_t i = 0; i < 2; i++) {
-
-	//		if (deepestContact->objects[i]->body->isStatic)
-	//			continue;
-
-	//		float linearMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * linearInertias[i] / totalInertia;
-	//		float angularMovementMagnitude = penetrationQuotaPerIteration * (i == 0 ? 1.0f : -1.0f) * deepestContact->penetration * angularInertias[i] / totalInertia;
-
-	//		/* restrict angular movement for stability reasons */
-	//		glm::vec3 relativeContactPositionInNormalDirection =
-	//			deepestContact->relativeContactPositions[i] + deepestContact->normal * -glm::dot(deepestContact->relativeContactPositions[i], deepestContact->normal);
-	//		float angularMovementLimit = PhysicsSettings::get().collisionResolution.angularMovementLimitFactor * glm::length(relativeContactPositionInNormalDirection);
-
-	//		if (glm::abs(angularMovementMagnitude) > angularMovementLimit) {
-	//			float totalMove = linearMovementMagnitude + angularMovementMagnitude;
-	//			angularMovementMagnitude = glm::clamp(angularMovementMagnitude, -angularMovementLimit, angularMovementLimit);
-	//			linearMovementMagnitude = totalMove - angularMovementMagnitude;
-	//		}
-
-	//		/* compute linear and angular deltas */
-	//		glm::vec3 linearDelta = deepestContact->normal * linearMovementMagnitude;
-	//		glm::vec3 angularDelta = glm::vec3(0);
-
-	//		if (angularMovementMagnitude != 0) {
-	//			glm::vec3 rotationDirection = glm::cross(deepestContact->relativeContactPositions[i], deepestContact->normal);
-	//			angularDelta = (deepestContact->objects[i]->body->invInertiaTensorWorld * rotationDirection) * (angularMovementMagnitude / angularInertias[i]);
-	//		}
-
-	//		/* apply the changes */
-	//		deepestContact->objects[i]->body->position += linearDelta;
-	//		glm::quat aux = glm::quat(0, angularDelta); aux *= deepestContact->objects[i]->body->orientation;
-	//		aux = deepestContact->objects[i]->body->orientation + 0.5f * aux;
-	//		deepestContact->objects[i]->body->orientation = glm::normalize(aux);
-	//		/*deepestContact->objects[i]->body->updateTransformMatrix();
-	//		deepestContact->objects[i]->body->updateInvInertiaTensorWorld();*/
-
-	//		/* TODO: other affected contacts??????? */
-	//		for (auto &contact : manifold.contacts) {
-
-	//			const uint8_t colliderIdxInOtherContact = contact->objects[0] == deepestContact->objects[i] ? 0 : 1;
-	//			const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
-
-	//			const glm::vec3 deltaPosition = linearDelta + glm::cross(angularDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
-	//			contact->penetration += sign * glm::dot(deltaPosition, contact->normal);
-
-	//			contact->relativeContactPositions[1] += deltaPosition * sign;
-
-	//			if (colliderIdxInOtherContact == 0) {
-	//				contact->points[0] += deltaPosition;
-	//				contact->points[1] -= deltaPosition;
-	//			}
-
-	//		}
-	//	}
-	//	
-	//}
+		/* compute and apply position update */
+		applyPositionUpdate(manifold, deepestContact);
+	}
 
 	/* fix velocities */
 	for (velocityIterations = 0; velocityIterations < PhysicsSettings::get().collisionResolution.VEL_MAX_ITERATIONS; velocityIterations++) {
-		Contact *slowestContact = nullptr;
-		for (auto & contact : manifold.contacts) {
-			if (contact->penetration < -PhysicsSettings::get().epsilons.PEN_EPSILON)
-				continue;
-			if (slowestContact == nullptr || contact->desiredDeltaVelocity < slowestContact->desiredDeltaVelocity)
-				slowestContact = contact;
-		}
+		/* get the contact with the lowest desired delta velocity (aka the fastest one) */
+		Contact *fastestContact = manifold.getFastestContact();
 
-		if (slowestContact == nullptr || slowestContact->desiredDeltaVelocity >= PhysicsSettings::get().epsilons.VEL_EPSILON) {
+		if (fastestContact == nullptr || fastestContact->desiredDeltaVelocity >= PhysicsSettings::get().epsilons.VEL_EPSILON) {
 			velocityIterations++;
 			break;
 		}
 
-		PRINT_WARN(slowestContact->toString());
-
-		glm::vec3 impulse = computeImpulse(slowestContact);
-		PRINT_WARN("impulse = " << impulse << "\n");
-
-		for (uint8_t i = 0; i < 2; i++) {
-			
-			if (slowestContact->objects[i]->body->isStatic)
-				continue;
-
-			const glm::vec3 velDelta = (i == 0 ? 1.0f : -1.0f) * impulse * slowestContact->objects[i]->body->invMass;
-			slowestContact->objects[i]->body->linVelocity += velDelta;
-
-			glm::vec3 angVelDelta = slowestContact->objects[i]->body->invInertiaTensorWorld * (i == 0 ? 1.0f : -1.0f) * glm::cross(slowestContact->relativeContactPositions[i], impulse);
-			slowestContact->objects[i]->body->angVelocity += angVelDelta;
-			PRINT_WARN("angVelDelta = " << angVelDelta << "\nbody angVelocity = " << slowestContact->objects[i]->body->angVelocity << "\n");
-
-			/* other affected contact */
-			for (auto &contact : manifold.contacts) {
-				const uint8_t colliderIdxInOtherContact = contact->objects[0] == slowestContact->objects[i] ? 0 : 1;
-				const float sign = colliderIdxInOtherContact == 0 ? -1.0f : 1.0f;
-
-				const glm::vec3 delta = velDelta + glm::cross(angVelDelta, contact->relativeContactPositions[colliderIdxInOtherContact]);
-				contact->closingVelocityWorld += sign * delta;
-				contact->closingVelocityContact = contact->matWorldToContact * contact->closingVelocityWorld;
-				contact->desiredDeltaVelocity = computeDesiredDeltaVelocity(contact);
-			}
-		}
+		/* compute and apply velocity update */
+		applyVelocityUpdate(manifold, fastestContact);
 	}
-	PRINT_WARN("AFTER " << penetrationIterations << "penIters and " << velocityIterations << "velIters\n");
 }
 
-void SequentialImpulseContactResolver::solve(const std::vector<CollisionPoint*> &collisions)
+void SequentialImpulseContactResolver::solve(const std::vector<CollisionPoint*> &collisions, float deltaTime)
 {
 	updateContacts(collisions);
 
 	for (auto &manifold : manifolds) {
-		solveContactManifold(manifold);
+		solveContactManifold(manifold, deltaTime);
 	}
 }
 
@@ -381,7 +465,7 @@ uint8_t SequentialImpulseContactResolver::findWorstContact(ContactManifold & man
 		}
 	}
 
-	// Compute the areas of all possible triangle permutations.
+	/* Compute the areas of all possible triangle permutations. */
 
 	const glm::vec3 v0v1 = manifold.contacts[0]->points[0] - manifold.contacts[1]->points[0];
 	const glm::vec3 v0v2 = manifold.contacts[0]->points[0] - manifold.contacts[2]->points[0];
@@ -392,7 +476,7 @@ uint8_t SequentialImpulseContactResolver::findWorstContact(ContactManifold & man
 
 	float *areas = new float[PhysicsSettings::get().collisionResolution.maxContactsPerManifold];
 
-	// Compute the areas for each triangle formed by excluding the vertex at the area index.
+	/* Compute the areas for each triangle formed by excluding the vertex at the area index. */
 	areas[0] = (lowestPenetrationIdx != 0) ? glm::length(glm::cross(v1v2, v1v3)) : 0.0f;
 	areas[1] = (lowestPenetrationIdx != 1) ? glm::length(glm::cross(v0v2, v0v3)) : 0.0f;
 	areas[2] = (lowestPenetrationIdx != 2) ? glm::length(glm::cross(v0v1, v0v3)) : 0.0f;
@@ -413,4 +497,26 @@ uint8_t SequentialImpulseContactResolver::findWorstContact(ContactManifold & man
 
 	delete areas;
 	return maxAreaIndex;
+}
+
+Contact * ContactManifold::getDeepestContact()
+{
+	Contact *deepestContact = nullptr;
+	for (auto & contact : contacts)
+		if (deepestContact == nullptr || contact->penetration > deepestContact->penetration)
+			deepestContact = contact;
+	
+	return deepestContact;
+}
+
+Contact * ContactManifold::getFastestContact()
+{
+	Contact *fastestContact = nullptr;
+	for (auto & contact : contacts) {
+		if (contact->penetration < -PhysicsSettings::get().epsilons.PEN_EPSILON)
+			continue;
+		if (fastestContact == nullptr || contact->desiredDeltaVelocity < fastestContact->desiredDeltaVelocity)
+			fastestContact = contact;
+	}
+	return fastestContact;
 }

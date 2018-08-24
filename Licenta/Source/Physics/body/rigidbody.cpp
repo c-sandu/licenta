@@ -17,7 +17,6 @@ RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const 
 	torqueAccumulator = glm::vec3(0);
 	linDamping = PhysicsSettings::get().damping.linear;
 	angDamping = PhysicsSettings::get().damping.angular;
-	angDamping = 0.9f;
 
 	isStatic = false;
 	isAwake = false;
@@ -27,6 +26,8 @@ RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const 
 
 	restitutionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
 	frictionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
+
+	motion = 4.0f;
 }
 
 void RigidBody::updateTransformMatrix()
@@ -77,11 +78,18 @@ void RigidBody::resetMovement()
 	linAcceleration = glm::vec3(0);
 	angAcceleration = glm::vec3(0);
 	clearAccumulators();
+	motion = 4.0f;
 }
 
 void RigidBody::integrate(float deltaTime)
 {
 	if (invMass != 0 && isAwake) {
+
+		if (motion < PhysicsSettings::get().rigidBodies.sleepMotionThreshold) {
+			resetMovement();
+			isAwake = false;
+			return;
+		}
 		lastFrameAcceleration = PhysicsSettings::get().gravity;
 		lastFrameAcceleration += forceAccumulator * invMass;
 		lastFrameAcceleration *= deltaTime;
@@ -105,6 +113,13 @@ void RigidBody::integrate(float deltaTime)
 		updateTransformMatrix();
 		updateInvInertiaTensorWorld();
 		clearAccumulators();
+
+		/* compute the relative motion using a recency weighted average */
+		float currentMotion = glm::dot(linVelocity, linVelocity) + glm::dot(angVelocity, angVelocity);
+		float baseBias = 0.8f;
+		float bias = glm::pow(baseBias, deltaTime);
+		motion = bias * motion + (1.0f - bias) * currentMotion;
+		glm::clamp(motion, 0.0f, 10.0f * PhysicsSettings::get().rigidBodies.sleepMotionThreshold);
 	}
 }
 
@@ -192,6 +207,19 @@ std::string RigidBody::toString()
 		+ "transform = " + to_string(transform) + "\n\t\t"
 		+ "scale = " + to_string(scale) + ", mass = " + std::to_string(mass) + ", invMass = " + std::to_string(invMass) + "\n\t\t"
 		+ "invInertiaTensorWorld = " + to_string(invInertiaTensorWorld) + "\n\n\t\t"
+		+ "linVelocity = " + to_string(linVelocity) + "\n\t\t"
+		+ "angVelocity = " + to_string(angVelocity) + "\n\t\t"
+		+ "linAcceleration = " + to_string(linAcceleration) + "\n\t\t"
+		+ "angAcceleration = " + to_string(angAcceleration) + "\n\n\t\t"
+		+ "lastFrameAcceleration = " + to_string(lastFrameAcceleration) + "\n\n\t\t"
+		+ "forceAccumulator = " + to_string(forceAccumulator) + "\n\t\t"
+		+ "torqueAccumulator = " + to_string(torqueAccumulator) + "\n\t}\n";
+}
+
+std::string RigidBody::toStringPrivateFields()
+{
+	return std::string("") + "Additional info {" + "\n\t\t"
+		+ "recentMotion = " + std::to_string(motion) + "\n\t\t"
 		+ "linVelocity = " + to_string(linVelocity) + "\n\t\t"
 		+ "angVelocity = " + to_string(angVelocity) + "\n\t\t"
 		+ "linAcceleration = " + to_string(linAcceleration) + "\n\t\t"

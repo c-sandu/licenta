@@ -58,8 +58,17 @@ void Contact::setContactInfo(const CollisionPoint & contactInfo)
 	this->objects[0] = contactInfo.objects[0];
 	this->objects[1] = contactInfo.objects[1];
 }
-void Contact::computeDerivedData()
+void Contact::computeDerivedData(float deltaTime)
 {
+	this->restitutionCoef = glm::mix(
+		std::min(objects[0]->body->restitutionCoef, objects[1]->body->restitutionCoef),
+		std::max(objects[0]->body->restitutionCoef, objects[1]->body->restitutionCoef),
+		PhysicsSettings::get().collisionResolution.coefInterpAlpha);
+	this->frictionCoef = glm::mix(
+		std::min(objects[0]->body->frictionCoef, objects[1]->body->frictionCoef),
+		std::max(objects[0]->body->frictionCoef, objects[1]->body->frictionCoef),
+		PhysicsSettings::get().collisionResolution.coefInterpAlpha);
+
 	matContactToWorld = makeOrthonormalBasis(normal);
 	matWorldToContact = glm::transpose(matContactToWorld);
 
@@ -72,7 +81,8 @@ void Contact::computeDerivedData()
 			return;
 
 		glm::vec3 lastFramePlanarAcceleration = objects[i]->body->lastFrameAcceleration - glm::dot(objects[i]->body->lastFrameAcceleration, normal) * normal;
-		glm::vec3 localVelocityWorld = glm::cross(objects[i]->body->angVelocity, relativeContactPositions[i]) + objects[i]->body->linVelocity + lastFramePlanarAcceleration;
+		glm::vec3 lastFramePlanarVelocityFromAcc = lastFramePlanarAcceleration * deltaTime;
+		glm::vec3 localVelocityWorld = glm::cross(objects[i]->body->angVelocity, relativeContactPositions[i]) + objects[i]->body->linVelocity + lastFramePlanarVelocityFromAcc;
 		
 		closingVelocityWorld += (i == 0 ? -1.0f : 1.0f) * localVelocityWorld;
 	}

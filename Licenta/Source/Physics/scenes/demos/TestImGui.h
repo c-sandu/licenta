@@ -41,6 +41,7 @@ private:
 	float materialKd;
 	float materialKs;
 
+
 	GLenum polygonMode;
 
 	ObjectSpawner *objSpawner;

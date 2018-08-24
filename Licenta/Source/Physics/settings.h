@@ -51,8 +51,8 @@ public:
 		const float gjkEpsilon = 0.0001f;
 		const float epaEpsilon = 0.001f;
 
-		const float PEN_EPSILON = 0.01f;
-		const float VEL_EPSILON = 0.01f;
+		const float PEN_EPSILON = 0.001f;
+		const float VEL_EPSILON = 0.001f;
 	} epsilons;
 
 	struct {
@@ -86,6 +86,7 @@ public:
 			const unsigned int materialShininess = 5;
 			const float materialKd = 0.2f;
 			const float materialKs = 0.2f;
+			const float ambientLight = 0.5f;
 		} lightning;
 
 		const glm::vec3 defaultCameraPosition = glm::vec3(0, 2, 10);
@@ -95,6 +96,7 @@ public:
 		float defaultMass = 32.0f;
 		float defaultRestitutionCoef = 0.1f;
 		float defaultFrictionCoef = 0.6f;
+		float sleepMotionThreshold = 0.1f;
 	} rigidBodies;
 
 	struct {

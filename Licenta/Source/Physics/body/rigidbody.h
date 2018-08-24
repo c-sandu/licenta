@@ -25,6 +25,7 @@ public:
 
 	float frictionCoef; /* body's friction coefficient */
 	float restitutionCoef; /* body's restitution coefficient */
+
 private:
 	glm::vec3 linVelocity; /* linear velocity in world space */
 	glm::vec3 angVelocity; /* angular velocity in world space */
@@ -35,6 +36,7 @@ private:
 
 	glm::vec3 forceAccumulator; /* total linear force applied to the body's center of mass in world space */
 	glm::vec3 torqueAccumulator; /* total torque in world space */
+	float motion; /* recent linear + angular motion */
 
 	float linDamping; /* linear damping factor for simulated friction */
 	float angDamping; /* angular damping factor for simulated friction */
@@ -89,5 +91,6 @@ public:
 	static glm::mat3 inertiaTensorCapsule(const float height = PhysicsSettings::get().shapes.capsule.height, const float radius = PhysicsSettings::get().shapes.capsule.radius);
 
 	std::string toString();
+	std::string toStringPrivateFields();
 };
 

@@ -41,6 +41,7 @@ static unsigned int globalContactID = 0; /* global contact id */
 /* describes a contact as it is used by the contact resolver */
 class Contact : public CollisionPoint
 {
+	friend class ContactManifold;
 	friend class SequentialImpulseContactResolver;
 private:
 	glm::vec3 localPoints[2]; /* points in the individual objects' local spaces */
@@ -115,5 +116,5 @@ public:
 	std::string toString();
 
 private:
-	void computeDerivedData();
+	void computeDerivedData(float deltaTime);
 };

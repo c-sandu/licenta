@@ -139,7 +139,7 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 			ImGui::TreePop();
 		}
 
-		if (ImGui::TreeNode("Default settings"))
+		if (ImGui::TreeNode("Simulation settings"))
 		{
 			if (ImGui::TreeNode("velocity damping factors")) {
 				ImGui::PushItemWidth(128);
@@ -197,7 +197,7 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 				ImGui::DragFloat("angular movement limit factor", &PhysicsSettings::get().collisionResolution.angularMovementLimitFactor, 0.005f, 0.0f, 5.0f);
 				ImGui::DragFloat("persistent contact distance threshold", &PhysicsSettings::get().collisionResolution.minVelocityForRestitution, 0.005f, 0.0f, 1.0f, "< %.3f");
 				
-				ImGui::DragFloat("coefficient interpolation alpha", &PhysicsSettings::get().collisionResolution.coefInterpAlpha, 0.005f, 0.0f, 1.0f);
+				ImGui::DragFloat("coefficient interpolation alpha", &PhysicsSettings::get().collisionResolution.coefInterpAlpha, 0.005f, 0.0f, 1.0f, "min + %.3f * max");
 				ImGui::PopItemWidth();
 				
 				ImGui::TreePop();
@@ -219,6 +219,7 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 
 			ImGui::PushItemWidth(400);
 			ImGui::DragFloat("timescale", &PhysicsSettings::get().timeScale, 0.005f, 0.0f, 8.0f, "x%.2f");
+			ImGui::DragFloat("sleep motion threshold", &PhysicsSettings::get().rigidBodies.sleepMotionThreshold, 0.005f, 0.0f, 2.0f, "%.3f");
 			ImGui::PopItemWidth();
 			ImGui::TreePop();
 		}
@@ -230,7 +231,8 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 		ImGui::Text(("selected object = " + objSpawner->selectedObject->name).c_str());
 		{
 			const char* names[] = { "position", "X", "Y", "Z" };
-			DragFloatNEx(names, glm::value_ptr(objSpawner->selectedObject->body->position), 3, 0.05f, -1000, 1000, "%.2f", 1);
+			if (DragFloatNEx(names, glm::value_ptr(objSpawner->selectedObject->body->position), 3, 0.05f, -1000, 1000, "%.2f", 1))
+				objSpawner->selectedObject->body->resetMovement();
 		}
 
 		{
@@ -244,6 +246,7 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 				euler.y = RADIANS(euler.y);
 				euler.z = RADIANS(euler.z);
 				objSpawner->selectedObject->body->orientation = glm::quat(euler);
+				objSpawner->selectedObject->body->resetMovement();
 			}
 		}
 
@@ -266,6 +269,9 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 		ImGui::DragFloat("restitution coeff", &objSpawner->selectedObject->body->restitutionCoef, 0.005f, 0.0f, 1.0f);
 		ImGui::PopItemWidth();
 
+		ImGui::PushItemWidth(400);
+		ImGui::Text(objSpawner->selectedObject->body->toStringPrivateFields().c_str());
+		ImGui::PopItemWidth();
 	}
 	
 	ImGui::End(); /* Main Window */
