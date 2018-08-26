@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\libs\imgui\addons\imguifilesystem\imguifilesystem.cpp" />
     <ClCompile Include="..\libs\imgui\imgui.cpp" />
     <ClCompile Include="..\libs\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\libs\imgui\imgui_draw.cpp" />
@@ -53,6 +54,8 @@
     <ClCompile Include="..\Source\Physics\scenes\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\libs\imgui\addons\imguifilesystem\dirent_portable.h" />
+    <ClInclude Include="..\libs\imgui\addons\imguifilesystem\imguifilesystem.h" />
     <ClInclude Include="..\libs\imgui\imconfig.h" />
     <ClInclude Include="..\libs\imgui\imgui.h" />
     <ClInclude Include="..\libs\imgui\imgui_impl_glfw.h" />
@@ -61,6 +64,7 @@
     <ClInclude Include="..\libs\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\libs\imgui\stb_textedit.h" />
     <ClInclude Include="..\libs\imgui\stb_truetype.h" />
+    <ClInclude Include="..\libs\picojson.h" />
     <ClInclude Include="..\Source\Component\CameraInput.h" />
     <ClInclude Include="..\Source\Component\SceneInput.h" />
     <ClInclude Include="..\Source\Component\SimpleScene.h" />

@@ -276,11 +276,11 @@ void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &man
 
 
 	/* fix interpenetration */
-	for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS; penetrationIterations++) {
+	for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.penMaxIterations; penetrationIterations++) {
 		/* get the contact with deepest penetration */
 		Contact *deepestContact = manifold.getDeepestContact();
 
-		if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.PEN_EPSILON) {
+		if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.penEpsilon) {
 			penetrationIterations++;
 			break;
 		}
@@ -290,11 +290,11 @@ void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &man
 	}
 
 	/* fix velocities */
-	for (velocityIterations = 0; velocityIterations < PhysicsSettings::get().collisionResolution.VEL_MAX_ITERATIONS; velocityIterations++) {
+	for (velocityIterations = 0; velocityIterations < PhysicsSettings::get().collisionResolution.velMaxIterations; velocityIterations++) {
 		/* get the contact with the lowest desired delta velocity (aka the fastest one) */
 		Contact *fastestContact = manifold.getFastestContact();
 
-		if (fastestContact == nullptr || fastestContact->desiredDeltaVelocity >= PhysicsSettings::get().epsilons.VEL_EPSILON) {
+		if (fastestContact == nullptr || fastestContact->desiredDeltaVelocity >= PhysicsSettings::get().epsilons.velEpsilon) {
 			velocityIterations++;
 			break;
 		}
@@ -417,7 +417,7 @@ void SequentialImpulseContactResolver::addContactToManifold(ContactManifold & ma
 	const glm::vec3 localPoint1 = glm::vec3(glm::inverse(obj1->getTransformMatrix()) * glm::vec4(worldPoint1, 1));
 	const glm::vec3 localPoint2 = glm::vec3(glm::inverse(obj2->getTransformMatrix()) * glm::vec4(worldPoint2, 1));
 
-	const float toleranceSquared = PhysicsSettings::get().collisionResolution.PersistentContactDistanceThreshold;
+	const float toleranceSquared = PhysicsSettings::get().collisionResolution.persistentContactDistanceThreshold;
 
 	for (uint8_t i = 0; i < manifold.contacts.size(); i++) {
 		Contact *contact = manifold.contacts[i];
@@ -513,7 +513,7 @@ Contact * ContactManifold::getFastestContact()
 {
 	Contact *fastestContact = nullptr;
 	for (auto & contact : contacts) {
-		if (contact->penetration < -PhysicsSettings::get().epsilons.PEN_EPSILON)
+		if (contact->penetration < -PhysicsSettings::get().epsilons.penEpsilon)
 			continue;
 		if (fastestContact == nullptr || contact->desiredDeltaVelocity < fastestContact->desiredDeltaVelocity)
 			fastestContact = contact;

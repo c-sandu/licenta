@@ -25,7 +25,7 @@ RigidBody::RigidBody(const glm::vec3 & position, const glm::vec3 & scale, const 
 	invMass = 1.0f / mass;
 
 	restitutionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
-	frictionCoef = PhysicsSettings::get().rigidBodies.defaultRestitutionCoef;
+	frictionCoef = PhysicsSettings::get().rigidBodies.defaultFrictionCoef;
 
 	motion = 4.0f;
 }
@@ -54,8 +54,9 @@ void RigidBody::setMass(float mass, bool isInverse)
 		this->isStatic = mass == 0.0f ? true : false;
 	}
 	else {
-		this->mass = mass;
-		this->invMass = 1.0f / mass;
+		this->mass = mass < 0.0f ? -1.0f : mass;
+		this->invMass = mass < 0.0f ? 0.0f : 1.0f / this->mass;
+		this->isStatic = mass < 0.0f ? true : false;
 	}
 }
 
@@ -83,7 +84,7 @@ void RigidBody::resetMovement()
 
 void RigidBody::integrate(float deltaTime)
 {
-	if (invMass != 0 && isAwake) {
+	if ((invMass > PhysicsSettings::get().epsilons.globalEpsilon) && isAwake) {
 
 		if (motion < PhysicsSettings::get().rigidBodies.sleepMotionThreshold) {
 			resetMovement();

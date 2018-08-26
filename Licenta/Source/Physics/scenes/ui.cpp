@@ -1,6 +1,7 @@
 #include "ui.h"
 
 #include <Core/Engine.h>
+#include <imgui/addons/imguifilesystem/imguifilesystem.h>
 
 #define D_SCL_SECURE_NO_WARNINGS
 
@@ -143,38 +144,19 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 		{
 			if (ImGui::TreeNode("velocity damping factors")) {
 				ImGui::PushItemWidth(128);
-				ImGui::DragFloat("", &PhysicsSettings::get().damping.linear, 0.005f, 0.5f, 1.0f, "x%.2f");
+				ImGui::DragFloat("linear", &PhysicsSettings::get().damping.linear, 0.005f, 0.5f, 1.0f, "x%.2f");
+				ImGui::DragFloat("angular", &PhysicsSettings::get().damping.angular, 0.005f, 0.5f, 1.0f, "x%.2f");
 				ImGui::PopItemWidth();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("linear");
-				ImGui::SameLine();
-				ImGui::PushItemWidth(128);
-				ImGui::DragFloat("", &PhysicsSettings::get().damping.angular, 0.005f, 0.5f, 1.0f, "x%.2f");
-				ImGui::PopItemWidth();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("angular");
 				ImGui::TreePop();
 			}
 
 			if (ImGui::TreeNode("force, torque and impulse multipliers"))
 			{
 				ImGui::PushItemWidth(128);
-				ImGui::DragFloat("", &PhysicsSettings::get().forceMultipliers.torque, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
+				ImGui::DragFloat("torque", &PhysicsSettings::get().forceMultipliers.torque, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
+				ImGui::DragFloat("force", &PhysicsSettings::get().forceMultipliers.force, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
+				ImGui::DragFloat("impulse", &PhysicsSettings::get().forceMultipliers.impulse, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
 				ImGui::PopItemWidth();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("torque");
-				ImGui::SameLine();
-				ImGui::PushItemWidth(128);
-				ImGui::DragFloat("", &PhysicsSettings::get().forceMultipliers.force, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
-				ImGui::PopItemWidth();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("angular");
-				ImGui::SameLine();
-				ImGui::PushItemWidth(128);
-				ImGui::DragFloat("", &PhysicsSettings::get().forceMultipliers.impulse, 0.05f, 1.0f, 2048.0f, "x%.2f", 2.0f);
-				ImGui::PopItemWidth();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("impulse");
 				ImGui::TreePop();
 			}
 
@@ -190,8 +172,8 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 			if (ImGui::TreeNode("collision resolution"))
 			{
 				ImGui::PushItemWidth(128);
-				ImGui::InputScalar("max penetration iterations", ImGuiDataType_U32, &PhysicsSettings::get().collisionResolution.PEN_MAX_ITERATIONS, &myOne);
-				ImGui::InputScalar("max velocity iterations", ImGuiDataType_U32, &PhysicsSettings::get().collisionResolution.VEL_MAX_ITERATIONS, &myOne);
+				ImGui::InputScalar("max penetration iterations", ImGuiDataType_U32, &PhysicsSettings::get().collisionResolution.penMaxIterations, &myOne);
+				ImGui::InputScalar("max velocity iterations", ImGuiDataType_U32, &PhysicsSettings::get().collisionResolution.velMaxIterations, &myOne);
 
 				ImGui::DragFloat("minimum velocity for restitution", &PhysicsSettings::get().collisionResolution.minVelocityForRestitution, 0.005f, 0.0f, 10.0f, "> %.2f");
 				ImGui::DragFloat("angular movement limit factor", &PhysicsSettings::get().collisionResolution.angularMovementLimitFactor, 0.005f, 0.0f, 5.0f);
@@ -274,6 +256,38 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 		ImGui::PopItemWidth();
 	}
 	
+	static unsigned int saveCounter = 0;
+	static char buf1[1024] = "";
+	sprintf_s(buf1, "scene_%02d.json", saveCounter);
+	ImGui::Text("file: ");
+	ImGui::SameLine();
+	ImGui::InputText("", buf1, 1024);
+	ImGui::SameLine();
+	if (ImGui::Button("save scene")) {
+		objSpawner->saveToFile(buf1);
+		saveCounter++;
+	}
+
+	// Inside a ImGui window:
+
+	static char buf2[1024] = "";
+	if (!strcmp(buf2, ""))
+		strcpy_s(buf2, PhysicsSettings::get().defaultLoadedScene.c_str());
+	ImGui::Text("file: %s", buf2);
+	ImGui::SameLine();
+	const bool browseButtonPressed = ImGui::Button("...");                          // we need a trigger boolean variable
+	static ImGuiFs::Dialog dlg;                                                     // one per dialog (and must be static)
+	const char* chosenPath = dlg.chooseFileDialog(browseButtonPressed);             // see other dialog types and the full list of arguments for advanced usage
+	if (strlen(chosenPath)>0) {
+		// A path (chosenPath) has been chosen RIGHT NOW. However we can retrieve it later more comfortably using: dlg.getChosenPath()
+	}
+	if (strlen(dlg.getChosenPath())>0) {
+		sprintf_s(buf2, "%s", dlg.getChosenPath());
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("load scene")) {
+		objSpawner->loadFromFile(buf2);
+	}
 	ImGui::End(); /* Main Window */
 }
 

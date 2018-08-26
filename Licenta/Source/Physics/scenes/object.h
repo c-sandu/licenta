@@ -20,6 +20,8 @@ public:
 	Shape *shape; /* object's shape, used for support point calculation */
 	Collider *collider; /* object's collider used in broad phase collision detection */
 
+	std::string type;
+
 
 	void update(float deltaTime); /* performs one frame's worth of updating the object state */
 	glm::mat4 getTransformMatrix() const; /* returns the local to world transform matrix of the object */
@@ -60,18 +62,20 @@ public:
 
 	void spawnNewObject();
 
+	void loadFromFile(const std::string &filename);
+	void saveToFile(const std::string &filename);
 
-	void spawnBoxDynamic();
-	void spawnBoxStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
-	void spawnLongBoxDynamic();
-	void spawnLongBoxStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
-	void spawnWallStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), glm::quat orientation = glm::quat(1, 0, 0, 0));
-	void spawnSphereDynamic();
-	void spawnSphereStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
-	void spawnCylinderDynamic();
-	void spawnCylinderStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
-	void spawnCapsuleDynamic();
-	void spawnCapsuleStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnBoxDynamic();
+	PhysicsObject* spawnBoxStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnLongBoxDynamic();
+	PhysicsObject* spawnLongBoxStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnWallStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnSphereDynamic();
+	PhysicsObject* spawnSphereStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnCylinderDynamic();
+	PhysicsObject* spawnCylinderStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
+	PhysicsObject* spawnCapsuleDynamic();
+	PhysicsObject* spawnCapsuleStatic(glm::vec3 position, glm::vec3 scale = glm::vec3(1), float mass = PhysicsSettings::get().rigidBodies.defaultMass, glm::quat orientation = glm::quat(1, 0, 0, 0));
 
 	std::string toString();
 };

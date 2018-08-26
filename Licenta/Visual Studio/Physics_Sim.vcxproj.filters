@@ -142,6 +142,9 @@
     <ClCompile Include="..\Source\Physics\scenes\ui.cpp">
       <Filter>Physics\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="..\libs\imgui\addons\imguifilesystem\imguifilesystem.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h">
@@ -263,6 +266,15 @@
     </ClInclude>
     <ClInclude Include="..\Source\Physics\scenes\ui.h">
       <Filter>Physics\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\picojson.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\addons\imguifilesystem\imguifilesystem.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\addons\imguifilesystem\dirent_portable.h">
+      <Filter>include\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

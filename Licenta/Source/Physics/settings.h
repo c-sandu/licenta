@@ -51,8 +51,8 @@ public:
 		const float gjkEpsilon = 0.0001f;
 		const float epaEpsilon = 0.001f;
 
-		const float PEN_EPSILON = 0.001f;
-		const float VEL_EPSILON = 0.001f;
+		const float penEpsilon = 0.001f;
+		const float velEpsilon = 0.001f;
 	} epsilons;
 
 	struct {
@@ -68,12 +68,12 @@ public:
 
 		float minVelocityForRestitution = 0.25f;
 
-		unsigned int PEN_MAX_ITERATIONS = 5;
-		unsigned int VEL_MAX_ITERATIONS = 5;
+		unsigned int penMaxIterations = 5;
+		unsigned int velMaxIterations = 5;
 
 		float angularMovementLimitFactor = 0.2f;
 
-		float PersistentContactDistanceThreshold = 0.001f;
+		float persistentContactDistanceThreshold = 0.001f;
 
 		float coefInterpAlpha = 0.5f;
 
@@ -108,4 +108,5 @@ public:
 	} rendering;
 	glm::vec3 gravity = glm::vec3(0, -20.0f, 0);
 	float timeScale = 1.0f;
+	std::string defaultLoadedScene = "test.json";
 };

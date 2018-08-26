@@ -11,6 +11,8 @@
 #include <Physics/collision/detection/contactgeneration.h>
 #include <Physics/collision/resolution/contactresolution.h>
 
+
+
 TestImGui::TestImGui()
 {
 }
@@ -89,20 +91,21 @@ void TestImGui::Init()
 	/* init object spawner */
 	objSpawner = new ObjectSpawner(&meshes, &pcd);
 
-	/* spawn floor */
-	objSpawner->spawnWallStatic(glm::vec3(0, -0.5, 0), glm::vec3(2, 2, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(1, 0, 0)));
-	objSpawner->selectedObject = objSpawner->objects.front();
+	///* spawn floor */
+	//objSpawner->spawnWallStatic(glm::vec3(0, -0.5, 0), glm::vec3(2, 2, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(1, 0, 0)));
+	//objSpawner->selectedObject = objSpawner->objects.front();
 
-	/* spawn back walls */
-	/* left wall */
-	objSpawner->spawnWallStatic(glm::vec3(-8.6, 4, 0), glm::vec3(2, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)));
-	/* back wall */
-	objSpawner->spawnWallStatic(glm::vec3(4, 4, -8.6), glm::vec3(4, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(0), glm::vec3(0, 1, 0)));
-	/* ramp */
-	objSpawner->spawnWallStatic(glm::vec3(12.6, 4, 0), glm::vec3(2, 2, 1), glm::rotate(glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)), RADIANS(60), glm::vec3(1, 0, 0)));
+	///* spawn back walls */
+	///* left wall */
+	//objSpawner->spawnWallStatic(glm::vec3(-8.6, 4, 0), glm::vec3(2, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)));
+	///* back wall */
+	//objSpawner->spawnWallStatic(glm::vec3(4, 4, -8.6), glm::vec3(4, 1, 1), glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(0), glm::vec3(0, 1, 0)));
+	///* ramp */
+	//objSpawner->spawnWallStatic(glm::vec3(12.6, 4, 0), glm::vec3(2, 2, 1), glm::rotate(glm::rotate(glm::quat(1, 0, 0, 0), RADIANS(90), glm::vec3(0, 1, 0)), RADIANS(60), glm::vec3(1, 0, 0)));
 
-	PRINT_APP("" + std::string((char*)glGetString(GL_VERSION)) + "\n");
-	PRINT_APP("" + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)) + "\n");
+
+	/* load scene */
+	objSpawner->loadFromFile("test.json");
 
 
 	cg.potentialCollisions = &pcd.potentialCollisions;
@@ -131,6 +134,7 @@ void TestImGui::Update(float deltaTime)
 		if (obj == objSpawner->selectedObject && PhysicsSettings::get().rendering.renderSelection) {
 			materialKd = 0.9f;
 		}
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 		RenderSimpleMesh(obj->mesh, shaders["phong"], obj->getTransformMatrix(), obj->color);
 		materialKd = PhysicsSettings::get().sceneProperties.lightning.materialKd;
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -352,10 +356,19 @@ void TestImGui::OnKeyPress(int key, int mods)
 	{
 		objSpawner->randomizeProperties = !objSpawner->randomizeProperties;
 	}
+
+	if (key == GLFW_KEY_DELETE)
+		ImGui::GetIO().KeysDown[GLFW_KEY_DELETE] = true;
+	if (key == GLFW_KEY_BACKSPACE)
+		ImGui::GetIO().KeysDown[GLFW_KEY_BACKSPACE] = true;
 }
 
 void TestImGui::OnKeyRelease(int key, int mods)
 {
+	if (key == GLFW_KEY_DELETE)
+		ImGui::GetIO().KeysDown[GLFW_KEY_DELETE] = false;
+	if (key == GLFW_KEY_BACKSPACE)
+		ImGui::GetIO().KeysDown[GLFW_KEY_BACKSPACE] = false;
 }
 
 void TestImGui::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
@@ -393,6 +406,7 @@ void TestImGui::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
 
 void TestImGui::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 {
+	ImGui_ImplGlfw_ScrollCallback(window->GetGLFWWindow(), offsetX, offsetY);
 }
 
 void TestImGui::OnWindowResize(int width, int height)

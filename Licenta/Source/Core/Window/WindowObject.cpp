@@ -10,6 +10,7 @@
 
 #include <include/gl.h>
 
+
 using namespace std;
 
 WindowProperties::WindowProperties()
@@ -207,6 +208,8 @@ void WindowObject::UnsubscribeFromEvents(InputController * IC)
 	observers.remove(IC);
 }
 
+#include <imgui/imgui_impl_glfw.h>
+
 void WindowObject::SetWindowCallbacks()
 {
 	glfwSetWindowCloseCallback(window, WindowCallbacks::OnClose);
@@ -215,6 +218,8 @@ void WindowObject::SetWindowCallbacks()
 	glfwSetMouseButtonCallback(window, WindowCallbacks::MouseClick);
 	glfwSetCursorPosCallback(window, WindowCallbacks::CursorMove);
 	glfwSetScrollCallback(window, WindowCallbacks::MouseScroll);
+
+	glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
 }
 
 GLFWwindow * WindowObject::GetGLFWWindow() const
@@ -280,6 +285,7 @@ void WindowObject::MouseScroll(double offsetX, double offsetY)
 {
 	mouseScrollDeltaX = (int)offsetX;
 	mouseScrollDeltaY = (int)offsetY;
+	scrollEvent = true;
 }
 
 void WindowObject::UpdateObservers()
