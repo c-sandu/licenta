@@ -17,6 +17,7 @@ int main(int argc, char **argv)
 	// Create a window property structure
 	WindowProperties wp;
 	wp.resolution = glm::ivec2(1366, 768);
+	wp.name.assign("Physics Simulation");
 
 	// Init the Engine and create a new window with the defined properties
 	WindowObject* window = Engine::Init(wp);

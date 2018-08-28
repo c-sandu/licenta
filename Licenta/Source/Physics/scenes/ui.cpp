@@ -98,8 +98,10 @@ void PhysicsUI::showMainWindow(ObjectSpawner *objSpawner)
 
 	if (ImGui::CollapsingHeader("Simulation"))
 	{
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Application average %.3f ms/frame (%.4f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text((std::to_string(objSpawner->objects.size()) + " objects in scene ").c_str());
+		if (ImGui::Button("wake up all objects"))
+			objSpawner->wakeUpAllObjects();
 		{
 			std::string nextObject;
 

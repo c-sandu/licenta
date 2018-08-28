@@ -63,4 +63,6 @@ public:
 
 	/* solve all contact manifolds maintained by this resolver */
 	void solve(const std::vector<CollisionPoint*> &collisions, float deltaTime = 1.0f);
+
+	void clearData();
 };

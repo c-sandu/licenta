@@ -109,4 +109,6 @@ public:
 	glm::vec3 gravity = glm::vec3(0, -20.0f, 0);
 	float timeScale = 1.0f;
 	std::string defaultLoadedScene = "test.json";
+	bool clearContactsFlag = false;
+	bool clearCollisionsFlag = false;
 };

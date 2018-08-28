@@ -547,6 +547,11 @@ bool GJKEPA::GJKEPACollisionPointGenerator::createCollisionPoint(CollisionPoint 
 
 void CollisionsGenerator::fillCollisions()
 {
+	if (PhysicsSettings::get().clearCollisionsFlag) {
+		PhysicsSettings::get().clearCollisionsFlag = false;
+
+		return;
+	}
 	for (auto & col : (*potentialCollisions)) {
 		GJKEPA::GJKEPACollisionPointGenerator cg = GJKEPA::GJKEPACollisionPointGenerator(col->one, col->two);
 

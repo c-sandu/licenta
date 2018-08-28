@@ -1,0 +1,36 @@
+Falling objects test results
+1 cube  - 60.0 FPS when free-falling, 59.9 FPS when resting on ground
+2 cubes -  60.0 FPS when free-falling, 59.9 FPS when resting on ground
+4 cubes - 60.0 FPS when free-falling, 59.8 FPS when resting on ground
+8 cubes - 59.9 FPS when free-falling, 59.6 FPS when resting on ground
+16 cubes - 59.6 FPS when free-falling, 58.9 FPS when resting on ground
+32 cubes - 59.2 FPS when free-falling, 57.7 FPS when resting on ground
+64 cubes - 50.0 FPS when free-falling, 30.4 FPS when resting on ground
+128 cubes - 18.5 FPS when free-falling, 14.3 FPS when resting on ground, simulation unstable
+256 cubes - 6.3 FPS when free-falling, 0.0 FPS when resting on ground, simulation completely unstable
+
+obtained by hand
+drawing objects - 0.002 s
+updating objects - 0.001 s
+broadphase collision detection - 0.003 s
+nearphase collision detection - 0.002 s
+collision resolution - 0.004 s
+drawing UI - 0.002 s
+
+^out of 0.017 s
+
+profiler:
+drawing objects 23.9%
+updating objects 1.31%
+broadphase 7.84%
+nearphase 20.83%
+resolution 4.48%
+draw UI 15.62%
+
+
+drawing objects - 4.063 ms
+updating objects - 0.2227 ms
+broadphase collision detection -  1.3328 ms
+nearphase collision detection - 3.5411 ms
+collision resolution - 0.7616 ms
+drawing UI - 2.6554 ms

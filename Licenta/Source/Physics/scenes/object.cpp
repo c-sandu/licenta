@@ -92,6 +92,13 @@ void ObjectSpawner::updateObjects(float deltaTime)
 	}
 }
 
+void ObjectSpawner::wakeUpAllObjects()
+{
+	for (auto o : objects)
+		if (!o->body->isStatic)
+			o->body->isAwake = true;
+}
+
 void ObjectSpawner::spawnNewObject()
 {
 	switch (nextObject) {
@@ -122,6 +129,9 @@ void ObjectSpawner::loadFromFile(const std::string & filename)
 		delete *objIt;
 		objIt = objects.erase(objIt);
 	}
+
+	PhysicsSettings::get().clearContactsFlag = true;
+	PhysicsSettings::get().clearCollisionsFlag = true;
 
 	selectedObject = nullptr;
 
@@ -866,7 +876,7 @@ PhysicsObject* ObjectSpawner::spawnCylinderStatic(glm::vec3 position, glm::vec3 
 
 	PhysicsObject *obj = new PhysicsObject();
 	obj->body = cylinder;
-	obj->mesh = (*meshes)["sphere"];
+	obj->mesh = (*meshes)["cylinder"];
 	obj->color = color;
 	obj->collider = new OBBCollider(PhysicsSettings::get().shapes.cylinder.obbHalfSizes * obj->body->scale, obj, (*meshes)["box"]);
 	obj->collider->setRigidBody(obj->body);

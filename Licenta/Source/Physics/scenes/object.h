@@ -60,6 +60,8 @@ public:
 
 	void updateObjects(float deltaTime);
 
+	void wakeUpAllObjects();
+
 	void spawnNewObject();
 
 	void loadFromFile(const std::string &filename);

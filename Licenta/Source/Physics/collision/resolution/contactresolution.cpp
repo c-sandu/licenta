@@ -5,6 +5,8 @@
 #include <glm/gtx/matrix_cross_product.hpp>
 #include <Physics/debug.h>
 
+#include <Physics/settings.h>
+
 
 float SequentialImpulseContactResolver::computeDesiredDeltaVelocity(Contact *contact)
 {
@@ -131,7 +133,7 @@ glm::vec3 SequentialImpulseContactResolver::computeImpulse(Contact *contact)
 	/* total planar impulse */
 	const float planarImpulse = glm::sqrt(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
 	/* check if we have dynamic friction  */
-	if (planarImpulse > impulseContact.x * contact->frictionCoef) {
+	if (planarImpulse > impulseContact.x * contact->frictionCoef && planarImpulse > PhysicsSettings::get().epsilons.globalEpsilon) {
 		PRINT_WARN("into planar if\n");
 		impulseContact.y /= planarImpulse; /* normalize y component */
 		impulseContact.z /= planarImpulse; /* normalize z component */
@@ -313,8 +315,20 @@ void SequentialImpulseContactResolver::solve(const std::vector<CollisionPoint*> 
 	}
 }
 
+void SequentialImpulseContactResolver::clearData()
+{
+	contacts.clear();
+	manifolds.clear();
+}
+
 void SequentialImpulseContactResolver::updateContacts(const std::vector<CollisionPoint*> & collisions)
 {
+	if (PhysicsSettings::get().clearContactsFlag) {
+		timestamp = 0;
+		clearData();
+		PhysicsSettings::get().clearContactsFlag = false;
+		return;
+	}
 	timestamp++;
 
 	for (unsigned int i = 0; i < collisions.size(); i++) {

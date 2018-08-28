@@ -1,0 +1,10 @@
+Stacking test results:
+1 box	- completely stable
+2 boxes	- very small amount of shaking, but stable - separation after 40s
+3 boxes - very small amount of shaking, but stable - separation after 30s
+4 boxes - very small amount of shaking, but stable - separation after 30s
+5 boxes - boxes visibly sliding - separation after 25s
+6 boxes - boxes visibly shaking and sliding - separation after 15s
+7 boxes - boxes visibly shaking and sliding - separation after 12s
+8 boxes - boxes visibly shaking and sliding - separation after 8s
+16 boxes - boxes completely unstable - separation after 4s

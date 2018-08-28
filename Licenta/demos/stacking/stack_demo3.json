@@ -1,0 +1,92 @@
+{
+	"settings" : {
+		"damping" : {
+			"linear" : 0.9,
+			"angular" : 0.9
+		},
+		"forceMultipliers" : {
+			"torque" : 1.0,
+			"force" : 1.0,
+			"impulse" : 1.0
+		},
+		"gjkepa" : {
+			"gjkMaxIters" : 100,
+			"epaMaxIters" : 50
+		},
+		"collisionResolution" : {
+			"penMaxIterations" : 5,
+			"velMaxIterations" : 5,
+			"minVelocityForRestitution" : 0.25,
+			"angularMovementLimitFactor" : 0.2,
+			"persistentContactDistanceThreshold" : 0.001,
+			"coefInterpAlpha" : 0.5
+		},
+		"rigidBodies" : {
+			"defaultMass" : 32.0,
+			"defaultRestitutionCoef" : 0.1,
+			"defaultFrictionCoef" : 0.6,
+			"sleepMotionThreshold" : 0.1
+		},
+		"gravity" : {
+			"x" : 0.0,
+			"y" : -20.0,
+			"z" : 0.0
+		},
+		"timeScale" : 1.0,
+		"rendering" : {
+			"renderColliders" : true,
+			"renderContacts" : true,
+			"renderContactNormals" : true,
+			"renderSpawner" : true,
+			"renderSelection" : true
+		}
+	},
+	"objects" : [
+		{
+			"type" : "wall",
+			"name" : "floor",
+			"position" : {
+				"x" : 0.0,
+				"y" : -0.5,
+				"z" : 0.0
+			},
+			"scale" : {
+				"x" : 2.0,
+				"y" : 2.0,
+				"z" : 1.0
+			},
+			"orientation" : {
+				"pitch" : 90.0,
+				"yaw" : 0.0,
+				"roll" : 0.0
+			},
+			"frictionCoef" : 0.6,
+			"restitutionCoef" : 0.1,
+			"mass" : -1.0
+		},
+		{
+			"type" : "box",
+			"position" : {
+				"x" : 0.0,
+				"y" : 0.5,
+				"z" : 0.0
+			}
+		},
+		{
+			"type" : "box",
+			"position" : {
+				"x" : 0.0,
+				"y" : 1.5,
+				"z" : 0.0
+			}
+		},
+		{
+			"type" : "box",
+			"position" : {
+				"x" : 0.0,
+				"y" : 2.5,
+				"z" : 0.0
+			}
+		}
+	]
+}
