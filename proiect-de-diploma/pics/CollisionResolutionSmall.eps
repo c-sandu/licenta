@@ -1,11 +1,11 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: C:\WINDOWS\system32\Diagram1.dia
 %%Creator: Dia v0.97.2
-%%CreationDate: Mon Aug 27 19:41:48 2018
+%%CreationDate: Mon Aug 27 21:37:16 2018
 %%For: ANDREI
 %%Orientation: Portrait
 %%Magnification: 1.0000
-%%BoundingBox: 0 0 345 304
+%%BoundingBox: 0 0 672 634
 %%BeginSetup
 %%EndSetup
 %%EndComments
@@ -341,48 +341,121 @@ definefont pop
     currentdict end
 definefont pop
 28.346000 -28.346000 scale
--2.275000 -12.215000 translate
+22.799357 -41.371649 translate
 %%EndProlog
 
 
 0.100000 slw
 [] 0 sd
 1.000000 1.000000 1.000000 srgb
-n 2.325000 1.565000 m 2.325000 2.965000 l 14.375000 2.965000 l 14.375000 1.565000 l f
+n -18.108190 19.067813 m -18.108190 20.467813 l -6.058190 20.467813 l -6.058190 19.067813 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 1.565000 m 2.325000 2.965000 l 14.375000 2.965000 l 14.375000 1.565000 l cp s
+n -18.108190 19.067813 m -18.108190 20.467813 l -6.058190 20.467813 l -6.058190 19.067813 l cp s
 /Helvetica-Bold-latin1 ff 0.700000 scf sf
-(PhysicsObject) dup sw 2 div 8.350000 ex sub 2.415000 m
+(ContactManifold) dup sw 2 div -12.083190 ex sub 19.917813 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 2.965000 m 2.325000 8.765000 l 14.375000 8.765000 l 14.375000 2.965000 l f
+n -18.108190 20.467813 m -18.108190 23.867813 l -6.058190 23.867813 l -6.058190 20.467813 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 2.965000 m 2.325000 8.765000 l 14.375000 8.765000 l 14.375000 2.965000 l cp s
+n -18.108190 20.467813 m -18.108190 23.867813 l -6.058190 23.867813 l -6.058190 20.467813 l cp s
 /Courier-latin1 ff 0.560000 scf sf
-(+name: string) 2.475000 3.465000 m
+(+obj1: *PhysicsObject) -17.958190 20.967813 m
  gs 1 -1 sc sh gr
-(+body: *RigidBody) 2.475000 4.265000 m
+(+obj2: *PhysicsObject) -17.958190 21.767813 m
  gs 1 -1 sc sh gr
-(+mesh: *Mesh) 2.475000 5.065000 m
+(+contacts: vector<Contact*>) -17.958190 22.567813 m
  gs 1 -1 sc sh gr
-(+color: vec3) 2.475000 5.865000 m
- gs 1 -1 sc sh gr
-(+shape: *Shape) 2.475000 6.665000 m
- gs 1 -1 sc sh gr
-(+collider: *Collider) 2.475000 7.465000 m
- gs 1 -1 sc sh gr
-(+type: string) 2.475000 8.265000 m
+(-timestamp: unsigned int) -17.958190 23.367813 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 8.765000 m 2.325000 12.165000 l 14.375000 12.165000 l 14.375000 8.765000 l f
+n -18.108190 23.867813 m -18.108190 25.667813 l -6.058190 25.667813 l -6.058190 23.867813 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 8.765000 m 2.325000 12.165000 l 14.375000 12.165000 l 14.375000 8.765000 l cp s
-(+update\(deltaTime:float\): void) 2.475000 9.265000 m
+n -18.108190 23.867813 m -18.108190 25.667813 l -6.058190 25.667813 l -6.058190 23.867813 l cp s
+(+getDeepestContact\(\): *Contact) -17.958190 24.367813 m
  gs 1 -1 sc sh gr
-(+getTransformMatrix\(\): mat4) 2.475000 10.065000 m
+(+getFastestContact\(\): *Contact) -17.958190 25.167813 m
  gs 1 -1 sc sh gr
-(+getColTransformMatrix\(\): mat4) 2.475000 10.865000 m
+0.100000 slw
+[] 0 sd
+1.000000 1.000000 1.000000 srgb
+n -22.749357 27.521649 m -22.749357 28.921649 l 0.850643 28.921649 l 0.850643 27.521649 l f
+0.000000 0.000000 0.000000 srgb
+n -22.749357 27.521649 m -22.749357 28.921649 l 0.850643 28.921649 l 0.850643 27.521649 l cp s
+/Helvetica-Bold-latin1 ff 0.700000 scf sf
+(SequentialImpulseContactResolver) dup sw 2 div -10.949357 ex sub 28.371649 m
  gs 1 -1 sc sh gr
-(+toString\(\): string) 2.475000 11.665000 m
+1.000000 1.000000 1.000000 srgb
+n -22.749357 28.921649 m -22.749357 31.521649 l 0.850643 31.521649 l 0.850643 28.921649 l f
+0.000000 0.000000 0.000000 srgb
+n -22.749357 28.921649 m -22.749357 31.521649 l 0.850643 31.521649 l 0.850643 28.921649 l cp s
+/Courier-latin1 ff 0.560000 scf sf
+(-timestamp: unsigned int) -22.599357 29.421649 m
  gs 1 -1 sc sh gr
+(+contacts: list<Contact>) -22.599357 30.221649 m
+ gs 1 -1 sc sh gr
+(+manifolds: list<ContactManifold>) -22.599357 31.021649 m
+ gs 1 -1 sc sh gr
+1.000000 1.000000 1.000000 srgb
+n -22.749357 31.521649 m -22.749357 41.321649 l 0.850643 41.321649 l 0.850643 31.521649 l f
+0.000000 0.000000 0.000000 srgb
+n -22.749357 31.521649 m -22.749357 41.321649 l 0.850643 41.321649 l 0.850643 31.521649 l cp s
+(-addContactToManifold\(inout manifold:ContactManifold,) -22.599357 32.021649 m
+ gs 1 -1 sc sh gr
+(                      in contact:CollisionPoint\): void) -22.599357 32.821649 m
+ gs 1 -1 sc sh gr
+(-findWorstContact\(in manifold:ContactManifold\): unsigned int) -22.599357 33.621649 m
+ gs 1 -1 sc sh gr
+(-solveContactManifold\(in manifold:ContactManifold\): void) -22.599357 34.421649 m
+ gs 1 -1 sc sh gr
+(-computeDesiredDeltaVelocity\(contact:*Contact\): float) -22.599357 35.221649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -22.599357 35.461649 m -2.194357 35.461649 l s
+0.100000 slw
+(-computeImpulse\(contact:*Contact\): vec3) -22.599357 36.021649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -22.599357 36.261649 m -7.584357 36.261649 l s
+0.100000 slw
+(-applyPositionUpdate\(inout manifold:ContactManifold,) -22.599357 36.821649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -22.599357 37.061649 m -2.579357 37.061649 l s
+0.100000 slw
+(                     inout deepestContact:*Contact\): void) -22.599357 37.621649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -14.514357 37.861649 m -0.654357 37.861649 l s
+0.100000 slw
+(-applyVelocityUpdate\(inout manifold:ContactManifold,) -22.599357 38.421649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -22.599357 38.661649 m -2.579357 38.661649 l s
+0.100000 slw
+(                     inout fastestContact:*Contact\): void) -22.599357 39.221649 m
+ gs 1 -1 sc sh gr
+0.050000 slw
+n -14.514357 39.461649 m -0.654357 39.461649 l s
+0.100000 slw
+(-updateContacts\(in collisions:vector<CollisionPoint*>\): void) -22.599357 40.021649 m
+ gs 1 -1 sc sh gr
+(+solve\(in collisions:vector<CollisionPoint*>\): void) -22.599357 40.821649 m
+ gs 1 -1 sc sh gr
+0.100000 slw
+[] 0 sd
+0 slj
+0 slc
+n -10.949357 26.213050 m -10.949357 25.952395 l -12.083190 25.952395 l -12.083190 25.716106 l s
+[] 0 sd
+0 slj
+0 slc
+1.000000 1.000000 1.000000 srgb
+n -10.949357 27.471629 m -11.189357 26.771629 l -10.949357 26.071629 l -10.709357 26.771629 l ef
+0.100000 slw
+[] 0 sd
+0 slj
+0 slc
+0.000000 0.000000 0.000000 srgb
+n -10.949357 27.471629 m -11.189357 26.771629 l -10.949357 26.071629 l -10.709357 26.771629 l cp s
+/Courier-latin1 ff 0.560000 scf sf
 showpage

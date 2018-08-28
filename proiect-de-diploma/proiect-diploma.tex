@@ -18,9 +18,9 @@
 \titleformat*{\subsubsection}{\large\bfseries}
 
 \usepackage{chngcntr}
-\counterwithout{figure}{chapter} % no chapter number in figure labels
-\counterwithout{table}{chapter} % no chapter number in table labels
-\counterwithout{equation}{chapter} % no chapter number in equation labels
+%\counterwithout{figure}{chapter} % no chapter number in figure labels
+%\counterwithout{table}{chapter} % no chapter number in table labels
+%\counterwithout{equation}{chapter} % no chapter number in equation labels
 
 \usepackage{booktabs} % for much better looking tables
 \usepackage{url} % Useful for inserting web links nicely
@@ -30,8 +30,12 @@
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
 %\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{float}
 \usepackage{enumitem}
 \setlist{noitemsep}
+
+
+\def\figureautorefname{figura}
 
 \usepackage{tikz} % figure drawing
 \usepackage{listings} % code snippets
@@ -41,6 +45,8 @@
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
 
+\renewcommand{\lstlistingname}{Extras de cod}
+\def\lstlistingautorefname{extrasul de cod}
 \lstdefinestyle{myC++}{ %
 	language=C++,
 	backgroundcolor=\color{white},   % choose the background color
@@ -55,12 +61,55 @@
 	morekeywords={Obj,obj,vec3,quat},
 }
 
+\usepackage{xcolor}
+
+\colorlet{punct}{red!60!black}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+	basicstyle=\linespread{0.7}\footnotesize,
+	numbers=left,
+	numberstyle=\scriptsize,
+	stepnumber=1,
+	captionpos=b,
+	numbersep=8pt,
+	showstringspaces=false,
+	breaklines=true,
+	frame=lines,
+	backgroundcolor=\color{white},
+	literate=
+	*{0}{{{\color{numb}0}}}{1}
+	{1}{{{\color{numb}1}}}{1}
+	{2}{{{\color{numb}2}}}{1}
+	{3}{{{\color{numb}3}}}{1}
+	{4}{{{\color{numb}4}}}{1}
+	{5}{{{\color{numb}5}}}{1}
+	{6}{{{\color{numb}6}}}{1}
+	{7}{{{\color{numb}7}}}{1}
+	{8}{{{\color{numb}8}}}{1}
+	{9}{{{\color{numb}9}}}{1}
+	{:}{{{\color{punct}{:}}}}{1}
+	{,}{{{\color{punct}{,}}}}{1}
+	{\{}{{{\color{delim}{\{}}}}{1}
+	{\}}{{{\color{delim}{\}}}}}{1}
+	{[}{{{\color{delim}{[}}}}{1}
+	{]}{{{\color{delim}{]}}}}{1},
+}
+
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
 
 \makeatletter
 \renewcommand{\ALG@name}{Algoritmul}
+
+\renewcommand\algorithmicend{\textbf{sfârșit}}
+\renewcommand\algorithmicloop{\textbf{repetă}}
+\renewcommand\algorithmicif{\textbf{dacă}}
+\renewcommand\algorithmicthen{\textbf{atunci}}
+\renewcommand\algorithmicreturn{\textbf{întoarce}}
+\renewcommand\algorithmicfunction{\textbf{funcție}}
 \makeatother
 
 \usepackage{amsmath}
@@ -70,6 +119,9 @@
 \usepackage{amsthm}
 
 \newtheorem{theorem}{Teorema}[]
+
+\usepackage{chngcntr}
+\counterwithin{figure}{chapter}
 
 %%% HEADERS & FOOTERS
 \usepackage{fancyhdr}
@@ -174,9 +226,9 @@ COMPUTER SCIENCE DEPARTMENT\\}
 %%   Campurile de mai jos trebuie modificate de autor. Modificati doar continutul, nu si numele fiecarei definitii
 %%
 \newcommand{\ProjectTitleRO}{Simularea interacțiunilor fizice}
-\newcommand{\ProjectSubtitleRO}{TODO:Subtitlu (ex: versiunea 2018)}
-\newcommand{\ProjectTitleEN}{Diploma Project Title  (eg: Diploma project template)}
-\newcommand{\ProjectSubtitleEN}{TODO:Subtitle (eg: 2018 version)}
+\newcommand{\ProjectSubtitleRO}{~}
+\newcommand{\ProjectTitleEN}{Simulation of physical interactions}
+\newcommand{\ProjectSubtitleEN}{~}
 \newcommand{\Name}{Cristian-Andrei SANDU}
 \newcommand{\Advisor}{Prof. dr. ing. Costin-Anton BOIANGIU}
 \newcommand{\Year}{2018}
@@ -189,11 +241,11 @@ COMPUTER SCIENCE DEPARTMENT\\}
 %%
 %%   Campurile aferente rezumatului
 %%
-\newcommand{\AbstractRO}{Lucrarea de față are obiectivul de a prezenta o serie de fenomene fizice ce țin de cinematica corpurilor solide, diferiți algoritmi și metode numerice utilizate pentru a simula aceste fenomene și punerea lor în aplicare sub forma unui simulator de interacțiuni mecanice, capabil să aproximeze și să afișeze în timp real mișcarea realistică a unui număr obiecte pe ecran. Rezultatul este o aplicație OpenGL capabilă să ruleze o serie de demo-uri și care oferă utilizatorului posibilitatea de a interacționa cu acestea(să vizualizeze scena, să poată introduce obiecte noi și să poată modifica parametri).}
+\newcommand{\AbstractRO}{Lucrarea de față are obiectivul de a prezenta o serie de fenomene fizice ce țin de cinematica corpurilor solide, diferiți algoritmi și metode numerice utilizate pentru a simula aceste fenomene și punerea lor în aplicare sub forma unui simulator de interacțiuni mecanice, capabil să aproximeze și să afișeze în timp real mișcarea realistică a unui număr de obiecte pe ecran. Rezultatul este o aplicație \textit{OpenGL} capabilă să ruleze o serie de demo-uri și care oferă utilizatorului posibilitatea de a interacționa cu acestea (să vizualizeze scena, să poată introduce obiecte noi și să poată modifica parametri).}
 %Sinopsisul proiectului are rol de introducere, conținând atât o descriere pe scurt a problemei abordate cât și o enumerare sumară a rezultatelor și a concluziilor. Se recomandă ca sinopsisul să fie redactat într-un limbaj accesibil unei persoane nefamiliarizate cu domeniul, dar în același timp destul de specific pentru a oferi rapid o vedere de ansamblu asupra proiectului prezentat.
 %Sinopsisul proiectului va fi redactat atât în română cât și în engleză. Ca dimensiunea recomandată aceasta secțiune va avea maxim 200 de cuvinte pentru fiecare variantă. Împreună, ambele variante se vor încadra într-o singură pagină.}
 
-\newcommand{\AbstractEN}{The aim of this thesis is to provide a closer look at a series of physical phenomena pertaining to the motion of solid objects, as well as to describe various algorithms and numerical methods used in motion simulation and implementing them inside a physics engine able to approximate and render the realistic motion of a number of objects in real time. The achieved result is an OpenGL app able to run a series of demos and also provide the user with means for interacting with them(view the scene, insert new objects or change simulation parameters).}
+\newcommand{\AbstractEN}{The aim of this thesis is to provide a closer look at a series of physical phenomena pertaining to the motion of solid objects, as well as to describe various algorithms and numerical methods used in motion simulation and implementing them inside a physics engine able to approximate and render the realistic motion of a number of objects in real time. The achieved result is an \textit{OpenGL} application able to run a series of demos and also provide the user with means for interacting with them (view the scene, insert new objects or change simulation parameters).}
 %The abstract has an introductory role and should engulf both a brief description of the issue at hand, as well as an overview of the obtained results and conclusions. The abstract should be formulated such that even somebody that is unfamiliar with the projects’ domain can grasp the objectives of the thesis while, at the same time, retaining a specificity level offering a bird’s eye view of the project.
 %The projects’ abstract will be elaborated in both Romanian and English. The recommended size for this section is limited to 200 words for each version. Together, both versions will fit in one page.}
 
@@ -215,7 +267,7 @@ COMPUTER SCIENCE DEPARTMENT\\}
 \AbstractPage
 
 % poate fi comentata sau stearsa
-\ThanksPage
+%\ThanksPage
 
 
 % Textul licentei incepe de aici 
@@ -248,11 +300,11 @@ COMPUTER SCIENCE DEPARTMENT\\}
 %
 %În cadrul capitolelor următoare, veți regăsi o serie notații de forma \dezvoltare, \cercetare. Acest tip de formatare este utilizat exclusiv în acest template pentru a marca sfaturi și cerințe specifice pentru lucrări de diploma cu specific diferit. În pregătirea documentului vostru, nu veți utiliza aceste marcaje. 
 %Elementele pe care trebuie să le abordați în introducere sunt descrise în cadrul subcapitolelor de mai jos. 
-Simularea interacțiunilor fizice pe un computer se realizează pe baza unui \textbf{motor de fizică}(eng. \textit{physics engine}) care are rolul de a prelua starea scenei la un moment discret de timp $t_i$ și de a determina starea la momentul $t_{i+1}$. Întrucât acest lucru se realizează într-un spațiu discret, se dorește de fapt obținerea unei aproximări cât mai bună a fenomenelor fizice din realitate. Pentru că fizica este un domeniu extrem de vast, lucrarea de față are ca subiect doar simularea interacțiunilor mecanice dintre corpuri, lăsând aprofundarea altor tipuri de forțe și fenomene la latitudinea cititorilor interesați de domeniu. 
+Simularea interacțiunilor fizice pe un computer se realizează pe baza unui \textbf{motor de fizică} (eng. \textit{physics engine}) care are rolul de a prelua starea scenei la un moment discret de timp $t_i$ și de a determina starea la momentul $t_{i+1}$. Întrucât acest lucru se realizează într-un spațiu discret, se dorește de fapt obținerea unei aproximări cât mai bune a fenomenelor fizice din realitate. Pentru că fizica este un domeniu extrem de vast, lucrarea de față are ca subiect doar simularea interacțiunilor mecanice dintre corpuri, lăsând aprofundarea altor tipuri de forțe și fenomene la latitudinea cititorilor interesați de domeniu. 
 \section{Context}
 %O scurtă introducere a proiectului, motivație, explicație de ce este relevant domeniul proiectului.
 Proiectul a luat naștere ca urmare a interesului autorului pentru mecanică și grafică pe calculator și dorința de a aprofunda pașii necesari implementării unui sistem informatic robust, realistic, ușor de folosit și plăcut vederii.
-Aplicabilitatea unui astfel de simulator se reflectă într-o multitudine de domenii: jocuri video, proiectare și testare de sisteme mecanice(complexitatea variind de la angrenaje simple până la mașini, avioane), balistică(de natură militară sau civilă), didactică(prin oferirea unei perspective ușor de urmărit și de înțeles în studiul mecanicii).
+Aplicabilitatea unui astfel de simulator se reflectă într-o multitudine de domenii: jocuri video, proiectare și testare de sisteme mecanice (complexitatea variind de la angrenaje simple până la mașini, avioane), balistică (de natură militară sau civilă), didactică (prin oferirea unei perspective ușor de urmărit și de înțeles în studiul mecanicii).
 \section{Problema} 
 %Care este problema pe care proiectul o va rezolva.
 Se dorește obținerea unei aplicații care să ofere utilizatorului capabilitatea de a rula simulări pentru niște scenarii definite programatic și editabile în timpul execuției printr-o interfață grafică.
@@ -263,10 +315,10 @@ Se disting, prin urmare, două subprobleme de rezolvat:
 \end{enumerate}
 \section{Obiective}
 %Care sunt obiectivele proiectului/soluției/abordării/ideii; Ce creșteri sau evoluții determină rezolvarea proiectului.
-În continuarea celor spuse anterior, sunt delimitate următoarele obiective atinse în elaborarea lucrării de față și a aplicației asociate:
+În continuarea celor menționate anterior, sunt delimitate următoarele obiective atinse în elaborarea lucrării de față și a aplicației asociate:
 \begin{itemize}
-	\item alegerea unei reprezentări robuste pentru starea(din punct de vedere cinematic) unui obiect al scenei
-	\item integrarea mărimilor secundare(de ex. accelerația, viteza) în vederea obținerii stării noi a obiectului
+	\item alegerea unei reprezentări robuste pentru starea (din punct de vedere cinematic) unui obiect al scenei
+	\item integrarea mărimilor secundare (de ex. accelerația, viteza) în vederea obținerii stării noi a obiectului
 	\item detecția potențialelor coliziuni între obiecte
 	\item generarea punctelor de contact între obiectele aflate în coliziune
 	\item rezolvarea contactelor generate cu un răspuns realistic
@@ -276,11 +328,14 @@ Se disting, prin urmare, două subprobleme de rezolvat:
 \end{itemize}
 \section{Soluția propusă} 
 %Descrierea pe scurt a soluției implementate; ce abordare este propusă (nu detalierea utilitarelor și a tehnologiilor, ci abordarea și ideea propusă de către autor).
-În vederea atingerii tuturor obiectivelor de mai sus, este propusă o aplicație OpenGL, capabilă să preia input-ul utilizatorului și să deseneze un număr de scenarii demonstrative.
-Backend-ul (motorul de fizică în sine) va urmări o arhitectură clasică, folosită cu succes în alte proiecte asemănătoare(ex: box2D\cite{box2D}, bullet\cite{bullet}). Funcționarea simulatorului este asigurată de o buclă infinită în care la fiecare iterație sunt realizate, pe rând: tratarea input-ului utilizatorului, integrarea(actualizarea stării) corpurilor solide,
-detecția coliziunilor, rezolvarea lor, desenarea în contextul OpenGL.
+În vederea atingerii tuturor obiectivelor de mai sus, este propusă o aplicație \textit{OpenGL}, capabilă să preia input-ul utilizatorului și să deseneze un număr de scenarii demonstrative.
+Backend-ul (motorul de fizică în sine) va urmări o arhitectură clasică, folosită cu succes în alte proiecte asemănătoare (ex: \textit{box2D}\cite{box2D}, \textit{bullet}\cite{bullet}). Funcționarea simulatorului este asigurată de o buclă infinită în care la fiecare iterație sunt realizate, pe rând: tratarea input-ului utilizatorului, integrarea (actualizarea stării) corpurilor solide,
+detecția coliziunilor, rezolvarea lor, desenarea în contextul \textit{OpenGL}.
 \section{Rezultatele obținute}
-TODO:Descriere pe scurt a rezultatelor obținute, eventual de ce acestea sunt importante față de alte soluții sau studii.
+În urma realizării acestei lucrări, am dobândit cunoștințe semnificative în domeniul simulării interacțiunilor mecanice și al implementării de motoare de fizică robuste și eficiente.
+
+În plus, am obținut o aplicație grafică \textit{OpenGL}, capabilă să ruleze o simulare de dimensiune rezonabilă (max. 64 de obiecte într-o scenă) a interacțiunilor mecanice dintre corpuri 3D, cuplată cu o interfață grafică pentru utilizator, prin care acesta poate încărca sau salva scene și controla parametrii simulării sau direct obiectele din scenă.
+ 
 \section{Structura lucrării}
 %Un paragraf în care fiecare dintre secțiunile următoare este prezentată în 1-2 fraze, punând accentul pe elementele cele mai semnificative din fiecare secțiune.
 În continuare voi prezenta pe scurt fiecare secțiune a acestei lucrări, care urmărește, în mare, șablonul oficial.
@@ -289,23 +344,22 @@ TODO:Descriere pe scurt a rezultatelor obținute, eventual de ce acestea sunt im
 	\item \textbf{Motivație și analiza cerințelor}: sunt detaliate atât motivația realizării proiectului propus, cât și funcționalitățile oferite de aplicație, în raport cu cerințele care trebuie acoperite.
 	\item \textbf{Metode existente}: sunt analizate metodele disponibile pentru atingerea fiecăruia dintre obiectivele propuse, modul în care acestea sunt folosite în soluții similare și o evaluare a acestor metode. Fiecare subproces al simulatorului va avea propria subsecțiune.
 	\item \textbf{Soluția propusă}: sunt motivate alegerile și deciziile luate la nivel structural, iar soluția va fi descrisă pe larg, din punct de vedere teoretic.
-	\item \textbf{Detalii de implementare}: este prezentată arhitectura aplicației și orice detalii de implementare considerate a fi relevante(algoritmi folosiți, etapele dezvoltării - cu dificultăți întâmpinate și soluții descoperite)
+	\item \textbf{Detalii de implementare}: este prezentată arhitectura aplicației și orice detalii de implementare considerate a fi relevante (algoritmi folosiți, etapele dezvoltării - cu dificultăți întâmpinate și soluții descoperite)
 	\item \textbf{Evaluare}: analiză a performanțelor aplicației și a gradului de atingere a obiectivelor propuse
-	\item \textbf{Concluzii}: este sumarizat întregul proiect, trecând din nou peste elementele constituente(obiective, implementare, rezultate obținute); în plus, sunt oferite perspective pentru dezvoltarea ulterioară a proiectului.
+	\item \textbf{Concluzii}: este sumarizat întregul proiect, trecând din nou peste elementele constituente (obiective, implementare, rezultate obținute); în plus, sunt oferite perspective pentru dezvoltarea ulterioară a proiectului.
 \end{enumerate}
 
 
 
 \chapter{Motivație}
-Motivul pentru care am ales să realizez proiectul de față este una personală, aceea de a aprofunda tehnicile matematice și programatice folosite într-o simulare realistică a interacțiunilor mecanice dintre corpuri 3D. Pe parcursul realizării acestuia, am avut în vedere și posibilitatea îmbunătățirii uneia sau mai multora dintre aceste tehnici.
+Motivul pentru care am ales să realizez proiectul de față este unul personal, acela de a aprofunda tehnicile matematice și programatice folosite într-o simulare realistică a interacțiunilor mecanice dintre corpuri 3D. Pe parcursul realizării acestuia, am avut în vedere și posibilitatea îmbunătățirii uneia sau mai multora dintre aceste tehnici.
 
-Faptul că în sfera dezvoltării de aplicații grafice sau jocuri accentul se pune mai ales pe partea practică -- e de preferat o aplicație care rulează mai bine și care este plăcută ochiului decât una foarte riguroasă din punct de vedere teoretic, a dat naștere multor soluții mai mult sau mai puțin "hacky", dar foarte interesante. Am ale astfel să nu urmăresc obținerea de rezultate teoretice remarcabile, și să mă concentrez pe înțelegerea și implementarea unor astfel de metode.
+Faptul că în sfera dezvoltării de aplicații grafice sau jocuri accentul se pune mai ales pe partea practică -- e de preferat să se obțină o aplicație care rulează mai bine și care este plăcută ochiului decât una foarte riguroasă din punct de vedere teoretic -- a dat naștere multor soluții mai mult sau mai puțin "hacky", dar foarte interesante. Am ales astfel să nu urmăresc obținerea de rezultate teoretice remarcabile, și să mă concentrez pe înțelegerea și implementarea unor astfel de metode.
 
 Proiectul poate fi considerat, în fapt, o "testare a apelor" în domeniul simulării de fizică în timp real, un exercițiu pentru abilitățile mele de programare eficientă, robustă, orientată pe obiecte, dar și o îmbunătățire a cunoștințelor mele de C++.
 
-Consider că ce am dobândit în urma realizării acestui proiect mă va ajuta să înțeleg mai bine subtilitățile din spatele unui motor de fizică state-of-the-art, astfel încât, pe viitor, să fiu capabil de a contribui la proiecte open-source deja existente(bullet\cite{bullet}) sau, de ce nu, să efectuez muncă în cercetare sau în industrie în acest domeniu, la un nivel ceva mai complex și actual.
+Consider că ce am dobândit în urma realizării acestui proiect mă va ajuta să înțeleg mai bine subtilitățile din spatele unui motor de fizică state-of-the-art, astfel încât, pe viitor, să fiu capabil de a contribui la proiecte open-source deja existente (ex. \textit{bullet}\cite{bullet}) sau, de ce nu, să efectuez muncă în cercetare sau în industrie în acest domeniu, la un nivel ceva mai complex și actual.
 
-TODO: ar mai trebui ceva aici?
 
 
 %\dezvoltare Acest capitol va analiza cerințele produsului din prisma potențialilor clienți și a scenariilor de utilizare preconizate, urmând a fi generată o lista de funcționalități. 
@@ -334,15 +388,14 @@ TODO: ar mai trebui ceva aici?
 %\end{itemize}
 
 
-\chapter{Studiu de Piață / Metode Existente}
-Pentru început, ar trebui menționat că un motor de fizică este foarte rar întâlnit de sine stătător, el constituind de cele mai multe ori o parte esențială a unei aplicații mult mai complexe(care cuprinde și alte motoare/instrumente necesare funcționării). De aceea, voi ignora sisteme precum motoarele pentru dezvoltarea jocurilor(Unreal Engine, Source, Unity etc.) sau simulatoare științifice și mă voi concentra strict pe expunerea particularităților motoarelor de fizică de sine stătătoare.
+\chapter{Metode Existente}
+Pentru început, ar trebui menționat că un motor de fizică este foarte rar întâlnit de sine stătător, el constituind de cele mai multe ori o parte esențială a unei aplicații mult mai complexe (care cuprinde și alte motoare/instrumente necesare funcționării). De aceea, voi ignora sisteme precum motoarele pentru dezvoltarea jocurilor (\textit{Unreal Engine}\cite{unreal}, \textit{Source}\cite{source}, \textit{Unity}\cite{unity} etc.) sau simulatoare științifice și mă voi concentra strict pe expunerea particularităților motoarelor de fizică de sine stătătoare.
 \section{Aplicații similare}
 Deoarece cele mai multe aplicații nu au nevoie de toate particularitățile unui motor de fizică complex și foarte general, o practică des întâlnită este ca companiile să își implementeze unul propriu, optimizat pentru cerințele specifice ale aplicațiilor dezvoltate. Chiar și așa, putem aminti câteva dintre cele mai populare middleware-uri: 
 \begin{itemize}
-	\item \textbf{Box2D}\cite{box2D} este un motor de fizică open source, capabil să simuleze corpuri solide în 2D. Oferă suport pentru detecție continuă a coliziunilor, poligoane convexe și cercuri, corpuri compuse, soluționarea contactelor cu frecare, articulațiilor etc. TODO: menționează arbore dinamic pentru broadphase. 
-	Scris în C++, a fost ulterior portat și în alte limbaje și este apreciat pentru simplitatea lui și folosit de dezvoltatori independenți, și a fost inclus chiar și în Unity ca opțiune pentru motorul de fizică 2D.
-	\item \textbf{Bullet}\cite{bullet} este probabil cel mai cunoscut motor de fizică open source în lumea 3D. Oferă suport pentru detecția discretă sau continuă a coliziunilor pentru toate primitivele de bază, dar și meshe convexe, simularea corpurilor deformabile, articulații și constrângeri complexe, mișcarea vehiculelor etc. Este folosit în jocuri, robotică, efecte speciale în filme și este inclus în software precum Godot, Blender Game Engine sau Unity 3D.
-	\item Din sfera closed source, poate fi amintit \textbf{NVIDIA PhysX}, unul dintre cele mai populare motoare de fizică în industria jocurilor video - inclus în Unreal Engine 3+, Unity 3D și folosit de companii ca EA, THQ, 2K Games. Physx folosește accelerare hardware pe GPU, plăcile video GeForce de la NVIDIA fiind capabile să ofere o creștere exponențială a puterii de procesare a simulărilor fizice.  
+	\item \textbf{Box2D}\cite{box2D} este un motor de fizică open source, capabil să simuleze corpuri solide în 2D. Oferă suport pentru detecție continuă a coliziunilor, poligoane convexe și cercuri, corpuri compuse, soluționarea contactelor cu frecare, articulațiilor etc și folosește un \hyperref[BVH]{arbore dinamic} pentru faza preliminară a detecției coliziunilor. Scris în C++, a fost ulterior portat și în alte limbaje și este apreciat pentru simplitatea lui și folosit de dezvoltatori independenți, și a fost inclus chiar și în \textit{Unity}\cite{unity} ca opțiune pentru motorul de fizică 2D.
+	\item \textbf{Bullet}\cite{bullet} este probabil cel mai cunoscut motor de fizică open source în lumea 3D. Oferă suport pentru detecția discretă sau continuă a coliziunilor pentru toate primitivele de bază, dar și pentru mesh-uri convexe, simularea corpurilor deformabile, articulații și constrângeri complexe, mișcarea vehiculelor etc. Este folosit în jocuri, robotică, efecte speciale în filme și este inclus în software precum \textit{Godot}\cite{godot}, \textit{Blender Game Engine}\cite{blender} sau \textit{Unity 3D}\cite{unity}.
+	\item Din sfera closed source, poate fi amintit \textbf{NVIDIA PhysX}\cite{physx}, unul dintre cele mai populare motoare de fizică în industria jocurilor video - inclus în \textit{Unreal Engine 3+}\cite{unreal}, \textit{Unity 3D}\cite{unity} și folosit de companii ca \textit{EA}, \textit{THQ}, \textit{2K Games}. \textit{Physx} folosește accelerare hardware pe GPU, plăcile video \textit{GeForce} de la \textit{NVIDIA} fiind capabile să ofere o creștere exponențială a puterii de procesare a simulărilor fizice.  
 \end{itemize}
 \section{Soluții curente}
 Secțiunea următoare va pune în evidență starea actuală a dezvoltării de motoare de fizică, oferind o perspectivă asupra unor algoritmi și metode numerice care sunt folosite în prezent. Gruparea acestora urmărește componentele standard ale unui simulator de interacțiuni fizice.
@@ -350,35 +403,35 @@ Secțiunea următoare va pune în evidență starea actuală a dezvoltării de m
 \begin{itemize}
 	\item O \textbf{funcție suport} a unei mulțimi pe o direcție este definită ca:
 	$$ h_A:\mathbb{R}^{n} \mapsto \mathbb{R} \textrm{, cu }A \subset \mathbb{R}^{n}\textrm{,  } h_A(d) = \sup \left\lbrace d\cdot a\ |\ a\in A\right\rbrace $$
-	Este utilizată în determinarea \textbf{punctelor suport}(cel mai îndepărtat punct al unui obiect într-o anumită direcție). Formele elementare(cub, sferă, con etc.) au funcții suport foarte ușor de calculat, mai ales în spațiul local al corpului.
+	Este utilizată în determinarea \textbf{punctelor suport} (cel mai îndepărtat punct al unui obiect într-o anumită direcție). Formele elementare (cub, sferă, con etc.) au funcții suport foarte ușor de calculat, mai ales în spațiul local al corpului.
 	\label{support_points}
 	\item \textbf{Suma Minkowski} a două mulțimi de puncte $A$ și $B$ este mulțimea
 	$$ A \oplus B = \left\lbrace a + b\ |\ a \in A, b \in B \right\rbrace $$
-	și este puțin interesantă în cazul de față.
+	și care, chiar dacă nu are aplicabilitate în cazul de față, a condus la următorul rezultat:
 	\item \textbf{Diferența Minkowski} a două mulțimi de puncte $A$ și $B$ este mulțimea
 	$$ A \ominus B = \left\lbrace a - b\ |\ a \in A, b \in B \right\rbrace $$
-	și are o proprietate remarcabilă. Mulțimile $A$ și $B$ se află în coliziune(au cel puțin un punct în comun) dacă $A \ominus B$ conține originea spațiului geometric. în plus, distanța dintre acestea, în cazul în care nu se intersectează este:
+	și are o proprietate remarcabilă. Mulțimile $A$ și $B$ se află în coliziune (au cel puțin un punct în comun) dacă $A \ominus B$ conține originea spațiului geometric. În plus, distanța dintre acestea, în cazul în care nu se intersectează, este:
 	$$ \centering dist(A, B) = \min \left\lbrace \left\Vert a - b \right\Vert\ |\ a \in A, b \in B \right\rbrace = \min \left\lbrace \left\Vert c \right\Vert\ |\ c \in A \ominus B \right\rbrace $$
 	\label{minkowski_difference}
 	\item În geometrie, un \textbf{simplex} este o generalizare a noțiunii de triunghi în spații de dimensiune arbitrară. Simplex-urile întâlnite în cadrul algoritmilor de detecție a coliziunii sunt punctul, muchia, triunghiul și tetraedrul.
 	\label{simplex}
 	\item Fie un triunghi $T$ definit de vârfurile $r_1$, $r_2$ și $r_3$. Atunci, pentru orice punct $r$ din interiorul triunghiului, există o serie de numere reale $\lambda_1$, $\lambda_2$, $\lambda_3$ unice, astfel încât $\lambda_1 + \lambda_2 + \lambda_3 = 1$ și $r = \lambda_1 r_1 + \lambda_2 r_2 + \lambda_3 r_3$. Cele trei numere $\lambda_1$, $\lambda_2$, $\lambda_3$ se numesc \textbf{coordonatele baricentrice} ale punctului $r$ în raport cu triunghiul $T$.
 	\label{barycentric_coordinates}
-	\item \textbf{Tensorul de inerție} este o matrice $I$ care exprima măsura prin care un corp se opune modificării stării sale de repaus relativ sau de mișcare de rotație uniformă la acțiunea unui moment al forței, pe fiecare dintre cele trei axe ale sistemului său de coordonate locale.
+	\item \textbf{Tensorul de inerție} este o matrice $I$ care exprimă măsura prin care un corp se opune modificării stării sale de repaus relativ sau de mișcare de rotație uniformă la acțiunea unui moment al forței, pe fiecare dintre cele trei axe ale sistemului său de coordonate locale.
 	\label{inertia_tensor}
 	
 \end{itemize}
 
 \subsection{Detecție coliziuni}
-Detecția coliziunilor se realizează de obicei în două etape: una preliminară(eng. \textit{broad phase}) și una exactă(eng. \textit{near phase}). Motivul este unul foarte simplu -- algoritmii folosiți în a doua etapă sunt semnificativ mai intensivi computațional decât cei din prima.
+Detecția coliziunilor se realizează de obicei în două etape: una \textbf{preliminară} (eng. \textit{broad phase}) și una \textbf{exactă} (eng. \textit{near phase}). Motivul este unul foarte simplu -- algoritmii folosiți în a doua etapă sunt semnificativ mai intensivi computațional decât cei din prima.
 
 \subsubsection{Etapa preliminară}
-Pentru prima fază, fiecare corp din simulare are atașat un \textbf{volum încadrator} sub forma unei primitive(în cazul 3D, de regulă sferă sau paralelipiped) care să îl cuprindă în întregime. Dacă 2 corpuri sunt în coliziune(se intersectează), atunci este sigur că și volumele lor încadratoare se întrepătrund. Testele de intersecție pentru primitive sunt ușor de implementat și computat.
+Pentru prima fază, fiecare corp din simulare are atașat un \textbf{volum încadrator} sub forma unei primitive (în cazul 3D, de regulă sferă sau paralelipiped) care să îl cuprindă în întregime. Dacă 2 corpuri sunt în coliziune (se intersectează), atunci este sigur că și volumele lor încadratoare se întrepătrund. Testele de intersecție pentru primitive sunt ușor de implementat și computat.
 Cele mai uzuale volume încadratoare sunt:
 \begin{itemize}
-	\item \textbf{Sfera încadratoare}(eng. \textit{bounding sphere}): este definită de o poziție și o rază. Testul de intersecție este banal: două sfere se intersectează dacă distanța dintre centrele lor este mai mică sau egală cu suma razelor. Este o soluție eficientă ca memorie și ca test de intersecție, dar este inexactă și conduce la multe verificări inutile în faza fină a detecției.
-	\item \textbf{Axis-aligned bounding box}(AABB): este definit de o poziție și de lungimea paralelipipedului pe fiecare dintre cele 3 axe ale sistemului global de coordonate(uzual, se reține jumătatea lungimii fiecărei laturi). Testul de intersecție este din nou destul de banal - se verifică întrepătrunderea celor două AABB-uri pe fiecare dintre cele 3 axe. Este mai precis decât sfera încadratoare, dar dezavantajul este că trebuie recalculat de fiecare dată când corpul este rotit, astfel încât volumul să rămână minim.
-	\item \textbf{Oriented bounding box}(OBB): este definit de o poziție, lungimile paralelipipedului pe fiecare dintre cele 3 axe ale sistemului de coordonate local obiectului și o orientare. Este asemănător unui AABB, dar în loc de axele sistemului global de coordonate, sunt folosite axele sistemului de coordonate locale obiectului. Astfel, atât timp cât obiectul nu este deformabil, el nu trebuie recalculat și este mai precis decât un AABB. Dezavantajul este că testul de intersecție devine mai complicat și se bazează pe aplicarea \textbf{Teoremei axei separatoare}(eng. \textit{SAT - Separating axis theorem}), descrisă \hyperref[SAT]{mai jos}, pentru 15 axe posibile de separare.
+	\item \textbf{Sfera încadratoare} (eng. \textit{bounding sphere}): este definită de o poziție și o rază. Testul de intersecție este banal: două sfere se intersectează dacă distanța dintre centrele lor este mai mică sau egală cu suma razelor. Este o soluție eficientă ca memorie și ca test de intersecție, dar este inexactă și conduce la multe verificări inutile în faza fină a detecției.
+	\item \textbf{Axis-aligned bounding box} (AABB): este definit de o poziție și de lungimea paralelipipedului pe fiecare dintre cele 3 axe ale sistemului global de coordonate (uzual, se reține jumătatea lungimii fiecărei laturi). Testul de intersecție este din nou destul de banal - se verifică întrepătrunderea celor două AABB-uri pe fiecare dintre cele 3 axe. Este mai precis decât sfera încadratoare, dar dezavantajul este că trebuie recalculat de fiecare dată când corpul este rotit, astfel încât volumul să rămână minim.
+	\item \textbf{Oriented bounding box} (OBB): este definit de o poziție, lungimile paralelipipedului pe fiecare dintre cele 3 axe ale sistemului de coordonate local obiectului și o orientare. Este asemănător unui AABB, dar în loc de axele sistemului global de coordonate, sunt folosite axele sistemului de coordonate locale ale obiectului. Astfel, atât timp cât obiectul nu este deformabil, el nu trebuie recalculat și este mai precis decât un AABB. Dezavantajul este că testul de intersecție devine mai complicat și se bazează pe aplicarea \textbf{Teoremei axei separatoare} (eng. \textit{SAT - Separating axis theorem}), descrisă \hyperref[SAT]{mai jos}, pentru 15 axe posibile de separare.
 \end{itemize}
 \begin{figure}[H]
 	\centering
@@ -388,26 +441,27 @@ Cele mai uzuale volume încadratoare sunt:
 \end{figure}
 Până acum am acoperit doar coliziunea în cazul unei perechi de obiecte, însă în cadrul unei simulări pot exista un număr foarte mare de obiecte. Abordarea $O(n^2)$, de a verifica fiecare pereche de obiecte din scenă este ineficientă.
 
-O posibilă soluție este aranjarea obiectelor într-un \textbf{arbore de volume încadratoare}(eng. \textit{bounding volume hierarchy}), care să fie actualizat pe parcursul simulării(odată la una sau mai multe etape ale acesteia). Frunzele arborelui vor fi chiar obiectele individuale ale scenei, iar restul nodurilor vor constitui volumul minim care încadrează toate nodurile copii. Astfel, dacă arborele este menținut echilibrat, timpul de verificare a perechilor de obiecte devine logaritmic, întrucât nodurile copii nu trebuie verificate pentru coliziune dacă părinții lor nu se intersectează.
+O posibilă soluție este aranjarea obiectelor într-un \textbf{arbore de volume încadratoare} (eng. \textit{bounding volume hierarchy})\label{BVH}\cite{ericson_bvh}, care să fie actualizat pe parcursul simulării (odată la una sau mai multe etape ale acesteia). Frunzele arborelui vor fi chiar obiectele individuale ale scenei, iar restul nodurilor vor constitui volumul minim care încadrează toate nodurile copii. Astfel, dacă arborele este menținut echilibrat, timpul de verificare a perechilor de obiecte devine logaritmic, întrucât nodurile copii nu trebuie verificate pentru coliziune dacă părinții lor nu se intersectează.
 
-Un alt tip de arbori folosiți sunt cei care partiționează întreg spațiul scenei, pe baza unor plane alese astfel încât împărțirea obiectelor să fie cât mai uniformă. Exemple de astfel de arbori sunt \textbf{arborii BSP}(eng. \textit{binary space-partitioning tree}) sau \textbf{octrees}(și variații ale acestora -- \textbf{quadtrees}). O resursă foarte bună pentru mai multe detalii despre aceștia o reprezintă Cap. 6. \textit{Bounding Volume Hierarchies} și Cap. 7. \textit{Spatial Partitioning} din cartea\cite{real_time_collision_detection} lui Christer Ericson.
+\label{bsp}
+Un alt tip de arbori folosiți sunt cei care partiționează întreg spațiul scenei, pe baza unor plane alese astfel încât împărțirea obiectelor să fie cât mai uniformă. Exemple de astfel de arbori sunt \textbf{arborii BSP} (eng. \textit{binary space-partitioning tree})\cite{ericson_bsp} sau \textbf{octrees} (și variații ale acestora -- \textbf{quadtrees})\cite{ericson_octrees}.
 
 \subsubsection{Etapa exactă}
-A doua parte a detecției de coliziuni o consider ușor mai interesantă, deoarece este responsabilă de stabilirea \textbf{punctelor de contact} dintre corpurile aflate în coliziune. Un exemplu de caracterizare a unui astfel de punct poate fi:
-\begin{lstlisting}[style=myC++]
-struct ContactPoint {
-	vec3 positionA; // pozitia celui mai adanc punct de interpenetrare
-	vec3 positionB; // in coordonatele locale ale fiecarui obiect
-	vec3 normal; // normala contactului (directia de separare)
+A doua parte a detecției de coliziuni o consider ușor mai interesantă, deoarece este responsabilă de stabilirea \textbf{punctelor de coliziune}\label{punct_coliziune} dintre corpurile aflate în coliziune. Un exemplu de caracterizare a unui astfel de punct poate fi:
+\begin{lstlisting}[style=myC++, label = {code:CollisionPointExample}]
+struct CollisionPoint {
+	vec3 positionA;    // pozitia celui mai adanc punct de interpenetrare
+	vec3 positionB;    // in coordonatele locale ale fiecarui obiect
+	vec3 normal;       // normala contactului (directia de separare)
 	float penetration; // distanta de interpenetrare
-	Obj *objA; // pointer catre fiecare dintre obiecte, pentru a accesa
-	Obj *objB; // matricele de modelare, functii suport etc.
+	Obj *objA;         // pointer catre fiecare dintre obiecte, pentru a
+	Obj *objB;         // accesa matricele de modelare, functii suport etc.
 }
 \end{lstlisting}
-În acest scop, au fost definiți mai mulți algoritmi care preiau o pereche de obiecte și stabilesc definitiv dacă acestea se intersectează, \textbf{punctul cel mai adânc de interpenetrare}, \textbf{normala}(sau direcția de separare) și \textbf{distanța de penetrare}(sau de separare) în sine.
+În acest scop, au fost definiți mai mulți algoritmi care preiau o pereche de obiecte și stabilesc definitiv dacă acestea se intersectează, \textbf{punctul cel mai adânc de interpenetrare}, \textbf{normala} (sau direcția de separare) și \textbf{distanța de penetrare} (sau de separare) în sine.
 
 
-\textbf{Teorema axei separatoare} derivă din \textbf{teorema hiperplanului separator}:
+\textbf{Teorema axei separatoare} derivă din \textbf{teorema hiperplanului separator}\cite{sat}:
 \begin{theorem}[Teorema hiperplanului separator]
 	Dacă A și B sunt două submulțimi disjuncte nevide ale lui $\mathbb{R}^n$, atunci există $v\in\mathbb{R}^n, v\neq0, c\in\mathbb{R}$, astfel încât $v^{T}x\leq c, \forall x\in A$ și $v^{T}x\geq b, \forall x\in B.$
 	\label{SAT}
@@ -427,44 +481,45 @@ Adaptată pentru cerințele noastre, ea ne spune că două corpuri se intersecte
 		\centering
 		\includegraphics[width=\textwidth]{pics/cap3_02.eps}
 		\label{fig:cap3_02}
-		\caption{o axă arbitrară $v$ și vectorul minim de translație $MTV$(eng. \textit{minimum translation vector}) pentru această axă în cazul unei intersecții}
+		\caption{o axă arbitrară $v$ și vectorul minim de translație $MTV$ (eng. \textit{minimum translation vector}) pentru această axă în cazul unei intersecții}
 	\end{subfigure}
 	\caption{Teorema axei separatoare}
 \end{figure}
-Astfel, două obiecte nu se intersectează(pe o axă) dacă suma razelor lor de proiecție este mai mică decât distanța dintre proiecțiile centrelor lor pe acea axă. În cazul poliedrelor convexe, intersecția poate fi de 3 tipuri: față-față, față-muchie, muchie-muchie (vârfurile pot fi considerate muchii degenerate) și este suficient să testăm doar următoarele posibile axe de separare:
+Astfel, două obiecte nu se intersectează (pe o axă) dacă suma razelor lor de proiecție este mai mică decât distanța dintre proiecțiile centrelor lor pe acea axă. În cazul poliedrelor convexe, intersecția poate fi de 3 tipuri: față-față, față-muchie, muchie-muchie (vârfurile pot fi considerate muchii degenerate) și este suficient să testăm doar următoarele posibile axe de separare:
 \begin{itemize}
 	\item axele paralele cu normalele fețelor obiectului A
 	\item axele paralele cu normalele fețelor obiectului B
 	\item axele paralele cu vectorii rezultați în urma produsului vectorial al tuturor muchiilor lui A cu toate muchiile lui B
 \end{itemize}
-Normala de coliziune este chiar axa care a rezultat într-o penetrare minimă, distanța de separare este chiar lungimea vectorului minim de translație ($min_B - max_A$ sau $min_A - max_B$), iar pentru determinarea punctelor de contact, se vor calcula pentru ambele obiecte, \hyperref[support_points]{punctele suport} în direcția de separare.
+Normala de coliziune este chiar axa care a rezultat într-o penetrare minimă, distanța de separare este chiar lungimea vectorului minim de translație ($min_B - max_A$ sau $min_A - max_B$), iar pentru determinarea punctelor de contact se vor calcula, pentru ambele obiecte, \hyperref[support_points]{punctele suport} în direcția de separare.
 
 
-\textbf{Algoritmul Gilbert-Johnson-Keerthi}(GJK) este o altă metodă de a determina cu precizie dacă două obiecte se intersectează. A fost propus inițial în 1988\cite{gjk_original}, ca metodă de a determina distanța euclidiană între două mulțimi convexe din $\mathbb{R}^n$, iar o implementare eficientă și robustă a fost propusă de Gino van den Bergen în 1998\cite{gjk_gino}.
+\textbf{Algoritmul Gilbert-Johnson-Keerthi} (GJK) este o altă metodă de a determina cu precizie dacă două obiecte se intersectează. A fost propus inițial în 1988\cite{gjk_original}, ca metodă de a determina distanța euclidiană între două mulțimi convexe din $\mathbb{R}^n$, iar o implementare eficientă și robustă a fost propusă de \textit{Gino van den Bergen} în 1998\cite{gjk_gino}.
+
 \begin{algorithm}[H]
 	\footnotesize
 	\linespread{0.9}\selectfont
 	\caption{Testul de intersecție Gilbert-Johnson-Keerthi}
 	\label{gjk_intersection_test}
 	\begin{algorithmic}[0]
-		\Function {GJKTestIntersection}{$shape\_A$, $shape\_B$, $init\_dir$}
-			\State $new\_point \gets \textproc{Support}(shape\_A, init\_dir) - \textproc{Support}(shape\_B, -initial\_dir)$
-			\State $simplex \gets \left\lbrace new\_support\_point \right\rbrace $
-			\State $dir \gets -new\_point$
+		\Function {GJKTestIntersecție}{$forma\_A$, $forma\_B$, $directie\_initiala$}
+			\State $punct\_nou \gets \textproc{Suport}(forma\_A, directie\_initiala) - \textproc{Suport}(forma\_B, -directie\_initiala)$
+			\State $simplex \gets \left\lbrace punct\_nou \right\rbrace $
+			\State $directie \gets -punct\_nou$
 			\Loop
-				\State $new\_point \gets \textproc{Support}(shape\_A, dir) - \textproc{Support}(shape\_B, -dir)$
-				\If{$\textproc{dot}(new\_point, dir) < 0$}
-					\State $\textbf{return}\ False$
+				\State $punct\_nou \gets \textproc{Suport}(forma\_A, directie) - \textproc{Suport}(forma\_B, -directie)$
+				\If{$\textproc{produs\_scalar}(punct\_nou, directie) < 0$}
+					\State \Return \textit{Fals}
 				\EndIf
-				\State $simplex \gets simplex\ \cup\ new\_point $
-				\State $simplex, dir, contains\_origin \gets \textproc{DoSimplex}(simplex) $
-				\If{$contains\_origin$}
-					\State $\textbf{return}\ True$
+				\State $simplex \gets simplex\ \cup\ punct\_nou $
+				\State $simplex, directie, contine\_originea \gets \textproc{ActualizeazăSimplex}(simplex) $
+				\If{$contine\_originea$}
+					\State \Return \textit{Adevărat}
 				\EndIf
 			\EndLoop
 		\EndFunction
 		\Statex
-		\Function {DoSimplex}{$simplex$}
+		\Function {ActualizeazăSimplex}{$simplex$}
 			
 			1. determină simplex-ul cel mai apropiat de origine care se poate forma din cât mai puține din punctele simplex-ului dat ca parametru
 			
@@ -475,41 +530,41 @@ Normala de coliziune este chiar axa care a rezultat într-o penetrare minimă, d
 	\end{algorithmic}
 \end{algorithm}
 
-Practic, la fiecare iterație, \hyperref[simplex]{simplex-ul} încearcă să se extindă și să cuprindă originea, adăugând mereu un punct suport de pe \hyperref[minkowski_difference]{diferența Minkowski} a celor două obiecte, aflat în direcția originii, până când aceasta este cuprinsă în simplex sau nu se mai apropie de acesta.
+Practic, la fiecare iterație, \hyperref[simplex]{simplex-ul} încearcă să se extindă și să cuprindă originea, adăugând mereu un punct suport de pe \hyperref[minkowski_difference]{\textit{diferența Minkowski}} a celor două obiecte, aflat în direcția originii, până când aceasta este cuprinsă în simplex sau nu se mai apropie de acesta.
 
 
 
-În cazul în care algoritmul GJK a stabilit că există o coliziune, pentru determinarea normalei, distanței de penetrare și a punctelor de contact, \textbf{algoritmul EPA}\cite{epa_gino}(eng. \textit{expanding polytope algorithm}) este continuarea firească. Acesta preia \hyperref[simplex]{simplex-ul} rezultat în urma aplicării GJK și îl extinde iterativ cu \hyperref[support_points]{puncte suport} de pe frontiera \hyperref[minkowski_difference]{diferenței Minkowski}, până când distanța minimă dintre politopul rezultat și origine nu se mai modifică. Odată întâlnită această situație, \hyperref[barycenric_coordinates]{coordonatele baricentrice} ale proiecției originii pe triunghiul(în cazul 3D) sau dreapta(în cazul 2D) cele mai apropiate de origine pot fi folosite pentru determinarea punctelor de contact, iar distanța de la origine la triunghi(sau dreaptă) este chiar distanța de penetrare și normala contactului. Expansiunea politopului se face prin divizarea feței celei mai apropiate și crearea de noi triunghiuri sau laturi folosind punctul nou ales și punctele rămase.
+În cazul în care algoritmul \textit{GJK} a stabilit că există o coliziune, pentru determinarea normalei, distanței de penetrare și a punctelor de contact, \textbf{algoritmul EPA}\cite{epa_gino} (eng. \textit{expanding polytope algorithm}) poate fi folosit pentru determinarea \hyperref[punct_coliziune]{informațiilor de coliziune}. Acesta preia \hyperref[simplex]{simplex-ul} rezultat în urma aplicării \textit{GJK} și îl extinde iterativ cu \hyperref[support_points]{puncte suport} de pe frontiera \hyperref[minkowski_difference]{\textit{diferenței Minkowski}}, până când distanța minimă dintre politopul rezultat și origine nu se mai modifică. Odată întâlnită această situație, \hyperref[barycenric_coordinates]{coordonatele baricentrice} ale proiecției originii pe triunghiul (în cazul 3D) sau dreapta (în cazul 2D) cea mai apropiată de origine pot fi folosite pentru determinarea punctelor de coliziune, iar distanța de la origine la triunghi (sau dreaptă) este chiar distanța de penetrare și normala coliziunii. Expansiunea politopului se face prin divizarea feței celei mai apropiate și crearea de noi triunghiuri sau laturi folosind punctul nou ales și punctele rămase.
 
 \begin{algorithm}[]
 	\footnotesize
 	\linespread{0.9}\selectfont
-	\caption{Expanding Polytope Algorithm și determinarea punctelor de contact}
+	\caption{Expanding Polytope Algorithm și determinarea punctelor de coliziune}
 	\label{epa}
 	\begin{algorithmic}[0]
-		\Function {EPACreateContact}{$shape\_A$, $shape\_B$, $simplex$}
-			\State $ polytope \gets simplex.triangles $
+		\Function {EPACreeazăPunctDeColiziune}{$forma\_A$, $forma\_B$, $simplex$}
+			\State $ politop \gets simplex.lista\_triunghiuri $
 			\Loop
-				\State $ closest\_triangle \gets \argmin_tr \textproc{distance}(tr, origin), tr \in polytope $
-				\State $ distance \gets \textproc{distance}(closest\_triangle, origin) $
-				\State $ normal \gets closest\_triangle.normal $
-				\State $ new\_point \gets \textproc{Support}(shape\_A, normal) - \textproc{Support}(shape\_B, -normal) $
-				\State $ new\_distance \gets \textproc{distance}(new\_point, origin) $
-				\If{$ new_distance - distance < threshold $}
-					\State $ coords \gets \textproc{barycentric}(origin, closest\_triangle) $
+				\State $ cel\_mai\_apropiat\_triunghi \gets \argmin_{tr} \textproc{distanța}(tr, origine), tr \in politop $
+				\State $ distanta \gets \textproc{distanța}(cel\_mai\_apropiat\_triunghi, origine) $
+				\State $ normala \gets cel\_mai\_apropiat\_triunghi.normala $
+				\State $ punct\_nou \gets \textproc{Suport}(forma\_A, normala) - \textproc{Suport}(forma\_B, -normala) $
+				\State $ distanta\_noua \gets \textproc{distanța}(punct\_nou, origine) $
+				\If{$ distanta\_noua - distanta < prag $}
+					\State $ coordonate \gets \textproc{CoordonateBaricentrice}(origine, cel\_mai\_apropiat\_triunghi) $
 					
-				\State	$ contact\_points \gets $ pentru fiecare obiect, se calculează punctul de contact în funcție de corespondențele fiecărui punct al triunghiului din mulțimea de puncte a obiectului respectiv
-				\State $ \textbf{return}\ contact\_points, normal, distance $
+				\State	$ puncte\_coliziune \gets $ pentru fiecare obiect, se calculează punctul de coliziune în funcție de corespondențele fiecărui punct al triunghiului din mulțimea de puncte a obiectului respectiv
+				\State \Return $ puncte\_coliziune, normala, distanta $
 				\EndIf
-				\State $ polytope \gets polytope \setminus \left\lbrace closest\_triangle \right\rbrace $
-				\State creează triunghiuri noi folosind $ new\_point $ în spațiul lăsat descoperit
+				\State $ politop \gets politop \setminus \left\lbrace cel\_mai\_apropiat\_triunghi \right\rbrace $
+				\State creează triunghiuri noi folosind $ punct\_nou $ în spațiul lăsat descoperit
 			\EndLoop
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
 \subsection{Rezolvare coliziuni}
-În esență, rezolvarea coliziunilor implică aplicarea unui \textbf{răspuns} asupra corpurilor aflate în contact, care să conducă la separarea acestora. În lumea reală, răspunsul vine sub forma forțelor elastice care se opun comprimării(oricât de mică ar fi aceasta) corpurilor aflate în contact, care determină o accelerație care reduce viteza de ciocnire până la valori negative, când corpurile se separă. În cadrul unui motor de fizică, acest fenomen este simulat cu ajutorul \textbf{impulsurilor} -- modificări bruște a vitezelor obiectelor aflate în coliziune, astfel încât acestea să tindă spre separare. În general, sunt suficiente două impulsuri -- cel liniar și cel unghiular, fiecare modificând viteza corespondentă.
+În esență, rezolvarea coliziunilor implică aplicarea unui \textbf{răspuns} asupra corpurilor aflate în contact, care să conducă la separarea acestora. În lumea reală, răspunsul vine sub forma forțelor elastice care se opun comprimării (oricât de mică ar fi aceasta) corpurilor aflate în contact, determinând o accelerație care reduce viteza de ciocnire până la valori negative, când corpurile se separă. În cadrul unui motor de fizică, acest fenomen este simulat cu ajutorul \textbf{impulsurilor} -- modificări bruște a vitezelor obiectelor aflate în coliziune, astfel încât acestea să tindă spre separare. În general, sunt suficiente două impulsuri -- cel liniar și cel unghiular, fiecare modificând viteza corespondentă.
 
 Soluționarea unei coliziuni este de regulă realizată cu ajutorul conceptului mult mai general de \textbf{constrângeri fizice}, definite ca o serie de ecuații și inecuații care trebuie să fie satisfăcute. În cazul rezolvării unei coliziuni, constrângerea care trebuie satisfăcută de vitezele celor două corpuri este:
 $$ \dot{C} \colon \left( -\vec{V_A} - \vec{\omega_A} \times \vec{r_A} + \vec{V_B} + \vec{\omega_B} \times \vec{r_B} \right) \cdot \vec{n} + b\geq 0 $$unde:
@@ -521,12 +576,26 @@ $$ \dot{C} \colon \left( -\vec{V_A} - \vec{\omega_A} \times \vec{r_A} + \vec{V_B
 	\item $b$ este un termen de bias, care corespunde vitezei de separare a celor două corpuri și este influențat de coeficientul de restituire al ciocnirii: $$b = C_R\left( -\vec{V_A} - \vec{\omega_A} \times \vec{r_A} + \vec{V_B} + \vec{\omega_B} \times \vec{r_B} \right) \cdot \vec{n} $$
 \end{itemize}
 
+Formula completă pentru determinarea impulsului normal $\vec{j_n}$ necesar rezolvării vitezei unui corp după coliziune este:
+
+$$ \vec{j_n} = \frac{\left(-1 + C_R\right) \cdot \left( \vec{V_B} - \vec{V_A} + \vec{\omega_B} \times \vec{r_B} - \vec{\omega_A} \times \vec{r_B} \right) }{\left(\frac{1}{m_A} + \frac{1}{m_B} \right) + \left(\left( \vec{r_A} \times \vec{n} \right) \cdot \left( I_{A}^{-1} * \left(\vec{r_A} \times \vec{n}\right)\right) + \left( \vec{r_B} \times \vec{n} \right) \cdot \left( I_{B}^{-1} * \left(\vec{r_B} \times \vec{n}\right)\right)  \right)} * \vec{n} $$
+
+unde:
+\begin{itemize}
+	\item $m_A$, respectiv $m_B$ sunt masele celor două corpuri
+	\item $I_{A}$, respectiv $I_{B}$ sunt tensorii de inerție în coordonate din spațiul lume pentru cele două corpuri
+\end{itemize}
+
 Frecările sunt rezolvate sub forma unor \textbf{impulsuri tangențiale}, care vor modifica viteza corpurilor în două direcții perpendiculare pe normala de contact, în plus față de \textbf{impulsul normal}.
 
-La calculul impulsurilor se ține cont și de masele celor două corpuri și de \hyperref[inertia_tensor]{tensorii de inerție}. O derivare a formulei poate fi urmărită în prezentarea lui Erin Catto\cite{constraints_catto}.
+$$ \vec{j_{t_1}} = \frac{\left(-1 + C_R\right) \cdot \left( \vec{V_B} - \vec{V_A} + \vec{\omega_B} \times \vec{r_B} - \vec{\omega_A} \times \vec{r_B} \right) }{\left(\frac{1}{m_A} + \frac{1}{m_B} \right) + \left(\left( \vec{r_A} \times \vec{t_1} \right) \cdot \left( I_{A}^{-1} * \left(\vec{r_A} \times \vec{t_1}\right)\right) + \left( \vec{r_B} \times \vec{t_1} \right) \cdot \left( I_{B}^{-1} * \left(\vec{r_B} \times \vec{t_1}\right)\right)  \right)} * \vec{t_1} $$
+
+$$ \vec{j_{t_2}} = \frac{\left(-1 + C_R\right) \cdot \left( \vec{V_B} - \vec{V_A} + \vec{\omega_B} \times \vec{r_B} - \vec{\omega_A} \times \vec{r_B} \right) }{\left(\frac{1}{m_A} + \frac{1}{m_B} \right) + \left(\left( \vec{r_A} \times \vec{t_2} \right) \cdot \left( I_{A}^{-1} * \left(\vec{r_A} \times \vec{t_2}\right)\right) + \left( \vec{r_B} \times \vec{t_2} \right) \cdot \left( I_{B}^{-1} * \left(\vec{r_B} \times \vec{t_2}\right)\right)  \right)} * \vec{t_2} $$
+
+O derivare a formulelor de mai sus poate fi urmărită în prezentarea lui \textit{Erin Catto}\cite{constraints_catto}.
 
 
-O simulare va conține un număr mare de contacte, care se pot afecta unele pe altele(de ex. în cazul unei stive de obiecte), motiv pentru care rezolvarea acestora se face iterativ, până la convergență. Astfel, dacă rezolvarea unui contact va afecta un altul (este modificată distanța de penetrare, normala sau viteza de întâlnire), acest lucru se va reflecta în iterațiile succesive și sistemul poate găsi soluția corectă. În realitate, într-o simulare, acest lucru se întâmplă destul de rar, dar rezultatele obținute sunt satisfăcătoare, imperfecțiunile fiind neglijabile.
+O simulare va conține un număr mare de contacte, care se pot afecta unele pe altele (de ex. în cazul unei stive de obiecte), motiv pentru care rezolvarea acestora se face iterativ, până la convergență. Astfel, dacă rezolvarea unui contact va afecta un altul (este modificată distanța de penetrare, normala sau viteza de întâlnire), acest lucru se va reflecta în iterațiile succesive și sistemul poate găsi soluția corectă. În realitate, într-o simulare, acest lucru se întâmplă destul de rar, dar rezultatele obținute sunt satisfăcătoare, imperfecțiunile fiind neglijabile.
 
 Realistic vorbind, o coliziune este deseori formată din mai multe puncte de contact, care împreună formează un \textbf{manifold} care trebuie rezolvat.
 \begin{figure}[H]
@@ -535,55 +604,79 @@ Realistic vorbind, o coliziune este deseori formată din mai multe puncte de con
 	\label{fig:cap3_03}
 	\caption[]{3 cazuri de contact și manifold-urile lor}
 \end{figure}
-În acest scop, există 2 posibile abordări \cite[Secțiunea 6.6.2~\textit{Collision response for colliding contact}]{game_physics_eberly}:
+În acest scop, există 2 posibile abordări \cite{eberly_collision_response}:
 \begin{enumerate}
-	\item \textbf{Metoda impulsurilor secvențiale} -- impulsurile sunt calculate și aplicate iterativ în fiecare dintre punctele de contact.
+	\item \textbf{Metoda impulsurilor secvențiale}\label{seq_impulse_method} -- impulsurile sunt calculate și aplicate iterativ în fiecare dintre punctele de contact.
 	\item \textbf{Metoda contactelor simultane} -- Jacobian-ul folosit pentru calculul impulsurilor este determinat pe baza tuturor punctelor din manifold-ul de contact, iar impulsurile sunt aplicate o singură dată per manifold.
 \end{enumerate}
 
+În plus ar trebui menționat faptul că impulsurile descrise mai sus sunt menite doar să oprească întrepătrunderea corpurilor, și nu să le și separe efectiv. Pentru acest lucru există mai multe alternative\cite{catto_position_correction}:
+\begin{enumerate}
+	\item \textbf{Stabilizarea Baumgarte} -- presupune adăugarea unei părți a distanței de penetrare la termenul de bias din formula pentru determinarea impulsului
+	\item \textbf{Metoda pseudo-vitezelor}\label{pseudo_velocities} -- constă în rezolvarea vitezelor corpurilor aflate în coliziune, recalcularea distanței de penetrare, a vitezelor și a maselor și mai apoi aplicarea unei corecții asupra pozițiilor celor două corpuri într-un pas ulterior.
+	\item \textbf{Metoda Gauss-Seidel neliniară} -- este asemănătoare cu metoda pseudo-vitezelor, dar presupune recalcularea interpenetrării după fiecare punct de contact rezolvat
+\end{enumerate}
 \subsection{Integrare numerică}
-Într-un motor de fizică, etapa de integrare constă în actualizarea stării obiectelor, prin \textbf{integrarea în raport cu timpul} a mărimilor fizice derivate. Ne amintim de la orele de fizică din liceu că accelerația unui corp este dată de formula $ a = \frac{F}{m} $, unde $F$ este rezultanta forțelor care acționează asupra corpului și $m$ este masa acestuia. Într-o simulare, accelerația este considerată o mărime fizică primară și este cea dintâi calculată în fiecare cadru. Accelerația este totodată definită și ca variația vitezei în timp, iar viteza este variația poziției în timp, ceea ce ne permite să calculăm atât viteza $\dot{p}'$, cât și poziția $p'$, prin integrarea accelerației $\ddot{p}$, respectiv vitezei $\dot{p}$:
+Într-un motor de fizică, etapa de integrare constă în actualizarea stării obiectelor, prin \textbf{integrarea în raport cu timpul} a mărimilor fizice derivate. Accelerația unui corp este dată de formula $ a = \frac{F}{m} $, unde $F$ este rezultanta forțelor care acționează asupra corpului și $m$ este masa acestuia. Într-o simulare, accelerația este considerată o mărime fizică primară și este cea dintâi calculată în fiecare cadru. Accelerația este totodată definită și ca variația vitezei în timp, iar viteza este variația poziției în timp, ceea ce ne permite să calculăm atât viteza $\dot{p}'$, cât și poziția $p'$, prin integrarea accelerației $\ddot{p}$, respectiv vitezei $\dot{p}$:
 $$ \dot{p}' = \dot{p} + \ddot{p}t $$
 $$ p' = p + \dot{p}t + \ddot{p}\frac{t^2}{2} \approx p + \dot{p}t $$
 Deoarece într-o simulare avem de-a face cu momente discrete de timp(dictate de diferența de timp dintre două cadre -- \textbf{deltaTime}, aceste valori trebuie aproximate, de unde rezultă nevoia folosirii unor metode de integrare numerică cu pas de timp discret.
-Se disting o serie de metode, mai mult sau mai puțin precise\cite{integration_gaffer}:
+Se disting o serie de metode, mai mult sau mai puțin precise \cite{integration_gaffer}:
 \begin{itemize}
-	\item \textbf{Metoda Euler explicită} presupune determinarea, în ordine, mai întâi a noii poziții și apoi a noii viteze, dar are dezavantajul că pierde din precizie dacă există variații mari ale mărimilor de la un cadru la altul, cu eroare de ordinul $O(deltaTime)$
+	\item \textbf{Metoda Euler explicită}\cite{explicit_euler} presupune determinarea, în ordine, mai întâi a noii poziții și apoi a noii viteze, dar are dezavantajul că pierde din precizie dacă există variații mari ale mărimilor de la un cadru la altul, cu eroare de ordinul $O(deltaTime)$
 	\begin{lstlisting}[style=myC++]
 		position = position + velocity * deltaTime;
 		velocity = velocity + acceleration * deltaTime;
 	\end{lstlisting}
-	\item \textbf{Metoda Euler semi-implicită} presupune folosirea noii viteze la determinarea noii poziții și este considerabil mai precisă, cu eroare de ordinul $O(deltaTime^2)$
+	\item \textbf{Metoda Euler semi-implicită}\cite{implicit_euler}\label{inline_implicit_euler} presupune folosirea noii viteze la determinarea noii poziții și este considerabil mai precisă, cu eroare de ordinul $O(deltaTime^2)$
 	\begin{lstlisting}[style=myC++]
 	velocity = velocity + acceleration * deltaTime;
 	position = position + velocity * deltaTime;
 	\end{lstlisting}
-	\item \textbf{Metoda Runge-Kutta 4} evaluează derivata stării în 4 puncte diferite din cadrul intervalului de derivare, folosind ca feedback rezultatele anterioare și este mult mai precisă, ceea ce conduce la o eroare de ordinul $O(deltaTime^4)$
+	\item \textbf{Metoda Runge-Kutta 4}\cite{runge_kutta} evaluează derivata stării în 4 puncte diferite din cadrul intervalului de derivare, folosind ca feedback rezultatele anterioare și este mult mai precisă, ceea ce conduce la o eroare de ordinul $O(deltaTime^4)$
 \end{itemize}
 
 \subsection{Interfață grafică}
-TODO:
+Soluțiile pentru implementarea unei \textbf{interfețe grafice cu utilizatorul} (eng. \textit{graphical user interface - GUI}) sunt întâlnite sub forma unor biblioteci care oferă API-uri programatorilor care doresc să le folosească în proiectele lor. Astfel de biblioteci există în număr destul de mare, iar facilitățile oferite de fiecare variază -- de la colecții de widget-uri minimale până la întregi framework-uri pentru dezvoltare de aplicații complete, care  oferă instrumente și funcționalități deja implementate care acoperă o multitudine de scenarii de utilizare. O posibilă clasificare a interfețelor grafice este cea bazată pe proprietatea  de a reține scena desenată (GUI-ul în sine) de la un cadru la altul. Se disting, astfel:
+\begin{enumerate}
+	\item \textbf{Interfețele grafice persistente} (eng. \textit{retained mode GUIs}) sunt caracterizate de menținerea unui model intern(de obicei, o ierarhie de obiecte) al interfeței în memorie. Astfel, apelurile de API doar modifică starea acestui model, fără să conducă neapărat la desenarea elementelor. Biblioteca poate, prin urmare, să optimizeze randarea interfeței pe ecran, sau să mențină stări anterioare la care se poate reveni. Sunt soluții robuste, eficiente, rapide, dar necesită un timp mai îndelungat de familiarizare și de învățare a acestora. Exemple includ:
+	\begin{itemize}
+		\item \textbf{Windows Presentation Foundation}\cite{wpf} este un framework pentru dezvoltarea de aplicații client pentru sistemul de operare \textit{Windows}. Este un subset al framework-ului \textit{.NET} și utilizează un limbaj de tip Markup(i.e. \textit{XAML}) pentru a oferi un model declarativ de programare. Asigură facilități de desenare (folosind \textit{Direct3D}), șabloane, animații, documente, securitate etc.
+		\item \textbf{Qt}\cite{qt} este un alt framework complet pentru dezvoltare de aplicații cross-platform. Este aproape în întregime open source și este scris în C++. Oferă, printre altele, un mediu de dezvoltare complet (\textit{QtCreator}), un limbaj declarativ (\textit{QML}) pentru prototipare, suport pentru lucrul cu baze de date \textbf{SQL}, parsare de documente \textit{XML} sau \textit{JSON}, multithreading etc. Ar trebui menționată și documentația foarte bine pusă la punct și comunitatea imensă de utilizatori.
+		\item \textbf{wxWidgets}\cite{wxwidgets} constă într-un API ușor de folosit pentru scrierea de aplicații grafice pe multiple platforme. Folosește controlul și utilitățile native platformei pentru care se dezvoltă aplicația, este în întregime open source și scris în C++ standard, cu multiple binding-uri pentru alte limbaje de programare populare. Oferă multiple componente grafice -- de la un simplu buton până la o fereastră pentru previzualizarea documentelor printate -- și sisteme pentru aranjarea elementelor, evenimente, integrare cu motorul de randare HTML nativ, tratare de erori, multithreading etc.
+	\end{itemize} 
+	\item De cealaltă parte, \textbf{interfețele grafice imediate} (eng. \textit{immediate mode GUIs}) lasă aproape totul la îndemâna utilizatorului(tratarea evenimentelor, management-ul resurselor). Elementele sunt desenate imediat pe ecran și nu mai există o delimitare clară a logicii aplicației de elementele de interfață. Sunt considerabil mai simple, dar mai ușor de extins și de modificat și sunt utile mai ales pentru prototipare, dar și în cazurile în care interfața grafică nu reprezintă o parte centrală a aplicației (de ex. jocuri). Pot fi amintite:
+	\begin{itemize}
+		\item \textbf{Dear ImGui}\cite{imgui} este o bibliotecă rapidă, portabilă, și independentă de motorul de randare. A fost dezvoltată pentru C++, nu conține dependințe externe, este open source și se concentrează pe simplitate și productivitate. Se pretează mai ales integrării în game engine-uri, tool-uri pentru vizualizare sau pentru debugging. Conține o multitudine de widget-uri și elemente anexe, care pot fi desenate pe loc, oriunde în aplicație, pentru a obține o strânsă legătură cu logica acesteia.
+		\item \textbf{Nuklear}\cite{nuklear} este un toolkit minimal pentru dezvoltarea de GUI-uri, scris în ANSI C și open source. A fost proiectat să poată fi ușor de integrat în aplicații și constă dintr-un singur fișier header. Are o amprentă redusă asupra memoriei, este personalizabilă și se concentrează strict pe elementele de interfață.
+	\end{itemize}
+\end{enumerate}
+
 \section{Alegeri pentru lucrarea de față}
 
 Dintre soluțiile menționate în subsecțiunile de mai sus, am fost nevoit să fac niște alegeri, pe care urmează să le prezint și să le motivez în continuare.
 
 \subsection{Detecție coliziuni}
 
-Deoarece scenele cu care am testat simulatorul sunt de dimensiuni relativ mici(sub 100 de obiecte), am decis că o ierarhie de volume încadratoare nu aduce o îmbunătățire semnificativă în raport cu overhead-ul pe care l-ar aduce etapei de implementare a soluției. La fel, o partiționare a spațiului scenei în arbori, folosind BSP mi s-a considerat nejustificată. Astfel, m-am utilizat doar de un \textbf{detector $O(n^2)$}, care testează intersecția dintre \textbf{OBB-urile} obiectelor folosind \textbf{Teorema axei separatoare}.
+Deoarece scenele cu care am testat simulatorul sunt de dimensiuni relativ mici (sub 100 de obiecte), am decis că o ierarhie de volume încadratoare nu aduce o îmbunătățire semnificativă în raport cu overhead-ul pe care l-ar aduce etapei de implementare a soluției. La fel, o partiționare a spațiului scenei în arbori, utilizând \hyperref[bsp]{\textit{BSP}}, mi s-a considerat nejustificată. Astfel, m-am folosit doar de un \textbf{detector $O(n^2)$}, care testează intersecția dintre \textbf{OBB-urile} obiectelor folosind \hyperref[SAT]{\textbf{Teorema axei separatoare}}.
 
-Pentru că obiectele din scenă sunt doar corpuri geometrice elementare pentru care nu stochez liste de vârfuri, muchii și fețe, ci doar descrierea geometrică a formei acestora, Teorema axei separatoare nu se pretează pentru determinarea punctelor de contact. În plus, corpurile rotunde(cilindru, con, sferă, capsulă) ar pune probleme în realizarea testului de separare, deoarece ar avea nevoie de un număr foarte mare de axe care să fie testate. În schimb, am ales să folosesc \textbf{algoritmul GJK}, care se poate folosi de descrierea geometrică a formei corpurilor pentru calculul facil al punctelor de suport necesare la determinarea simplex-ului final.
+Pentru că obiectele din scenă sunt doar corpuri geometrice elementare pentru care nu stochez liste de vârfuri, muchii și fețe, ci doar descrierea geometrică a formei acestora, Teorema axei separatoare nu se pretează pentru determinarea punctelor de contact. În plus, corpurile rotunde (cilindru, con, sferă, capsulă) ar pune probleme în realizarea testului de separare, deoarece ar avea nevoie de un număr foarte mare de axe care să fie testate. În schimb, am ales să utilizez \hyperref[gjk_intersection_test]{\textbf{algoritmul GJK}}, care se poate folosi de descrierea geometrică a formei corpurilor pentru calculul facil al punctelor de suport necesare la determinarea simplex-ului final.
 
-Și, în mod evident, algoritmul GJK se potrivește de minune cu \textbf{EPA}, având în comun o bună parte dintre metode și structuri de date.
+Deoarece rezultatul algoritmului \textit{GJK} poate fi utilizat ca intrare pentru \hyperref[epa]{\textbf{EPA}}, am folosit acest algoritm în determinarea punctelor de coliziune.
 
 \subsection{Rezolvare coliziuni}
 
-Complexitatea pe care ar fi adus-o implementarea metodei rezolvării simultane a contactelor nu este justificată în cazul de față. Ar fi fost nevoie de un redesign al structurilor de date folosite adus de necesitatea operațiilor dintre matrice și vectori de dimensiuni mari, direct proporționale cu numărul de contacte din manifold -- ar fi trebuit să îmi scriu propria implementare pentru structurile geometrice de date - vectori și matrice de dimensiuni mai mari decât 4x4. Am ales, astfel, să utilizez \textbf{metoda impulsurilor secvențiale}, care produce rezultate acceptabile pentru o simulare care nu se vrea a fi hiper-exactă.
+Complexitatea pe care ar fi adus-o implementarea metodei rezolvării simultane a contactelor nu este justificată în cazul de față. Ar fi fost nevoie de un redesign al structurilor de date folosite adus de necesitatea operațiilor dintre matrice și vectori de dimensiuni mari, direct proporționale cu numărul de contacte din manifold -- ar fi trebuit să îmi scriu propria implementare pentru structurile geometrice de date - vectori și matrice de dimensiuni mai mari decât 4x4. Am ales, astfel, să utilizez \hyperref[seq_impulse_method]{\textbf{metoda impulsurilor secvențiale}}, care produce rezultate acceptabile pentru o simulare care nu se vrea a fi hiper-exactă. Corectarea pozițiilor corpurilor o realizez printr-o metodă asemănătoare cu cea a \textbf{pseudo-vitezelor}.
 
 De asemenea, am decis să nu generalizez contactele la constrângeri fizice și am ales să introduc în schimb alte optimizări, descrise în capitolele ulterioare.
 
 \subsection{Integrare numerică}
 
-În cazul unei simulări, metoda Euler explicită este inferioară din toate punctele de vedere celei \textbf{Euler implicită}, iar precizia altor metode de ordin superior ar fi combătute oricum de micile imperfecțiuni apărute în urma rezolvării coliziunilor. Am ales să păstrez lucrurile simple și să folosesc a doua metodă prezentată mai sus.
+În cazul unei simulări, metoda Euler explicită este inferioară din toate punctele de vedere celei \textbf{Euler implicite}, iar precizia altor metode de ordin superior ar fi combătută oricum de micile imperfecțiuni apărute în urma rezolvării coliziunilor. Am ales să păstrez lucrurile simple și să folosesc a doua metodă menționată mai sus.
+
+\subsection{Interfață grafică}
+
+Pentru realizarea interfeței grafice, lipsa de experiență în lucrul cu tool-uri consacrate ca \textit{Qt} sau \textit{WPF} m-au făcut să aleg să folosesc o soluție imediată, care să fie ușor de învățat și de utilizat. Documentația \textbf{Dear ImGui} mi s-a părut mai bine realizată și multitudinea de widget-uri și addon-uri deja existente au contribuit la alegerea făcută. Rapiditatea cu care am putut implementa o interfață grafică completă și funcțională m-a surprins plăcut și consider alegerea ca fiind una inspirată.
 % 
 %\dezvoltare Ce soluții similare există pe piață? Care sunt limitările lor / pentru ce cazuri de utilizare sau pentru ce tip de clienți produsele existente pe piață nu răspund cerințelor? Care sunt indicatorii pe baza cărora sunt evaluate aceste produse, de către potențiali clienți, și unde sunt lipsurile/ care este oportunitatea generată de lipsurile acestea?
 %
@@ -637,9 +730,8 @@ De asemenea, am decis să nu generalizez contactele la constrângeri fizice și 
 \chapter{Soluția Propusă}
 
 Soluția propusă urmărește arhitectura firească a unei aplicații grafice \textbf{OpenGL}, cu următoarele componente:
-
 \begin{enumerate}
-	\item \textbf{backend}-ul -- este un framework care oferă funcționalitățile de bază necesare funcționării aplicației OpenGL
+	\item \textbf{backend}-ul -- este un framework care oferă funcționalitățile de bază necesare funcționării aplicației \textit{OpenGL}
 	\item \textbf{logica} -- este implementarea propriu-zisă a simulatorului de interacțiuni fizice
 	\item \textbf{frontend}-ul -- reprezintă interfața cu utilizatorul
 \end{enumerate}
@@ -648,26 +740,26 @@ Soluția propusă urmărește arhitectura firească a unei aplicații grafice \t
 
 Funcționalitățile pe care le oferă așa-numitul backend sunt:
 \begin{itemize}
-	\item crearea, controlul și interfațarea cu un context OpenGL
-	\item suport pentru încărcarea de meshe 3D
-	\item suport pentru definirea și încărcarea de shadere OpenGL
+	\item crearea, controlul și interfațarea cu un context \textit{OpenGL}
+	\item suport pentru încărcarea de mesh-uri 3D
+	\item suport pentru definirea și încărcarea de shader-e \textit{OpenGL}
 	\item crearea și controlul unei ferestre de afișare
-	\item oferirea unui model generic pentru scrierea de aplicații OpenGL:
+	\item oferirea unui model generic pentru scrierea de aplicații \textit{OpenGL}:
 		\begin{itemize}
 			\item control pentru fereastra de afișare
 			\item management-ul input-ului de la mouse și tastatură
 			\item implementarea unei camere first-person pentru vizualizarea scenei
 			\item o scenă de bază care poate fi moștenită și căreia i se vor adăuga funcționalitățile specifice aplicației
-			\item interfață pentru desenarea meshelolor 3D
+			\item interfață pentru desenarea mesh-urilor 3D
 		\end{itemize}
 \end{itemize}
-Lista de mai sus nu este exhaustivă, complexitatea unui astfel de framework, chiar și minimal, este destul de mare. Cum implementarea acestuia nu a făcut parte din obiectivele proiectului, am ales să folosesc framework-ul realizat de Gabriel Ivănică pentru laboratoarele de EGC\cite{framework_egc_github}. O descriere mai detaliată a acestuia poate fi găsită aici\cite{framework_egc_ocw}.
+Lista de mai sus nu este exhaustivă, complexitatea unui astfel de framework, chiar și minimal, este destul de mare. Cum implementarea acestuia nu a făcut parte din obiectivele proiectului, am ales să folosesc framework-ul\cite{framework_egc_github} oferit pentru laboratoarele aferente cursului de Elemente de Grafică pe Calculator, din cadrul secției CTI a Universității Politehnica București. O descriere mai detaliată a acestuia poate fi găsită pe wiki-ul asociat laboratorului\cite{framework_egc_ocw}.
 
 Astfel, etapele funcționării unei aplicații, facilitate de framework-ul descris mai sus sunt:
 \begin{enumerate}
 	\item Se definesc proprietățile pentru fereastra de lucru.
-	\item Se inițializează API-ul OpenGL.
-	\item Se creează fereastra de lucru cu un context OpenGL.
+	\item Se inițializează API-ul \textit{OpenGL}.
+	\item Se creează fereastra de lucru cu un context \textit{OpenGL}.
 	\item Se atașează evenimentele de fereastră la motorul care se ocupă de tratarea lor.
 	\item Se creează și se inițializează noua scenă 3D.
 	\item Se pornește bucla principală a aplicației.
@@ -683,8 +775,8 @@ Este componenta centrală a oricărei aplicații grafice și funcționează în 
 	\setcounter{enumi}{-1}
 	\item Backend-ul realizează un preambul în care își actualizează parametrii interni
 	\begin{itemize}
-		\item Se pregătește contextul OpenGL pentru desenare -- sunt curățate buffer-ele de culoare, dimensiunea ferestrei de desenare este reactualizată, dacă este cazul
-		\item Se estimează timpul de execuție pentru iterația actuală, pe baza duratei iterației precedente(deltaTime).
+		\item Se pregătește contextul \textit{OpenGL} pentru desenare -- sunt curățate buffer-ele de culoare, dimensiunea ferestrei de desenare este reactualizată, dacă este cazul
+		\item Se estimează timpul de execuție pentru iterația actuală, pe baza duratei iterației precedente (\textit{deltaTime}).
 		\item Sunt procesate evenimentele salvate anterior.
 	\end{itemize}
 	\item Este desenată scena în totalitate.
@@ -701,6 +793,7 @@ Este componenta centrală a oricărei aplicații grafice și funcționează în 
 \subsection{Structură}
 În continuare voi descrie, pe rând, componentele individuale ale simulatorului.
 
+\subsubsection{Obiectele scenei}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\linewidth]{pics/cap4_00.eps}
@@ -708,59 +801,92 @@ Este componenta centrală a oricărei aplicații grafice și funcționează în 
 	\caption[]{Descrierea unui obiect al scenei}
 \end{figure}
 
-Începând cu \textbf{obiectele scenei}, acestea sunt alocate dinamic la rularea aplicației și stochează informații necesare la desenare, dar oferă și o interfață pentru actualizarea corpului solid, prin metoda \textbf{update()}. Am ales să folosesc obiectul scenei ca pe o scurtătură către toate referințele necesare celorlalte componente(de ex. în cadrul algoritmului GJK, determinarea punctului de suport pe diferența Minkowski a 2 corpuri necesită apelul metodei \textit{getSupportPtInLocalSpace()} din clasa Shape și poate fi accesată prin referința din PhysicsObject).
+Începând cu \textbf{obiectele scenei}, acestea sunt alocate dinamic la rularea aplicației și stochează informații necesare la desenare, dar oferă și o interfață pentru actualizarea corpului solid, prin metoda \textbf{update()}. Am ales să folosesc obiectul scenei ca pe o scurtătură către toate referințele necesare celorlalte componente (de ex. în cadrul algoritmului GJK, determinarea punctului de suport pe \hyperref[minkowski_difference]{\textit{diferența Minkowski}} a 2 corpuri necesită apelul metodei \textit{getSupportPtInLocalSpace()} din clasa \textit{Shape} și poate fi accesată prin referința din \textit{PhysicsObject}).
 
-Starea cinematică a obiectului este încapsulată într-un obiect \textbf{RigidBody}(descris în întregime aici \ref{fig:RigidBody}). Pasul de integrare presupune:
+Toate obiectele scenei sunt menținute într-un obiect de tip \textbf{ObjectSpawner} care se ocupă de instanțierea și actualizarea lor și oferă funcționalități de nivel înalt aplicației.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{pics/ObjectSpawner.eps}
+	\caption[]{Structura unui obiect ObjectSpawner}
+	\label{fig:ObjectSpawner}
+\end{figure}
+
+\subsubsection{Corpurile solide}
+Starea cinematică a obiectului este încapsulată într-un obiect \textbf{RigidBody}(descris în întregime în [\autoref{fig:RigidBody}]). Pasul de integrare presupune:
 \begin{enumerate}
 	\item \textbf{determinarea accelerației} ca rezultat al forțelor care acționează asupra obiectului
-	\item determinarea noilor valori pentru \textbf{viteză}(atât liniară, cât și unghiulară), și pentru \textbf{poziție}, respectiv \textbf{orientare}, folosind metoda Euler semi-implicită
+	\item determinarea noilor valori pentru \textbf{viteză} (atât liniară, cât și unghiulară), și pentru \textbf{poziție}, respectiv \textbf{orientare}, folosind \hyperref[inline_implicit_euler]{\textit{metoda Euler semi-implicită}}
 	\item sunt simulate forțele de frecare cu aerul, prin înmulțirea vitezelor cu un \textbf{factor de amortizare}
 	\item sunt actualizate \textbf{matricele de modelare} și \textbf{tensorul de inerție} și se resetează acumulatorii de forțe și momente 
 \end{enumerate}
 
-Mai departe, controlul aplicației este preluat de \textbf{detectorul de coliziuni}, a cărui structură completă poate fi găsită aici \ref{fig:CollisionDetection}.
+\subsubsection{Detecția de coliziuni}
+Mai departe, controlul aplicației este preluat de \textbf{detectorul de coliziuni}, a cărui structură completă poate fi găsită în [\autoref{fig:CollisionDetection}].
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\linewidth]{pics/CollisionDetectionSmall.eps}
-	\caption[]{Sistemul de detecție de coliziuni}
+	\includegraphics[width=1.0\linewidth]{pics/CollisionDetectionSmall.eps}
+	\caption[]{Subsistemul de detecție de coliziuni}
 	\label{fig:CollisionDetectionSmall}
 \end{figure}
 
-Am considerat necesară separarea procesului de detecție a coliziunilor în două subsisteme -- \textbf{detectorul de posibile coliziuni}, corespondent fazei preliminare a algoritmului și \textbf{generatorul de puncte de coliziune}, care preia responsabilitatea pentru corpurile descoperite de primul. \textbf{generatorul de coliziuni} nu este decât un agregator al celor două subsisteme care oferă o interfață simplă aplicației.
+Am considerat necesară separarea procesului de detecție a coliziunilor în două subsisteme -- \textbf{detectorul de posibile coliziuni}, corespondent fazei preliminare a algoritmului și \textbf{generatorul de puncte de coliziune}, care preia responsabilitatea pentru corpurile descoperite de primul. \textbf{Generatorul de coliziuni} nu este decât un agregator al celor două subsisteme care oferă o interfață simplă aplicației.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\linewidth]{pics/collider.eps}
+	\includegraphics[width=0.8\linewidth]{pics/collider.eps}
 	\caption[]{OBBCollider implementează clasa abstractă Collider}
 	\label{fig:collider}
 \end{figure}
 
-Detectorul de posibile coliziuni menține un \textbf{vector de collider-e OBB} pentru obiectele din scenă pentru care se dorește posibilă existența coliziunilor și construiește \textbf{vectorul de posibile coliziuni} folosind referințele către obiectele fizice din collider-e. Generatorul de puncte de coliziune preia rezultatul și efectuează, mai întâi testul de intersecție, și mai apoi calculează punctele de coliziune, care este rezultatul final al etapei de detecție a coliziunilor și care este transmis mai departe în pipeline \textbf{rezolvitorului de coliziuni}.
-
-Deoarece \textbf{punctele de coliziune} reprezintă doar niște informații legate de coliziunea cea mai adâncă dintre 2 corpuri(câte un singur punct pe suprafețele celor două corpuri, normala și distanța de penetrare) și ar fi ineficient să se aloce dinamic noi contacte la fiecare cadru, am folosit o schemă de caching bazată pe ideea de \textbf{contacte persistente} și \textbf{manifold-uri de contact}:
+Detectorul de posibile coliziuni menține un \textbf{vector de collider-e OBB} pentru obiectele din scenă pentru care se dorește posibilă existența coliziunilor și construiește \textbf{vectorul de posibile coliziuni} folosind referințele către obiectele fizice din collider-e. Generatorul de puncte de coliziune preia rezultatul și efectuează, mai întâi testul de intersecție, și mai apoi calculează punctele de coliziune, care este rezultatul final al etapei de detecție a coliziunilor și care este transmis mai departe în pipeline \textbf{rezolvitorului de coliziuni}, a cărui structură completă poate fi observată în [\autoref{fig:CollisionResolution}].
+\subsubsection{Rezolvarea coliziunilor}
+Deoarece \textbf{punctele de coliziune} reprezintă doar niște informații legate de coliziunea cea mai adâncă dintre 2 corpuri (câte un singur punct pe suprafețele celor două corpuri, normala și distanța de penetrare) și ar fi ineficient să se aloce dinamic noi contacte la fiecare cadru, am folosit o schemă de caching bazată pe ideea de \textbf{contacte persistente} și \textbf{manifold-uri de contact}:
 \begin{itemize}
 	\item introduc aici noțiunea de \textbf{punct de contact}, care pe lângă informațiile de coliziune, mai include și alte câmpuri necesare algoritmului de caching sau rezolvării în sine
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=0.7\linewidth]{pics/collisionContact.eps}
-		\caption[]{\centering diferența subtilă dintre punctul de coliziune și punctul de contact \newline (a se observa că Contact moștenește CollisionPoint)}
+		\includegraphics[width=0.85\linewidth]{pics/collisionContact.eps}
+		\caption[]{\centering diferența dintre punctul de coliziune și punctul de contact \newline (a se observa că Contact moștenește CollisionPoint)}
 		\label{fig:collisionContact}
 	\end{figure}
 	\item pentru fiecare pereche de obiecte pentru care există coliziune, punctele de contact sunt reținute într-un manifold format din maxim 4 astfel de puncte
 	\item de fiecare dată când obțin un nou punct de coliziune între două obiecte, caut manifold-ul de contact asociat perechii de obiecte și îl actualizez:
 	\begin{itemize}
 		\item dacă nu am găsit un manifold pentru perechea curentă, atunci creez unul nou și creez un nou punct de contact pe care îl adaug la manifold
-		\item dacă punctul de coliziune poate fi atribuit unuia dintre punctele de contact ale manifold-ului(se află la o distanță suficient de mică), atunci doar actualizez punctul de contact deja existent
-		\item dacă nu corespunde unui astfel de punct, atunci este creat un nou punct de contact și este adăugat manifold-ului, înlocuind, dacă există deja 4 puncte, punctul de contact care oferă cea mai puțină informație(cel cu penetrarea cea mai mică)
+		\item dacă punctul de coliziune poate fi atribuit unuia dintre punctele de contact ale manifold-ului (se află la o distanță suficient de mică), atunci doar actualizez punctul de contact deja existent
+		\item dacă nu corespunde unui astfel de punct, atunci este creat un nou punct de contact și este adăugat manifold-ului, înlocuind, dacă există deja 4 puncte, punctul de contact care oferă cea mai puțină informație (cel cu penetrarea cea mai mică)
 	\end{itemize}
 	\item manifold-urile care nu au fost actualizate în cadrul curent, sau cele formate din puncte de contact cu penetrare negativă, sunt pur și simplu eliminate din sistem
 \end{itemize}
 
-Cu asta se încheie pipeline-ul logic al simulatorului. Totul se reia de la început în noul cadru.
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=0.8\linewidth]{pics/CollisionResolutionSmall.eps}}
+	\caption[]{Subsistemul de rezolvare a coliziunilor}
+	\label{fig:CollisionResolutionSmall}
+\end{figure}
+
+Rezolvarea completă a coliziunilor presupune rezolvarea tuturor manifold-urilor de contact. La nivelul unui singur manifold au loc următorii pași:
+\begin{enumerate}
+	\item identificarea celui mai adânc contact (cu distanța de penetrare cea mai mare)
+	\item rezolvarea erorii de poziție a corpurilor pe baza informațiilor acestui contact
+	\item repetarea pașilor 1 și 2 cât timp iterațiile pentru rezolvarea pozițiilor nu sunt epuizate
+	\item identificarea celui mai rapid contact (cu viteza de separare (!valoare negativă) cea mai mică)
+	\item rezolvarea vitezelor corpurilor pe baza informațiilor acestui contact
+	\item repetarea pașilor 4 și 5 cât timp iterațiile pentru rezolvarea vitezelor nu sunt epuizate
+\end{enumerate}
 
 \section{Interfața cu utilizatorul}
-TODO:
+Posibilitatea utilizatorului de a interacționa cu simularea este oferită de o interfață minimală. Aceasta este bazată atât pe input-ul de la mouse și tastatură, cât și pe un GUI care să ofere control mai fin asupra parametrilor.
+
+Astfel, utilizatorul poate selecta câte un obiect de pe ecran dând click pe acesta și îi poate controla poziția și orientarea folosind tastatura. În plus, controlul camerei oferite de backend se realizează tot cu ajutorul tastaturii, atunci când butonul dreapta al mouse-ului este ținut apăsat. Totodată, utilizatorul poate introduce oricând dorește obiecte noi în scenă, atât static, la inițializare, cât și dinamic, în timpul rulării aplicației.
+
+Interfața grafică oferă posibilitatea de a controla în timp real parametrii simulării (elementele desenate, gravitația, numărul de iterații în cadrul diferiților algoritmi, precizie etc.). Utilizatorul primește feedback în timp real, valorile fiind în permanență afișate. În plus față de setările ce țin de simulare, mai pot fi alterate proprietățile (masă, poziție, orientare, coeficienți de frecare / elasticitate etc.) obiectului selectat cu mouse-ul.
+
+În ultimul rând, pentru a putea testa și crea diferite simulări într-un mod cât mai facil, există posibilitatea de a încărca scene (formate din parametrii de simulare și lista cu obiectele din scenă) definite în fișiere \textit{.json} sau de a salva starea actuală a simulării într-o nouă astfel de scenă.
+
 %Capitolul conține o privire de ansamblu a soluției ce rezolvă problema, prin prezentarea structurii / arhitecturii acesteia. În funcție de tipul lucrării acest capitol poate conține diagrame (clase, distribuție, workflow, entitate-relație), demonstrații de corectitudine pentru algoritmii propuși de autor, abordări teoretice (modelare matematică), structura hardware, arhitectura aplicației.
 %
 %
@@ -796,15 +922,16 @@ TODO:
 
 Acest capitol conține câteva observații asupra procesului de dezvoltare și implementare a aplicației aferente proiectului.
 
-Implementarea a fost realizată folosind limbajul \textbf{C++} și biblioteca \textbf{OpenGL}, în mediul de programare Microsoft \textbf{Visual Studio} Community Edition 2017, iar testarea s-a făcut pe laptop-ul personal(Intel i5 2.5GHz, 8GB RAM, Intel HD Graphics 4600).
+Implementarea a fost realizată folosind limbajul \textbf{C++} și biblioteca \textbf{OpenGL}, în mediul de programare \textit{Microsoft \textbf{Visual Studio} Community Edition 2017}, iar testarea s-a făcut pe laptop-ul personal (\textit{Intel i5} 2.5GHz, 8GB RAM, \textit{Intel HD Graphics 4600}).
 
-Dezvoltarea a pornit de la framework-ul utilizat la laboratoarele de EGC, care a fost descris în capitolul precedent. Acesta oferă clasa abstractă SimpleScene, care poate fi moșteniță și care oferă interfețe pentru rularea aplicației(metodele Init(), FrameStart(), Update(), FrameEnd()), randarea de meshe și pentru tratarea de input de la mouse și tastatură. Aplicațiile demo sunt pur și simplu implementări ale acestei SimpleScene. În plus, framework-ul oferă și implementarea unei camere first-person, care poate fi controlată din mouse și tastatură, pentru vizualizarea scenei.
+Dezvoltarea a pornit de la framework-ul descris în capitolul precedent. Acesta oferă clasa abstractă \textit{SimpleScene}, care poate fi moștenită și care oferă interfețe pentru rularea aplicației (metodele \textit{Init()}, \textit{FrameStart()}, \textit{Update()}, \textit{FrameEnd()}), randarea de mesh-uri și pentru tratarea de input de la mouse și tastatură. Aplicațiile demo sunt pur și simplu implementări ale acestei \textit{SimpleScene}. În plus, framework-ul oferă și implementarea unei camere first-person, care poate fi controlată din mouse și tastatură, pentru vizualizarea scenei.
 
-Biblioteca folosită pentru tipuri și funcții matematice și geometrice este \textbf{GLM}
+Biblioteca utilizată pentru tipuri și funcții matematice și geometrice este \textbf{GLM}\cite{glm}.
 
+\section{Reprezentarea corpurilor solide}
 
-Primul obiectiv atins a fost \textbf{implementarea clasei RigidBody}\ref{fig:RigidBody} și, implicit, a operației de integrare. Testarea s-a făcut cu un simplu cub asupra căruia acționează gravitația și asupra căruia se pot aplica forțe, momente și impulsuri cu ajutorul tastaturii. Singura mențiune specială este că am ales să stochez orientarea corpului într-un \textbf{quaternion}, în loc de o reprezentare matriceală sau cu unghiurile lui Euler. Motivul este foarte simplu, ocupă mai puțin spațiu în memorie, nu prezintă problema Gimbal Lock\cite{quaternions}, iar suportul GLM pentru operații cu quaternioni este foarte bun. Exemplu de utilizare:
-\begin{lstlisting}[style=myC++]
+Primul obiectiv atins a fost \textbf{implementarea clasei RigidBody}[\autoref{fig:RigidBody}] și, implicit, a operației de integrare. Testarea s-a făcut cu un simplu cub asupra căruia acționează gravitația și asupra căruia se pot aplica forțe, momente și impulsuri cu ajutorul tastaturii. O mențiune specială este că am ales să stochez orientarea corpului într-un \textbf{quaternion}, în loc de o reprezentare matriceală sau cu \textit{unghiurile lui Euler}. Motivul este foarte simplu, ocupă mai puțin spațiu în memorie, nu prezintă problema \textit{Gimbal Lock}\cite{quaternions}, iar suportul \textit{GLM} pentru operații cu quaternioni este foarte bun. Exemplu de utilizare:
+\begin{lstlisting}[style=myC++, label = {code:quaternion_example}, caption={actualizarea orientării în pasul de integrare}, float, floatplacement = H]
 	glm::quat orientation;
 	...
 	orientation = orientation + deltaTime * 0.5f * glm::quat(0.0f, angVelocity) * orientation;
@@ -812,50 +939,43 @@ Primul obiectiv atins a fost \textbf{implementarea clasei RigidBody}\ref{fig:Rig
 \end{lstlisting}
 
 
-A doua etapă de dezvoltare a constat în implementarea sistemului de \textbf{detecție a coliziunilor}. Complexitatea etapei mi-a pus mult mai multe bătăi de cap.
+\section {Detecția coliziunilor}
+A doua etapă de dezvoltare a constat în implementarea sistemului de \textbf{detecție a coliziunilor}. Complexitatea etapei a fost semnificativ mai mare, și am întâmpinat mai multe dificultăți.
 
-Pentru \textbf{faza preliminară}, am implementat direct collider-ele de tip OBB, cu un detector $O(n^2)$. După ce am citit despre teorema axei separatoare și eșuarea în a corecta erorile din implementarea mea a testului de intersecție, am ales să folosesc cea mai eficientă implementare posibilă, cea propusă de Ericson în \cite[Secțiunea 4.4 \textit{Oriented Bounding Boxes(OBBs)}]{real_time_collision_detection}. Tot aici, am fost nevoit să implementez abstractizarea obiectelor din scenă, care să încapsuleze obiectele RigidBody și Collider.
+\subsection {Etapa preliminară}
 
-Faza de detecție exactă și generare a punctelor de coliziune este cea care mi s-a părut cea mai dificilă. A necesitat o foarte mare atenție la detalii cum ar fi ordinea vârfurilor care compun simplex-ul din algoritmul GJK sau triunghiurile care compun poliedrul din cadrul EPA. Pentru implementarea GJK, foarte utilă mi s-a părut explicația lui Casey Muratori\cite{gjk_muratori}, care a oferit o interpretare mult mai ușor de înțeles a algoritmului decât enunțarea lui inițială\cite{gjk_original}. Remarcabil mi se pare că în cazul unui simplex tetraedru, am obținut până la 4 if-uri imbricate, pentru determinarea precisă a noului simplex și a noii direcții. Includ aici cazul triunghi, deoarece mi se pare că algoritmul în pseudocod nu spune prea multe cititorilor nefamiliarizați cu acesta.
+Pentru \textbf{faza preliminară}, am implementat direct collider-ele de tip \textit{OBB}, cu un detector $O(n^2)$. După ce am citit despre teorema axei separatoare și eșuarea în a corecta erorile din implementarea mea a testului de intersecție, am ales să folosesc implementarea optimă propusă de Christer Ericson\cite{ericson_obb}. Tot aici, am fost nevoit să implementez abstractizarea obiectelor din scenă, care să încapsuleze obiectele \textit{RigidBody} și \textit{Collider}.
 
-\begin{lstlisting}[style=myC++]
-void GJKEPA::GJKEPACollisionPointGenerator::doSimplex3() {
-	/* simplex is a triangle ABC, A was just added */
+\subsection {Etapa exactă}
+
+Faza de \textbf{detecție exactă} și generare a punctelor de coliziune este cea care mi s-a părut cea mai dificilă. A necesitat o foarte mare atenție la detalii cum ar fi ordinea vârfurilor care compun simplex-ul din algoritmul \textit{GJK} sau triunghiurile care compun poliedrul din cadrul \textit{EPA}.
+
+\subsubsection{GJK}
+
+Pentru \textbf{implementarea GJK}, foarte utilă mi s-a părut explicația lui Casey Muratori\cite{gjk_muratori}, care a oferit o interpretare mult mai ușor de înțeles a algoritmului decât enunțarea lui inițială\cite{gjk_original}. Remarcabil mi se pare că în cazul unui simplex tetraedru, am obținut până la 4 teste condiționale imbricate, pentru determinarea precisă a noului simplex și a noii direcții. Includ aici cazul muchie, deoarece mi se pare că algoritmul în pseudocod nu spune prea multe cititorilor nefamiliarizați cu acesta.
+
+\begin{lstlisting}[style=myC++, label={code:gjk_simplex2}, caption = {cazul muchie în algoritmul GJK}]
+void GJKEPA::GJKEPACollisionPointGenerator::doSimplex2()
+{
+	/* simplex is an edge \vec{AB}, A was just added */
 	glm::vec3 vecAO = -simplex.a.v;
 	glm::vec3 vecAB = simplex.b.v - simplex.a.v;
-	glm::vec3 vecAC = simplex.c.v - simplex.a.v;
-	glm::vec3 vecABC = glm::cross(vecAB, vecAC);
-
-	if (glm::dot(glm::cross(vecABC, vecAC), vecAO) > 0) {
-		if (glm::dot(vecAC, vecAO) > 0) {
-			simplex.set(simplex.a, simplex.c);
-			searchDir = glm::cross(glm::cross(vecAC, vecAO), vecAC);
-		} else {
-			if (glm::dot(vecAB, vecAO) > 0) {
-				simplex.set(simplex.a, simplex.b);
-				searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
-			} else {
-				simplex.set(simplex.a);
-				searchDir = vecAO; }}
-	} else {
-		if (glm::dot(glm::cross(vecAB, vecABC), vecAO) > 0) {
-			if (glm::dot(vecAB, vecAO) > 0) {
-				simplex.set(simplex.a, simplex.b);
-				searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
-			} else {
-				simplex.set(simplex.a);
-				searchDir = vecAO; }
-		} else {
-			if (glm::dot(vecABC, vecAO) > 0) {
-				searchDir = vecABC;
-			} else {
-				simplex.set(simplex.a, simplex.c, simplex.b);
-				searchDir = -vecABC;
-	}}}
+	/* origin is in the direction of \vec{AB}
+	search direction is perpendicular to \vec{AB} and coplanar with \vec{AO} */
+	if (glm::dot(vecAB, vecAO) > 0) {
+		searchDir = glm::normalize(glm::cross(glm::cross(vecAB, vecAO), vecAB));
+	}
+	else {
+		simplex.set(simplex.a);
+		searchDir = glm::normalize(vecAO);
+	}
 }
 \end{lstlisting}
 
-Un alt hop a fost reprezentat de \textbf{implementarea EPA}. Problemele întâlnite au fost:
+Ofer și codul pentru tratarea cazului triunghi în \autoref{code:gjk_simplex3}.
+\subsubsection{EPA}
+
+Un alt impediment a fost reprezentat de \textbf{implementarea EPA}. Problemele întâlnite au fost:
 \begin{itemize}
 	\item felul în care ar trebui stocat poliedrul -- am ales să îl rețin ca o listă de triunghiuri
 	\item pasul de expansiune a poliedrului -- adăugarea unui nou vârf presupune eliminarea  triunghiurilor care ar fi acoperite de acesta
@@ -893,8 +1013,8 @@ Un alt hop a fost reprezentat de \textbf{implementarea EPA}. Problemele întâln
 	\caption{Un pas de extindere al poliedrului în cadrul EPA}
 \end{figure}
 
-Bucata de cod care face exact acest lucru este:
-\begin{lstlisting}[style=myC++]
+Secvența de cod care face exact acest lucru este:
+\begin{lstlisting}[style=myC++, label={code:epa_expansion_step}, caption = {extinderea politopului în cadrul EPA}]
 /* adds an edge to the list of edges or removes it, if it is already there, but reversed */
 static void addRemoveEdge(std::list<GJKEPA::Edge> &edges, const GJKEPA::MinkowskiDiffPt &a, const GJKEPA::MinkowskiDiffPt &b) {
 	for (auto it = edges.begin(); it != edges.end(); it++) {
@@ -920,22 +1040,140 @@ for (Edge e : edges) {
 }
 \end{lstlisting}
 
+\section{Rezolvarea coliziunilor}
 
-\textbf{Rezolvarea contactelor} este componenta cea mai complexă a simulatorului din punct de vedere matematic și programatic. Procesul constă în doi pași:
-\begin{itemize}
-	\item rezolvarea interpenetrării
-	\item determinarea vitezei corecte de separare și aplicarea ei
-\end{itemize}
+\textbf{Rezolvarea coliziunilor} este componenta cea mai complexă a simulatorului din punct de vedere matematic și programatic. Procesul a fost descris mai pe larg în capitolele precedente, dar reiterez faptul că am ales o metodă de rezolvare a interpenetrării bazată pe \hyperref[pseudo_velocities]{metoda pseudo-vitezelor}. În plus, informațiile de coliziune sunt încapsulate în structuri numite \textit{contacte}, care pot supraviețui de la un cadru la altul și sunt grupate în manifold-uri diferite pentru fiecare pereche de obiecte aflate în coliziune.  Astfel, rezolvarea unui manifold de contact se realizează în felul următor:
+
+Sunt calculate pozițiile relative, coeficienții de frecare și elasticitate, viteza corpurilor dorită după rezolvare.
+\begin{lstlisting}[style=myC++, label={code:solveManifold_a}]
+void SequentialImpulseContactResolver::solveContactManifold(ContactManifold &manifold, float deltaTime)
+{
+	unsigned int penetrationIterations = 0;
+	unsigned int velocityIterations = 0;
+
+	for (auto & contact : manifold.contacts) {
+		for (uint8_t i = 0; i < 2; i++) {
+			if (contact->objects[i]->collider->body != nullptr)
+				contact->objects[i]->collider->body->isAwake = true;
+		}
+
+		contact->computeDerivedData(deltaTime);
+		contact->desiredDeltaVelocity = computeDesiredDeltaVelocity(contact);
+	}
+[cont.]
+\end{lstlisting}
 
 Rezolvarea interpenetrării presupune modificarea poziției corpurilor astfel încât acestea să nu se mai intersecteze. Pentru a obține rezultate mai realiste, se aplică atât o mișcare liniară, cât și una unghiulară. Calculul acestora presupune determinarea inerției liniare și unghiulare pentru ambele corpuri, împărțirea acestora la inerția totală necesară mișcării unitare și înmulțirea cu distanța de penetrare, pentru a obține cantitățile de mișcare necesare pentru separare.
+\begin{lstlisting}[style=myC++, label={code:solveManifold_b}]
+[cont.]
+	/* fix interpenetration */
+	for (penetrationIterations = 0; penetrationIterations < PhysicsSettings::get().collisionResolution.penMaxIterations; penetrationIterations++) {
+		/* get the contact with deepest penetration */
+		Contact *deepestContact = manifold.getDeepestContact();
 
-Calculul impulsului care să stabilească viteza corectă de separare se bazează din nou, pe componentele individuale -- cea liniară și cea unghiulară. Se determină schimbarea în viteze cauzată de o unitate de impuls. Se determină diferența în viteză dorită $desiredVelocity = -closingVelocity(1 + coefRestitution)$. Apoi, folosind cele două rezultate, sunt calculate componentele impulsului care vor fi aplicate celor două corpuri.
+		if (deepestContact == nullptr || deepestContact->penetration < PhysicsSettings::get().epsilons.penEpsilon) {
+			penetrationIterations++;
+			break;
+		}
+
+		/* compute and apply position update */
+		applyPositionUpdate(manifold, deepestContact);
+	}
+[cont.]
+\end{lstlisting}
+
+Se rezolvă vitezele corpurilor prin metoda impulsurilor secvențiale. Calculul impulsului care să stabilească viteza corectă de după coliziune se bazează din nou, pe componentele individuale -- cea liniară și cea unghiulară.
+\begin{lstlisting}[style=myC++, label={code:solveManifold_c}]
+[cont.]
+	/* fix velocities */
+	for (velocityIterations = 0; velocityIterations < PhysicsSettings::get().collisionResolution.velMaxIterations; velocityIterations++) {
+		/* get the contact with the lowest desired delta velocity (aka the fastest one) */
+		Contact *fastestContact = manifold.getFastestContact();
+
+		if (fastestContact == nullptr || fastestContact->desiredDeltaVelocity >= PhysicsSettings::get().epsilons.velEpsilon) {
+			velocityIterations++;
+			break;
+		}
+
+		/* compute and apply velocity update */
+		applyVelocityUpdate(manifold, fastestContact);
+	}
+}
+\end{lstlisting}
 
 Deoarece rezolvarea pe rând a contactelor dintr-un manifold poate duce la situații în care un alt contact decât cel curent să fie accentuat, folosesc mai multe iterații pentru aplicarea celor doi pași de mai sus, de fiecare dată încercând să rezolv cel mai adânc, respectiv cel mai rapid contact din manifold, astfel încât soluția să poată converge. Odată rezolvat un contact, schimbările aduse de acesta sunt aplicate tuturor celorlalte contacte din manifold.
 
 Principala resursă folosită pentru înțelegerea acestui proces a fost cartea\cite{millington} lui Ian Millington, iar soluția mea urmează îndeaproape indicațiile și implementarea acestuia.
 
-TODO: ceva și despre interfața grafică
+\section {Controlul obiectelor}
+Controlul obiectelor din scenă este realizat cu ajutorul unui obiect\textbf{ ObjectSpawner}[\autoref{fig:ObjectSpawner}], care menține o listă cu toate obiectele și care se ocupă de instanțierea și de actualizarea lor. Folosirea acestui obiect care să abstractizeze operațiile de bază (instanțiere, actualizare, încărcare/salvare scene) asigură un cod cât mai lizibil în aplicația principală și posibilitatea de a folosi aceste apeluri chiar și în cadrul interfeței grafice. Pentru simplitate, poziția acestuia este determinată pe baza poziției camerei și un deplasament față de aceasta. Exemple de folosire:
+
+\begin{lstlisting}[style=myC++]
+ObjectSpawner *spawner = new ObjectSpawner();
+[...]
+// instantiaza un nou obiect la runtime, cu parametri aleatori(sau nu), stabiliti de spawner
+spawner->spawnNewObject();
+// instantiaza un nou perete cu parametri alesi de utilizator                             
+spawner->spawnWallStatic(position, scale, orientation);
+// incarca o noua scena din fisier
+spawner->loadFromFile("test.json");
+// elimina obiectele prea indepartate si apeleaza update() pentru fiecare obiect
+spawner->updateObjects();
+\end{lstlisting}
+
+\section {Interfața grafică}
+Folosirea \textbf{Dear ImGui} nu a ridicat nicio problemă majoră. A trebuit să redirectez evenimentele de tastatură și scroll către cele definite în exemplul oficial de folosire a bibliotecii cu \textit{GLFW}, dar integrarea a fost facilă în rest. Definirea UI-ului am realizat-o într-un fișier separat, iar funcția pentru desenarea acestuia este apelată la sfârșitul fiecărui cadru. Am preluat în plus un addon pentru interfațarea cu sistemul de fișiere la alegerea unui fișier din care să se încarce o nouă scenă și să îmi definesc un nou widget pentru afișarea personalizată a celor 3 câmpuri dintr-un \textit{vec3}. Fiind vorba de un GUI imediat, elementele de logică sunt strâns legate de cele ce țin de desenare. Exemplu din \textit{ui.cpp}:
+
+\begin{lstlisting}[style=myC++, label={code:imguiExample}, caption = {widget-urile pentru stabilirea parametrilor impliciti ai corpurilor solide}]
+PhysicsSettings *settings = PhysicsSettings::get()
+[...]
+if (ImGui::TreeNode("rigid bodies default values"))
+{
+	ImGui::PushItemWidth(128);
+	ImGui::DragFloat("mass", &settings->rigidBodies.defaultMass, 1.0f, 0.0f, 10000.0f, "%.1f");
+
+	ImGui::DragFloat("friction coefficient", &settings->rigidBodies.defaultFrictionCoef, 0.005f, 0.0f, 1.0f);
+	ImGui::DragFloat("restitution coefficient", &settings->rigidBodies.defaultRestitutionCoef, 0.005f, 0.0f, 1.0f);
+
+	ImGui::PopItemWidth();
+	ImGui::TreePop();
+}
+\end{lstlisting}
+
+\section {Parametrii simulării}
+
+Pentru a nu hardcoda valori literale direct în cod, pentru a avea acces facil la ele, și pentru a le putea modifica la runtime, toate setările aplicației -- parametri de simulare, constante, erori admisibile, parametri impliciți pentru obiecte, configurația spawner-ului sau elementele desenate -- sunt reținute într-un obiect \textbf{PhysicsSettings}, care este un singleton accesibil de oriunde este nevoie în aplicație. Cea mai mare parte dintre acestea pot fi definite și în cadrul scenelor încărcabile în format \textit{.json}.
+
+\begin{lstlisting}[language=json, label={code:json_example}, caption={Exemplu de scenă în format .json}]
+{
+	"settings" : {
+		"gravity" : {
+			"x" : 0.0,
+			"y" : -20.0,
+			"z" : 0.0
+		},
+		"timeScale" : 1.0,
+		"rendering" : {
+			"renderColliders" : false
+		}
+	},
+	"objects" : [
+		{
+			"type" : "box",
+			"name" : "cube0",
+			"position" : {
+				"x" : 12.6,
+				"y" : 4.0,
+				"z" : 0.0
+			},
+			"frictionCoef" : 0.6,
+			"restitutionCoef" : 0.1,
+			"mass" : -1.0
+		}
+	]
+}
+\end{lstlisting}
+Un exemplu mai complet poate fi găsit în [\autoref{code:json_full}].
 %
 %În plus fata de capitolul precedent acesta conține elemente specifice ale rezolvării problemei care au presupus dificultăți deosebite din punct de vedere tehnic. Pot fi incluse configurații, secvențe de cod, pseudo-cod, implementări ale unor algoritmi, analize ale unor date, scripturi de testare. De asemenea, poate fi detaliat modul în care au fost utilizate tehnologiile introduse in capitolul 3.
 %
@@ -972,7 +1210,6 @@ TODO: ceva și despre interfața grafică
 
 
 \chapter{Evaluare}
-TODO:
 %Acest capitol trebuie să răspundă, în principiu, la 2 întrebări și să se încheie cu o discuție a rezultatelor obținute. Cele doua întrebări la care trebuie sa se răspundă sunt:
 %\begin{enumerate}
 %	\item  \textbf{Merge corect?} (Conform specificațiilor extrase în capitolul 2); 
@@ -1003,9 +1240,206 @@ TODO:
 %	\item \cercetare Componentele și soluția în ansamblu au fost evaluate din punct de vedere al performanței, folosind seturi de date standard și cu o interpretare corectă a rezultatelor.
 %	\item \ambele Discuție cu prezentarea calitativă și cantitativă a rezultatelor, precum și a relevanței acestor rezultate printr-o comparație complexă cu alte sisteme similare.
 %\end{itemize}
+Pentru evaluarea aplicației obținute, voi încerca să fac o analiză din perspectiva \textbf{obiectivelor propuse} inițial, dar și din punct de vedere al \textbf{performanței} acesteia.
+
+\section{Atingerea obiectivelor}
+
+La sfârșitul dezvoltării aplicației, am reușit cu succes să ating toate obiectivele pe care mi le-am propus. Am obținut un sistem pentru simularea interacțiunilor mecanice (ciocniri) între corpuri solide într-un spațiu 3D. Răspunsul la aceste interacțiuni este credibil pentru utilizatorul obișnuit, iar interfața pusă la dispoziție permite un control fin asupra scenei.
+
+Includ o listă completă de facilități oferite și suportate, care să evidențieze cele spuse mai sus:
+\begin{itemize}
+	\item reprezentarea corpurilor 3D în scenă se realizează cu ajutorul obiectelor de tip RigidBody[\autoref{fig:RigidBody}], în care:
+		\begin{itemize}
+			\item masa, factorii de scalare, coeficienții de frecare/elasticitate sunt mărimi constante
+			\item forțele și momentele forței care acționează asupra corpurilor sunt mărimi brute care sunt folosite la ajustarea mărimilor secundare
+			\item vitezele și accelerațiile liniare și unghiulare sunt mărimi secundare, care sunt utilizate la actualizarea mărimilor finale
+			\item poziția și orientarea sunt mărimi finale, care determină starea absolută a corpurilor într-un moment de timp $t$
+		\end{itemize}
+	\item corpurile au atribuite forme elementare și volume încadratoare, astfel încât să se poată detecta coliziunile dintre acestea în două etape:
+		\begin{itemize}
+			\item în etapa preliminară, se realizează teste de intersecție mai puțin precise, pe baza volumelor încadratoare
+			\item în etapa exactă, se identifică toate coliziunile reale și sunt determinate informațiile care să ajute la rezolvarea acestora
+		\end{itemize}
+	\item toate coliziunile identificate sunt soluționate printr-un răspuns aplicat corpurilor implicate, care are rolul de a:
+		\begin{itemize}
+			\item asigura un set de viteze liniare și unghiulare post-coliziune realiste, care să respecte, pe cât posibil, legile fizicii
+			\item separa corpurile imediat, în cazul întrepătrunderilor vizibile
+		\end{itemize}
+	\item toate obiectele și alte elemente anexe(puncte de coliziune, normale, volume încadratoare etc.) sunt desenate pe ecran, într-o fereastră OpenGL
+	\item este oferită o interfață cu utilizatorul care să îi permită acestuia să:
+		\begin{itemize} 
+			\item încarce sau să salveze scene în format .json [\autoref{fig:gui_load_scene}]
+			\item instanțieze noi obiecte
+			\item controleze un obiect individual selectat de acesta(atât starea, cât și parametrii constanți) [\autoref{fig:gui_object_control}]
+			\item altereze setările simulării [\autoref{fig:gui_simulation_settings}]
+			\item poată naviga în scenă
+			\item aleagă exact ce elemente dorește să fie desenate [\autoref{fig:gui_rendering}]
+		\end{itemize}
+	\item corpuri 3D suportate: cub, paralelipiped dreptunghic, sferă, cilindru, capsulă și variații obținute prin scalare ale acestora
+	\item sisteme de operare suportate: Windows
+	\item biblioteci adiționale: doar cele incluse în folder-ul /libs
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/screenshot0.png}}
+	\caption[]{Interfața grafică oferită}
+	\label{fig:gui_showcase}
+\end{figure}
+
+\section{Evaluare performanțe}
+Pentru evaluarea performanțelor aplicației, propun 3 scenarii de test diferite. Parametrii simulării și cei impliciți ai corpurilor sunt cei din [\autoref{code:json_full}], dacă nu este specificat altfel.
+Toate testele au fost efectuate pe laptop-ul personal (\textit{Intel i5} 2.5GHz, 8GB RAM, \textit{Intel HD Graphics 4600}), utilizând mediul de dezvoltare \textit{Visual Studio Community Edition 2017}.
+
+\subsection{Stive de obiecte}
+Pentru acest test, am considerat un număr variabil de cuburi unitare stivuite unul peste celălalt deasupra unui perete static care ține loc de podea și am măsurat timpul până când oricare două cuburi alăturate nu mai sunt în contact.
+
+\begin{table}[th]\small\linespread{1}
+	\centering
+	\begin{tabular}{| l | >{\raggedright\arraybackslash}p{3cm} | >{\raggedright\arraybackslash}p{8cm} |}
+		\hline
+		\textbf{Nr. cuburi} & \textbf{Timp până la separare (secunde)} & \textbf{Observații} \\\hline
+		1 & $\infty$ & cubul este complet stabil \\\hline
+		2 & 40 & vibrații foarte mici, dar ansamblul este stabil \\\hline
+		3 & 30 & vibrații foarte mici, dar ansamblul este stabil \\\hline
+		4 & 30 & vibrații foarte mici, dar ansamblul este stabil \\\hline
+		5 & 25 & cuburile alunecă în mod vizibil \\\hline
+		6 & 15 & vibrații observabile, cuburile alunecă în mod vizibil \\\hline
+		7 & 12 & vibrații observabile, cuburile alunecă în mod vizibil \\\hline
+		8 & 8  & vibrații observabile, cuburile alunecă în mod vizibil \\\hline
+		16 & 4 & stiva este complet instabilă \\\hline	
+	\end{tabular}
+	\caption{Testul pentru stive de obiecte}
+	\label{tab:stacking}
+\end{table}
+
+Creșterea pragului de mișcare pentru trecerea obiectelor în starea de sleep poate duce la stabilizarea stivelor de 2, 3, sau 4 obiecte. Pentru uz general, consider rezultatele obținute mulțumitoare.
+
+\subsection {Număr de obiecte în scenă}
+Pentru acest test, am considerat un număr variabil de cuburi instanțiate deasupra solului și lăsate să cadă. Cuburile sunt instanțiate astfel încât acestea să se afle în contact sau nu. La impactul cu solul, se va aplica un răspuns pentru coliziune. Am măsurat numărul de cadre efectuate pe secundă.
+
+\begin{table}[th]\small\linespread{1}
+	\centering
+	\begin{tabular}{| l | >{\raggedright\arraybackslash}p{3cm} | >{\raggedright\arraybackslash}p{3cm} | >{\raggedright\arraybackslash}p{6cm} |}
+		\hline
+		\textbf{Nr. cuburi} & \textbf{Nr. cadre pe secundă (în cădere)} & \textbf{Nr. cadre pe secundă (la sol)} & \textbf{Observații} \\\hline
+		1   & 60.0 & 59.9 & funcționare fluidă \\\hline
+		2   & 60.0 & 59.9 & funcționare fluidă \\\hline
+		4   & 60.0 & 59.8 & funcționare fluidă \\\hline
+		8   & 59.9 & 59.6 & funcționare fluidă \\\hline
+		16  & 59.6 & 58.9 & funcționare fluidă \\\hline
+		32  & 59.2 & 57.7 & funcționare acceptabilă \\\hline
+		64  & 50.0 & 30.4 & o cădere mare, dar simularea este încă stabilă \\\hline
+		128 & 18.5 & 12.3 & simularea este instabilă \\\hline
+		256 & 6.3  & 0.0  & simularea este complet instabilă \\\hline	
+	\end{tabular}
+	\caption{Testul pentru număr de obiecte în scenă}
+	\label{tab:fps_num_objects}
+\end{table}
+
+Așa cum era de așteptat, simularea devine instabilă când în scenă se află un număr mare de obiecte. În plus, rezolvarea coliziunilor are o influență semnificativă asupra vitezei aplicației.
+
+Pentru a doua parte a acestui test, am determinat timpul petrecut de aplicație în fiecare dintre subsistemele majore ale acesteia pentru o scenă cu 32 de cuburi aflate în contact cu solul.
+
+\begin{table}[th]\small\linespread{1}
+	\centering
+	\begin{tabular}{| l | >{\raggedright\arraybackslash}p{3cm} |}
+		\hline
+		\textbf{Etapa} & \textbf{timp (ms)} \\\hline
+		desenare obiecte   & 4.06  \\\hline
+		integrare & 0.22 \\\hline
+		detecție posibile coliziuni & 1.33 \\\hline
+		stabilire puncte de contact & 3.54 \\\hline
+		rezolvare contacte & 0.76 \\\hline
+		desenare UI  &  2.66 \\\hline
+		\end{tabular}
+	\caption{Timpul petrecut în fiecare dintre subsistemele simulatorului într-un cadru}
+	\label{tab:time_elapsed}
+\end{table}
+
+Rezultatele nu sunt extrem de surprinzătoare. Etapa cea mai costisitoare, excluzând pe cele de desenare, este generarea punctelor de contact. Complexitatea algoritmilor folosiți este potrivită doar pentru teste de dimensiuni mici. Pentru măsurare am folosit profiler-ul oferit de \textit{Visual Studio 2017}, care oferă detalii exacte asupra căror apeluri de funcții au ocupat cei mai mulți cicli de procesor.
+
+
+\subsection{Plan înclinat}
+
+Acest test nu are fundamente obiective, dar verifică funcționarea corectă a frecării în cadrul rezolvării contactelor. Toate tipurile de obiecte sunt instanțiate deasupra unui perete care joacă rolul unui plan înclinat de $30\deg$. Sunt considerate 3 situații: coeficientul de frecare atât al corpurilor, cât și al planului înclinat ia pe rând fiecare dintre valorile $0.0$, $0.5$, respectiv $1.0$.
+
+În cazul sferei, ar trebui să se poată observa cu ușurință ca aceasta nu se rotește deloc în cazul fără frecare și se va roti puțin sau mai mult în celelalte două cazuri. Pentru vizualizare, folosesc \textit{OBB}-ul asociat sferei, iar ca metrică, rețin norma maximă a vitezei unghiulare atinsă de sferă.
+
+\begin{table}[th]\small\linespread{1}
+	\centering
+	\begin{tabular}{| l | >{\raggedright\arraybackslash}p{3cm} |}
+		\hline
+		\textbf{Coeficient de frecare} & \textbf{Viteza unghiulară maximă atinsă} \\\hline
+		0.0   & 0.02  \\\hline
+		0.5   & 1.04 \\\hline
+		1.0   & 1.32 \\\hline
+	\end{tabular}
+	\caption{Testul pentru verificarea tratării corecte a frecărilor}
+	\label{tab:friction_test}
+\end{table}
+
+Se observă diferența clară între cazul fără frecare și celelalte două. Pentru o vizualizare și mai bună, pot fi încărcate scenele din /demos/slope/.
+
+\subsection {Utilizare resurse}
+
+Câteva detalii despre resursele utilizate de aplicație:
+\begin{itemize}
+	\item aplicația rulează pe un singur thread
+	\item \textit{Visual Studio} raportează o amprentă în memorie de 45.5 MB; cea mai mare parte este ocupată de biblioteci și alocări realizate de backend
+	\item dimensiunea heap-ului se menține în jurul valorii de ~5900 KB (de exemplu, încărcarea unei scene cu 32 de obiecte va produce 265 de alocări totalizând 34.80 KB)
+\end{itemize}
+
+
+Per total, aplicația nu a atins nivelul de performanță pe care mi l-aș fi dorit, optimizările cele mai esențiale care ar trebui efectuate fiind cele ce țin de alocarea și dealocarea inteligentă a memoriei la runtime, dar și optimizări ale algoritmilor folosiți în cadrul simulatorului.
 
 \chapter{Concluzii}
-TODO:
+
+În urma realizării acestui proiect, am atins toate obiectivele pe care mi le-am propus, ceea ce mă face să îl consider un succes.
+
+Pe plan teoretic, am reușit să aprofundez suficient de multe cunoștințe astfel încât pe viitor să pot extinde și îmbunătăți aplicația obținută sau să contribui la alte proiecte asemănătoare. Am dobândit o înțelegere foarte bună a arhitecturii unui motor de fizică și a câtorva dintre algoritmii și metodele folosite des în industrie.  Mi-am exersat abilitățile de a programa în C++, mi-am reîmprospătat cunoștințele de \textit{OpenGL} și m-am familiarizat cu biblioteci noi care mi-ar putea fi utile și în viitor.
+
+Practic, am obținut o aplicație grafică \textit{OpenGL}, capabilă să ruleze o simulare de dimensiune rezonabilă (max. 64 de obiecte) a interacțiunilor mecanice dintre corpuri 3D pe sistemul de operare Windows. În plus, am implementat cu succes o interfață grafică pentru utilizator, prin care acesta poate încărca sau salva scene, controla parametrii simulării și direct obiectele din scenă.
+
+În realizarea aplicației:
+	\begin{itemize}
+		\item am implementat o reprezentare a corpurilor solide robustă și minimală
+		\item am implementat o serie de corpuri 3D (cub, paralelipiped dreptunghic, sferă, cilindru, capsulă) care să aibă asociate câte un obiect \textit{RigidBody} și care să participe în simulare
+		\item am implementat un integrator numeric bazat pe metoda Euler implicită
+		\item am implementat un sistem de detecție preliminară a coliziunilor, cu ajutorul volumelor încadratoare de tip \textit{OBB}
+		\item am implementat algoritmii \textit{GJK} și \textit{EPA} pentru detecția și calculul punctelor de coliziune
+		\item am implementat un rezolvitor de coliziuni bazat pe metoda impulsurilor secvențiale
+		\item am folosit \textit{Dear ImGui} pentru realizarea interfeței grafice
+		\item am testat și am oferit spre folosire o serie de demo-uri care să ilustreze capabilitățile simulatorului
+	\end{itemize}
+
+Limitările aplicației sunt:
+\begin{itemize}
+	\item numărul mic de forme care pot fi simulate -- nu există posibilitatea de a încărca mesh-uri poligonale complexe
+	\item performanța mai puțin decât ideală
+	\item realismul simulării este mulțumitor, dar nu excelent
+	\item lipsa suportului pentru alte tipuri de constrângeri mecanice (cum ar fi articulațiile)
+\end{itemize}
+Acestea sunt dictate de:
+	\begin{itemize}
+		\item erori numerice, datorate lucrului cu numere în virgulă mobilă
+		\item utilizarea unor parametri neoptimi în cadrul simulării
+		\item bug-uri și calitatea implementării
+		\item folosirea unui algoritm ineficient pentru detecția preliminară a coliziunilor
+		\item utilizarea ineficientă a memoriei
+	\end{itemize}
+
+Acestea fiind spuse, mențin posibilitatea ca pe viitor să continui lucrul la aplicație. Cele mai importante adăugiri pe care le-aș putea face sunt:
+\begin{itemize}
+	\item implementarea unei ierarhii de de volume încadratoare pentru a reduce complexitatea algoritmului $O(n^2)$ folosit în prezent în faza preliminară a detecției de coliziuni
+	\item alternativ, implementarea unui arbore al scenei de tip \textit{BSP} sau octree
+	\item oferirea unui suport pentru încărcarea de mesh-uri convexe și adaptarea algoritmilor deja implementați la acest caz general
+	\item implementarea și altor volume încadratoare pentru a putea compara performanțele acestora
+	\item rafinarea parametrilor simulării
+	\item implementarea și altor algoritmi, cum ar fi metoda contactelor simultane
+	\item optimizarea lucrului cu heap-ul, prin implementarea unui alocator propriu 
+	\item repararea bug-urilor existente
+\end{itemize}
 %În acest capitol este sumarizat întreg proiectul, de la obiective, la implementare, si la relevanta rezultatelor obținute. În finalul capitolului poate exista o subsecțiune de ``Dezvoltări ulterioare''.
 %
 %Criterii pentru calificativul \textit{Ne\textit{Satisfăcător}}: 
@@ -1023,7 +1457,8 @@ TODO:
 %	\item	Concluziile sunt corelate cu conținutul lucrării, și se oferă o imagine precisa asupra relevantei și calității rezultatelor obținute în cadrul proiectului. 
 %\end{itemize}
 
-\chapter*{Bibliografie}\addcontentsline{toc}{chapter}{Bibliografie}  
+
+
 % * <marios.choudary@gmail.com> 2018-02-28T12:07:48.730Z:
 % 
 % > BIBLIOGRAFIE
@@ -1077,7 +1512,10 @@ TODO:
 %\textbf{Important}: în această secțiune de obicei apar doar intrările bibliografice (adică doar listarea referințelor). Citarea lor prin comanda cite și explicații legate de ele trebuie facute în secțiunile anterioare. Citarea de mai sus a fost facută aici doar pentru exemplificare.
 
 % Asa se specifica folosirea unui fisier cu referinte bibliografice:
-\bibliographystyle{plain}
+\bibliographystyle{ieeetr}
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliografie}  
 \bibliography{bibliografie}
 
 %% O alta varianta ar fi fost includerea de articole direct in acest fisier
@@ -1097,7 +1535,7 @@ TODO:
 
 %\newpage
 
-\chapter*{Anexe}\addcontentsline{toc}{chapter}{Anexe}
+%\chapter*{Anexe}\addcontentsline{toc}{chapter}{Anexe}
 %Anexele sunt opționale.
 %Ce poate intra în anexe:
 %\begin{itemize}
@@ -1109,24 +1547,171 @@ TODO:
 %\item	Un exemplu de rulare a unor comenzi plus rezultatul (``output''-ul) acestora;
 %\item 	În anexe intră lucruri care ocupă mai mult de o pagină ce ar întrerupe firul natural de parcurgere al textului.
 %\end{itemize}
-
 \begin{appendices}
 
 \chapter{Extrase de cod} % Introduce o nouă anexă
-\ldots
+\begin{lstlisting}[style={myC++}, caption = {Cazul triunghi în algoritmul GJK}, label={code:gjk_simplex3}]
+void GJKEPA::GJKEPACollisionPointGenerator::doSimplex3() {
+	/* simplex is a triangle ABC, A was just added */
+	glm::vec3 vecAO = -simplex.a.v;
+	glm::vec3 vecAB = simplex.b.v - simplex.a.v;
+	glm::vec3 vecAC = simplex.c.v - simplex.a.v;
+	glm::vec3 vecABC = glm::cross(vecAB, vecAC);
+	
+	if (glm::dot(glm::cross(vecABC, vecAC), vecAO) > 0) {
+		if (glm::dot(vecAC, vecAO) > 0) {
+			simplex.set(simplex.a, simplex.c);
+			searchDir = glm::cross(glm::cross(vecAC, vecAO), vecAC);
+		} else {
+			if (glm::dot(vecAB, vecAO) > 0) {
+				simplex.set(simplex.a, simplex.b);
+				searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
+			} else {
+				simplex.set(simplex.a);
+				searchDir = vecAO;
+			}
+		}
+	} else {
+		if (glm::dot(glm::cross(vecAB, vecABC), vecAO) > 0) {
+			if (glm::dot(vecAB, vecAO) > 0) {
+				simplex.set(simplex.a, simplex.b);
+				searchDir = glm::cross(glm::cross(vecAB, vecAO), vecAB);
+			} else {
+				simplex.set(simplex.a);
+				searchDir = vecAO;
+			}
+		} else {
+			if (glm::dot(vecABC, vecAO) > 0) {
+				searchDir = vecABC;
+			} else {
+				simplex.set(simplex.a, simplex.c, simplex.b);
+				searchDir = -vecABC;
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=json, label={code:json_full}, caption={toate setarile disponibile pentru o scena in format .json}, float, floatplacement=t]
+{
+	"settings" : {
+		"damping" : {
+			"linear" : 0.9,
+			"angular" : 0.9
+		},
+		"forceMultipliers" : {
+			"torque" : 1.0,
+			"force" : 1.0,
+			"impulse" : 1.0
+		},
+		"gjkepa" : {
+			"gjkMaxIters" : 100,
+			"epaMaxIters" : 50
+		},
+		"collisionResolution" : {
+			"penMaxIterations" : 5,
+			"velMaxIterations" : 5,
+			"minVelocityForRestitution" : 0.25,
+			"angularMovementLimitFactor" : 0.2,
+			"persistentContactDistanceThreshold" : 0.001,
+			"coefInterpAlpha" : 0.5
+		},
+		"rigidBodies" : {
+			"defaultMass" : 32.0,
+			"defaultRestitutionCoef" : 0.1,
+			"defaultFrictionCoef" : 0.6,
+			"sleepMotionThreshold" : 0.1
+		},
+		"gravity" : {
+			"x" : 0.0,
+			"y" : -20.0,
+			"z" : 0.0
+		},
+		"timeScale" : 1.0,
+		"rendering" : {
+			"renderColliders" : true,
+			"renderContacts" : true,
+			"renderContactNormals" : true,
+			"renderSpawner" : true,
+			"renderSelection" : true
+		}
+	},
+	"objects" : [
+		{
+			"type" : "wall",
+			"name" : "floor",
+			"position" : {
+				"x" : 0.0,
+				"y" : -0.5,
+				"z" : 0.0
+			},
+			"scale" : {
+				"x" : 2.0,
+				"y" : 2.0,
+				"z" : 1.0
+			},
+			"orientation" : {
+				"pitch" : 90.0,
+				"yaw" : 0.0,
+				"roll" : 0.0
+			},
+			"frictionCoef" : 0.6,
+			"restitutionCoef" : 0.1,
+			"mass" : -1.0
+		}
+	]
+}
+\end{lstlisting}
+
 \chapter{Diagrame de clase}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\linewidth]{pics/RigidBody.eps}
+	\makebox[\textwidth][c]{\includegraphics[width=0.9\linewidth]{pics/RigidBody.eps}}
 	\caption[asdfas]{Definiția unui RigidBody}
 	\label{fig:RigidBody}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1.0\linewidth]{pics/CollisionDetection.eps}
+	\makebox[\textwidth][c]{\includegraphics[width=0.9\linewidth]{pics/CollisionDetection.eps}}
 	\caption[]{Subsistemul de detecție de coliziuni}
 	\label{fig:CollisionDetection}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/CollisionResolution.eps}}
+	\caption[]{Subsistemul de rezolvare a coliziunilor}
+	\label{fig:CollisionResolution}
+\end{figure}
+
+\chapter{Capturi de ecran}
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/screenshot1.png}}
+	\caption[]{Controlul obiectului selectat}
+	\label{fig:gui_object_control}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/screenshot2.png}}
+	\caption[]{Încărcarea de scene la runtime}
+	\label{fig:gui_load_scene}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/screenshot3.png}}
+	\caption[]{Controlul elementelor desenate}
+	\label{fig:gui_rendering}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\linewidth]{pics/screenshot4.png}}
+	\caption[]{Controlul parametrilor de simulare}
+	\label{fig:gui_simulation_settings}
 \end{figure}
 \end{appendices}
 \end{document}

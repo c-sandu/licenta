@@ -1,11 +1,11 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: C:\WINDOWS\system32\Diagram1.dia
 %%Creator: Dia v0.97.2
-%%CreationDate: Sun Aug 19 20:08:36 2018
+%%CreationDate: Mon Aug 27 19:43:36 2018
 %%For: ANDREI
 %%Orientation: Portrait
 %%Magnification: 1.0000
-%%BoundingBox: 0 0 694 803
+%%BoundingBox: 0 0 694 871
 %%BeginSetup
 %%EndSetup
 %%EndComments
@@ -341,7 +341,7 @@ definefont pop
     currentdict end
 definefont pop
 28.346000 -28.346000 scale
--2.275000 -29.815000 translate
+-2.275000 -32.215000 translate
 %%EndProlog
 
 
@@ -355,9 +355,9 @@ n 2.325000 1.565000 m 2.325000 2.965000 l 26.695000 2.965000 l 26.695000 1.56500
 (RigidBody) dup sw 2 div 14.510000 ex sub 2.415000 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 2.965000 m 2.325000 18.365000 l 26.695000 18.365000 l 26.695000 2.965000 l f
+n 2.325000 2.965000 m 2.325000 20.765000 l 26.695000 20.765000 l 26.695000 2.965000 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 2.965000 m 2.325000 18.365000 l 26.695000 18.365000 l 26.695000 2.965000 l cp s
+n 2.325000 2.965000 m 2.325000 20.765000 l 26.695000 20.765000 l 26.695000 2.965000 l cp s
 /Courier-latin1 ff 0.560000 scf sf
 (+position: vec3) 2.475000 3.465000 m
  gs 1 -1 sc sh gr
@@ -375,58 +375,64 @@ n 2.325000 2.965000 m 2.325000 18.365000 l 26.695000 18.365000 l 26.695000 2.965
  gs 1 -1 sc sh gr
 (+transform: mat4) 2.475000 9.065000 m
  gs 1 -1 sc sh gr
-(-linVelocity: vec3) 2.475000 9.865000 m
+(+frictionCoef: float) 2.475000 9.865000 m
  gs 1 -1 sc sh gr
-(-angVelocity: vec3) 2.475000 10.665000 m
+(+restitutionCoef: float) 2.475000 10.665000 m
  gs 1 -1 sc sh gr
-(-linAcceleration: vec3) 2.475000 11.465000 m
+(-linVelocity: vec3) 2.475000 11.465000 m
  gs 1 -1 sc sh gr
-(-angAcceleration: vec3) 2.475000 12.265000 m
+(-angVelocity: vec3) 2.475000 12.265000 m
  gs 1 -1 sc sh gr
-(-lastFrameAcceleration: vec3) 2.475000 13.065000 m
+(-linAcceleration: vec3) 2.475000 13.065000 m
  gs 1 -1 sc sh gr
-(-forceAccumulator: vec3) 2.475000 13.865000 m
+(-angAcceleration: vec3) 2.475000 13.865000 m
  gs 1 -1 sc sh gr
-(-torqueAccumulator: vec3) 2.475000 14.665000 m
+(-lastFrameAcceleration: vec3) 2.475000 14.665000 m
  gs 1 -1 sc sh gr
-(-linDamping: float) 2.475000 15.465000 m
+(-forceAccumulator: vec3) 2.475000 15.465000 m
  gs 1 -1 sc sh gr
-(-angDamping: float) 2.475000 16.265000 m
+(-torqueAccumulator: vec3) 2.475000 16.265000 m
  gs 1 -1 sc sh gr
-(-inertiaTensor: mat3) 2.475000 17.065000 m
+(-motion: float) 2.475000 17.065000 m
  gs 1 -1 sc sh gr
-(-invInertiaTensorWorld: mat3) 2.475000 17.865000 m
+(-linDamping: float) 2.475000 17.865000 m
+ gs 1 -1 sc sh gr
+(-angDamping: float) 2.475000 18.665000 m
+ gs 1 -1 sc sh gr
+(-inertiaTensor: mat3) 2.475000 19.465000 m
+ gs 1 -1 sc sh gr
+(-invInertiaTensorWorld: mat3) 2.475000 20.265000 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 18.365000 m 2.325000 29.765000 l 26.695000 29.765000 l 26.695000 18.365000 l f
+n 2.325000 20.765000 m 2.325000 32.165000 l 26.695000 32.165000 l 26.695000 20.765000 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 18.365000 m 2.325000 29.765000 l 26.695000 29.765000 l 26.695000 18.365000 l cp s
-(+RigidBody\(in position:vec3,in scale:vec3,in orientation:quat\)) 2.475000 18.865000 m
+n 2.325000 20.765000 m 2.325000 32.165000 l 26.695000 32.165000 l 26.695000 20.765000 l cp s
+(+RigidBody\(in position:vec3,in scale:vec3,in orientation:quat\)) 2.475000 21.265000 m
  gs 1 -1 sc sh gr
-(+updateTransformMatrix\(\): void) 2.475000 19.665000 m
+(+updateTransformMatrix\(\): void) 2.475000 22.065000 m
  gs 1 -1 sc sh gr
-(+updateInvInertiaTensorWorld\(\): void) 2.475000 20.465000 m
+(+updateInvInertiaTensorWorld\(\): void) 2.475000 22.865000 m
  gs 1 -1 sc sh gr
-(+setMass\(in mass:float,in isInverse:bool=false\): void) 2.475000 21.265000 m
+(+setMass\(in mass:float,in isInverse:bool=false\): void) 2.475000 23.665000 m
  gs 1 -1 sc sh gr
-(+setInertiaTensor\(in inertiaTensor:mat3\): void) 2.475000 22.065000 m
+(+setInertiaTensor\(in inertiaTensor:mat3\): void) 2.475000 24.465000 m
  gs 1 -1 sc sh gr
-(+clearAccumulators\(\): void) 2.475000 22.865000 m
+(+clearAccumulators\(\): void) 2.475000 25.265000 m
  gs 1 -1 sc sh gr
-(+resetMovement\(\): void) 2.475000 23.665000 m
+(+resetMovement\(\): void) 2.475000 26.065000 m
  gs 1 -1 sc sh gr
-(+integrate\(in deltaTime:float\): void) 2.475000 24.465000 m
+(+integrate\(in deltaTime:float\): void) 2.475000 26.865000 m
  gs 1 -1 sc sh gr
-(+applyForce\(in force:vec3\): void) 2.475000 25.265000 m
+(+applyForce\(in force:vec3\): void) 2.475000 27.665000 m
  gs 1 -1 sc sh gr
-(+applyForceAtWorldPoint\(in force:vec3,in point:vec3,\): void) 2.475000 26.065000 m
+(+applyForceAtWorldPoint\(in force:vec3,in point:vec3,\): void) 2.475000 28.465000 m
  gs 1 -1 sc sh gr
-(+applyForceAtLocalPoint\(in force:vec3,in point:vec3\): void) 2.475000 26.865000 m
+(+applyForceAtLocalPoint\(in force:vec3,in point:vec3\): void) 2.475000 29.265000 m
  gs 1 -1 sc sh gr
-(+applyTorqueAtLocalPoint\(in torque:vec3,in point:vec3\): void) 2.475000 27.665000 m
+(+applyTorqueAtLocalPoint\(in torque:vec3,in point:vec3\): void) 2.475000 30.065000 m
  gs 1 -1 sc sh gr
-(+applyLinearImpulse\(in impulse:vec3\): void) 2.475000 28.465000 m
+(+applyLinearImpulse\(in impulse:vec3\): void) 2.475000 30.865000 m
  gs 1 -1 sc sh gr
-(+toString\(\): string) 2.475000 29.265000 m
+(+toString\(\): string) 2.475000 31.665000 m
  gs 1 -1 sc sh gr
 showpage

@@ -1,11 +1,11 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: C:\WINDOWS\system32\Diagram1.dia
 %%Creator: Dia v0.97.2
-%%CreationDate: Mon Aug 27 19:41:48 2018
+%%CreationDate: Mon Aug 27 19:44:19 2018
 %%For: ANDREI
 %%Orientation: Portrait
 %%Magnification: 1.0000
-%%BoundingBox: 0 0 345 304
+%%BoundingBox: 0 0 792 848
 %%BeginSetup
 %%EndSetup
 %%EndComments
@@ -341,48 +341,96 @@ definefont pop
     currentdict end
 definefont pop
 28.346000 -28.346000 scale
--2.275000 -12.215000 translate
+-2.275000 -31.415000 translate
 %%EndProlog
 
 
 0.100000 slw
 [] 0 sd
 1.000000 1.000000 1.000000 srgb
-n 2.325000 1.565000 m 2.325000 2.965000 l 14.375000 2.965000 l 14.375000 1.565000 l f
+n 2.325000 1.565000 m 2.325000 2.965000 l 30.160000 2.965000 l 30.160000 1.565000 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 1.565000 m 2.325000 2.965000 l 14.375000 2.965000 l 14.375000 1.565000 l cp s
+n 2.325000 1.565000 m 2.325000 2.965000 l 30.160000 2.965000 l 30.160000 1.565000 l cp s
 /Helvetica-Bold-latin1 ff 0.700000 scf sf
-(PhysicsObject) dup sw 2 div 8.350000 ex sub 2.415000 m
+(ObjectSpawner) dup sw 2 div 16.242500 ex sub 2.415000 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 2.965000 m 2.325000 8.765000 l 14.375000 8.765000 l 14.375000 2.965000 l f
+n 2.325000 2.965000 m 2.325000 11.965000 l 30.160000 11.965000 l 30.160000 2.965000 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 2.965000 m 2.325000 8.765000 l 14.375000 8.765000 l 14.375000 2.965000 l cp s
+n 2.325000 2.965000 m 2.325000 11.965000 l 30.160000 11.965000 l 30.160000 2.965000 l cp s
 /Courier-latin1 ff 0.560000 scf sf
-(+name: string) 2.475000 3.465000 m
+(+objects: list<PhysicsObject*>) 2.475000 3.465000 m
  gs 1 -1 sc sh gr
-(+body: *RigidBody) 2.475000 4.265000 m
+(+meshes: *unordered_map<string, Mesh*>) 2.475000 4.265000 m
  gs 1 -1 sc sh gr
-(+mesh: *Mesh) 2.475000 5.065000 m
+(+pcd: *PotentialCollisionDetector) 2.475000 5.065000 m
  gs 1 -1 sc sh gr
-(+color: vec3) 2.475000 5.865000 m
+(+spawnPosition: vec3) 2.475000 5.865000 m
  gs 1 -1 sc sh gr
-(+shape: *Shape) 2.475000 6.665000 m
+(+spawnDirection: vec3) 2.475000 6.665000 m
  gs 1 -1 sc sh gr
-(+collider: *Collider) 2.475000 7.465000 m
+(+offsetInFront: float) 2.475000 7.465000 m
  gs 1 -1 sc sh gr
-(+type: string) 2.475000 8.265000 m
+(+applyStartingImpulse: bool) 2.475000 8.265000 m
+ gs 1 -1 sc sh gr
+(+selectedObject: *PhysicsObject) 2.475000 9.065000 m
+ gs 1 -1 sc sh gr
+(+nextObjectType: string) 2.475000 9.865000 m
+ gs 1 -1 sc sh gr
+(+randomizeNextObject: bool) 2.475000 10.665000 m
+ gs 1 -1 sc sh gr
+(+randomizeProperties: bool) 2.475000 11.465000 m
  gs 1 -1 sc sh gr
 1.000000 1.000000 1.000000 srgb
-n 2.325000 8.765000 m 2.325000 12.165000 l 14.375000 12.165000 l 14.375000 8.765000 l f
+n 2.325000 11.965000 m 2.325000 31.365000 l 30.160000 31.365000 l 30.160000 11.965000 l f
 0.000000 0.000000 0.000000 srgb
-n 2.325000 8.765000 m 2.325000 12.165000 l 14.375000 12.165000 l 14.375000 8.765000 l cp s
-(+update\(deltaTime:float\): void) 2.475000 9.265000 m
+n 2.325000 11.965000 m 2.325000 31.365000 l 30.160000 31.365000 l 30.160000 11.965000 l cp s
+(+updateFromCamera\(in cameraPosition:vec3,) 2.475000 12.465000 m
  gs 1 -1 sc sh gr
-(+getTransformMatrix\(\): mat4) 2.475000 10.065000 m
+(                  in forward:vec3\): void) 2.475000 13.265000 m
  gs 1 -1 sc sh gr
-(+getColTransformMatrix\(\): mat4) 2.475000 10.865000 m
+(+updateObjects\(\): void) 2.475000 14.065000 m
  gs 1 -1 sc sh gr
-(+toString\(\): string) 2.475000 11.665000 m
+(+spawnNewObject\(\): void) 2.475000 14.865000 m
+ gs 1 -1 sc sh gr
+(+loadFromFile\(in filename:string\): void) 2.475000 15.665000 m
+ gs 1 -1 sc sh gr
+(+saveToFile\(in filename:string\): void) 2.475000 16.465000 m
+ gs 1 -1 sc sh gr
+(+spawnBoxDynamic\(\): *PhysicsObject) 2.475000 17.265000 m
+ gs 1 -1 sc sh gr
+(+spawnBoxStatic\(in position:vec3,in scale:vec3,) 2.475000 18.065000 m
+ gs 1 -1 sc sh gr
+(                in mass:float,in orientation:quat\): *PhysicsObject) 2.475000 18.865000 m
+ gs 1 -1 sc sh gr
+(+spawnLongBoxDynamic\(\): *PhysicsObject) 2.475000 19.665000 m
+ gs 1 -1 sc sh gr
+(+spawnLongBoxStatic\(in position:vec3,in scale:vec3,) 2.475000 20.465000 m
+ gs 1 -1 sc sh gr
+(                    in mass:float,in orientation:quat\): *PhysicsObject) 2.475000 21.265000 m
+ gs 1 -1 sc sh gr
+(+spawnWallStatic\(in position:vec3,in scale:vec3,) 2.475000 22.065000 m
+ gs 1 -1 sc sh gr
+(                 in orientation:quat\): *PhysicsObject) 2.475000 22.865000 m
+ gs 1 -1 sc sh gr
+(+spawnSphereDynamic\(\): *PhysicsObject) 2.475000 23.665000 m
+ gs 1 -1 sc sh gr
+(+spawnSphereStatic\(in position:vec3,in scale:vec3,) 2.475000 24.465000 m
+ gs 1 -1 sc sh gr
+(                   in mass:float,in orientation:quat\): *PhysicsObject) 2.475000 25.265000 m
+ gs 1 -1 sc sh gr
+(+spawnCylinderDynamic\(\): *PhysicsObject) 2.475000 26.065000 m
+ gs 1 -1 sc sh gr
+(+spawnCylinderStatic\(in position:vec3,in scale:vec3,) 2.475000 26.865000 m
+ gs 1 -1 sc sh gr
+(                     in mass:float,in orientation:quat\): *PhysicsObject) 2.475000 27.665000 m
+ gs 1 -1 sc sh gr
+(+spawnCapsuleDynamic\(\): *PhysicsObject) 2.475000 28.465000 m
+ gs 1 -1 sc sh gr
+(+spawnCapsuleStatic\(in position:vec3,in scale:vec3,) 2.475000 29.265000 m
+ gs 1 -1 sc sh gr
+(                    in mass:float,in orientation:quat\): *PhysicsObject) 2.475000 30.065000 m
+ gs 1 -1 sc sh gr
+(+toString\(\): string) 2.475000 30.865000 m
  gs 1 -1 sc sh gr
 showpage
