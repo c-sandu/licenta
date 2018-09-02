@@ -620,7 +620,7 @@ Realistic vorbind, o coliziune este deseori formată din mai multe puncte de con
 Într-un motor de fizică, etapa de integrare constă în actualizarea stării obiectelor, prin \textbf{integrarea în raport cu timpul} a mărimilor fizice derivate. Accelerația unui corp este dată de formula $ a = \frac{F}{m} $, unde $F$ este rezultanta forțelor care acționează asupra corpului și $m$ este masa acestuia. Într-o simulare, accelerația este considerată o mărime fizică primară și este cea dintâi calculată în fiecare cadru. Accelerația este totodată definită și ca variația vitezei în timp, iar viteza este variația poziției în timp, ceea ce ne permite să calculăm atât viteza $\dot{p}'$, cât și poziția $p'$, prin integrarea accelerației $\ddot{p}$, respectiv vitezei $\dot{p}$:
 $$ \dot{p}' = \dot{p} + \ddot{p}t $$
 $$ p' = p + \dot{p}t + \ddot{p}\frac{t^2}{2} \approx p + \dot{p}t $$
-Deoarece într-o simulare avem de-a face cu momente discrete de timp(dictate de diferența de timp dintre două cadre -- \textbf{deltaTime}, aceste valori trebuie aproximate, de unde rezultă nevoia folosirii unor metode de integrare numerică cu pas de timp discret.
+Deoarece într-o simulare avem de-a face cu momente discrete de timp (dictate de diferența de timp dintre două cadre -- \textbf{deltaTime}, aceste valori trebuie aproximate, de unde rezultă nevoia folosirii unor metode de integrare numerică cu pas de timp discret.
 Se disting o serie de metode, mai mult sau mai puțin precise \cite{integration_gaffer}:
 \begin{itemize}
 	\item \textbf{Metoda Euler explicită}\cite{explicit_euler} presupune determinarea, în ordine, mai întâi a noii poziții și apoi a noii viteze, dar are dezavantajul că pierde din precizie dacă există variații mari ale mărimilor de la un cadru la altul, cu eroare de ordinul $O(deltaTime)$
@@ -660,7 +660,7 @@ Dintre soluțiile menționate în subsecțiunile de mai sus, am fost nevoit să 
 
 Deoarece scenele cu care am testat simulatorul sunt de dimensiuni relativ mici (sub 100 de obiecte), am decis că o ierarhie de volume încadratoare nu aduce o îmbunătățire semnificativă în raport cu overhead-ul pe care l-ar aduce etapei de implementare a soluției. La fel, o partiționare a spațiului scenei în arbori, utilizând \hyperref[bsp]{\textit{BSP}}, mi s-a considerat nejustificată. Astfel, m-am folosit doar de un \textbf{detector $O(n^2)$}, care testează intersecția dintre \textbf{OBB-urile} obiectelor folosind \hyperref[SAT]{\textbf{Teorema axei separatoare}}.
 
-Pentru că obiectele din scenă sunt doar corpuri geometrice elementare pentru care nu stochez liste de vârfuri, muchii și fețe, ci doar descrierea geometrică a formei acestora, Teorema axei separatoare nu se pretează pentru determinarea punctelor de contact. În plus, corpurile rotunde (cilindru, con, sferă, capsulă) ar pune probleme în realizarea testului de separare, deoarece ar avea nevoie de un număr foarte mare de axe care să fie testate. În schimb, am ales să utilizez \hyperref[gjk_intersection_test]{\textbf{algoritmul GJK}}, care se poate folosi de descrierea geometrică a formei corpurilor pentru calculul facil al punctelor de suport necesare la determinarea simplex-ului final.
+Pentru că obiectele din scenă sunt doar corpuri geometrice elementare pentru care nu stochez liste de vârfuri, muchii și fețe, ci doar descrierea geometrică a formei acestora, \textit{teorema axei separatoare} nu se pretează pentru determinarea punctelor de contact. În plus, corpurile rotunde (cilindru, con, sferă, capsulă) ar pune probleme în realizarea testului de separare, deoarece ar avea nevoie de un număr foarte mare de axe care să fie testate. În schimb, am ales să utilizez \hyperref[gjk_intersection_test]{\textbf{algoritmul GJK}}, care se poate folosi de descrierea geometrică a formei corpurilor pentru calculul facil al punctelor de suport necesare la determinarea simplex-ului final.
 
 Deoarece rezultatul algoritmului \textit{GJK} poate fi utilizat ca intrare pentru \hyperref[epa]{\textbf{EPA}}, am folosit acest algoritm în determinarea punctelor de coliziune.
 
@@ -753,7 +753,7 @@ Funcționalitățile pe care le oferă așa-numitul backend sunt:
 			\item interfață pentru desenarea mesh-urilor 3D
 		\end{itemize}
 \end{itemize}
-Lista de mai sus nu este exhaustivă, complexitatea unui astfel de framework, chiar și minimal, este destul de mare. Cum implementarea acestuia nu a făcut parte din obiectivele proiectului, am ales să folosesc framework-ul\cite{framework_egc_github} oferit pentru laboratoarele aferente cursului de Elemente de Grafică pe Calculator, din cadrul secției CTI a Universității Politehnica București. O descriere mai detaliată a acestuia poate fi găsită pe wiki-ul asociat laboratorului\cite{framework_egc_ocw}.
+Lista de mai sus nu este exhaustivă, complexitatea unui astfel de framework, chiar și minimal, este destul de mare. Cum implementarea acestuia nu a făcut parte din obiectivele proiectului, am ales să folosesc framework-ul\cite{framework_egc_github} oferit pentru laboratoarele aferente cursului de \textit{Elemente de Grafică pe Calculator}, din cadrul secției \textit{CTI} a \textit{Universității Politehnica București}. O descriere mai detaliată a acestuia poate fi găsită pe wiki-ul asociat laboratorului\cite{framework_egc_ocw}.
 
 Astfel, etapele funcționării unei aplicații, facilitate de framework-ul descris mai sus sunt:
 \begin{enumerate}
@@ -801,7 +801,7 @@ Este componenta centrală a oricărei aplicații grafice și funcționează în 
 	\caption[]{Descrierea unui obiect al scenei}
 \end{figure}
 
-Începând cu \textbf{obiectele scenei}, acestea sunt alocate dinamic la rularea aplicației și stochează informații necesare la desenare, dar oferă și o interfață pentru actualizarea corpului solid, prin metoda \textbf{update()}. Am ales să folosesc obiectul scenei ca pe o scurtătură către toate referințele necesare celorlalte componente (de ex. în cadrul algoritmului GJK, determinarea punctului de suport pe \hyperref[minkowski_difference]{\textit{diferența Minkowski}} a 2 corpuri necesită apelul metodei \textit{getSupportPtInLocalSpace()} din clasa \textit{Shape} și poate fi accesată prin referința din \textit{PhysicsObject}).
+Începând cu \textbf{obiectele scenei}, acestea sunt alocate dinamic la rularea aplicației și stochează informații necesare la desenare, dar oferă și o interfață pentru actualizarea corpului solid, prin metoda \textbf{update()}. Am ales să folosesc obiectul scenei ca pe o scurtătură către toate referințele necesare celorlalte componente (de ex. în cadrul algoritmului \textit{GJK}, determinarea punctului de suport pe \hyperref[minkowski_difference]{\textit{diferența Minkowski}} a 2 corpuri necesită apelul metodei \textit{getSupportPtInLocalSpace()} din clasa \textit{Shape} și poate fi accesată prin referința din \textit{PhysicsObject}).
 
 Toate obiectele scenei sunt menținute într-un obiect de tip \textbf{ObjectSpawner} care se ocupă de instanțierea și actualizarea lor și oferă funcționalități de nivel înalt aplicației.
 
@@ -873,7 +873,7 @@ Rezolvarea completă a coliziunilor presupune rezolvarea tuturor manifold-urilor
 	\item identificarea celui mai adânc contact (cu distanța de penetrare cea mai mare)
 	\item rezolvarea erorii de poziție a corpurilor pe baza informațiilor acestui contact
 	\item repetarea pașilor 1 și 2 cât timp iterațiile pentru rezolvarea pozițiilor nu sunt epuizate
-	\item identificarea celui mai rapid contact (cu viteza de separare (!valoare negativă) cea mai mică)
+	\item identificarea celui mai rapid contact (cu viteza de separare (valoare negativă!) cea mai mică)
 	\item rezolvarea vitezelor corpurilor pe baza informațiilor acestui contact
 	\item repetarea pașilor 4 și 5 cât timp iterațiile pentru rezolvarea vitezelor nu sunt epuizate
 \end{enumerate}
@@ -930,8 +930,10 @@ Biblioteca utilizată pentru tipuri și funcții matematice și geometrice este 
 
 \section{Reprezentarea corpurilor solide}
 
-Primul obiectiv atins a fost \textbf{implementarea clasei RigidBody}[\autoref{fig:RigidBody}] și, implicit, a operației de integrare. Testarea s-a făcut cu un simplu cub asupra căruia acționează gravitația și asupra căruia se pot aplica forțe, momente și impulsuri cu ajutorul tastaturii. O mențiune specială este că am ales să stochez orientarea corpului într-un \textbf{quaternion}, în loc de o reprezentare matriceală sau cu \textit{unghiurile lui Euler}. Motivul este foarte simplu, ocupă mai puțin spațiu în memorie, nu prezintă problema \textit{Gimbal Lock}\cite{quaternions}, iar suportul \textit{GLM} pentru operații cu quaternioni este foarte bun. Exemplu de utilizare:
-\begin{lstlisting}[style=myC++, label = {code:quaternion_example}, caption={actualizarea orientării în pasul de integrare}, float, floatplacement = H]
+Primul obiectiv atins a fost \textbf{implementarea clasei RigidBody}[\autoref{fig:RigidBody}] și, implicit, a operației de integrare. Reprezentarea aleasă este una standard. Acelerația liniară și cea unghiulară sunt mărimi primare, determinate din forțele sau momentele care sunt aplicate corpului. Viteza (atât liniară, cât și unghiulară) este determinată pe baza acestor accelerații, iar poziția și orientarea corpului sunt calculate cu ajutorul vitezelor și sunt mărimile finale, care codifică starea corpurilor.
+
+O mențiune specială este că am ales să stochez orientarea corpului într-un \textbf{quaternion}, în loc de o reprezentare matriceală sau folosind \textit{unghiurile lui Euler}. Motivul este foarte simplu, ocupă mai puțin spațiu în memorie, nu prezintă problema \textit{Gimbal Lock}\cite{quaternions}, iar suportul \textit{GLM} pentru operații cu quaternioni este foarte bun, incluzând atât adunări, înmulțiri, rotații, cât și funcții pentru obținerea unei matrice de rotație dintr-un quaternion sau viceversa.
+\begin{lstlisting}[style=myC++, label = {code:quaternion_example}, caption={actualizarea orientării în pasul de integrare}]
 	glm::quat orientation;
 	...
 	orientation = orientation + deltaTime * 0.5f * glm::quat(0.0f, angVelocity) * orientation;
@@ -944,7 +946,7 @@ A doua etapă de dezvoltare a constat în implementarea sistemului de \textbf{de
 
 \subsection {Etapa preliminară}
 
-Pentru \textbf{faza preliminară}, am implementat direct collider-ele de tip \textit{OBB}, cu un detector $O(n^2)$. După ce am citit despre teorema axei separatoare și eșuarea în a corecta erorile din implementarea mea a testului de intersecție, am ales să folosesc implementarea optimă propusă de Christer Ericson\cite{ericson_obb}. Tot aici, am fost nevoit să implementez abstractizarea obiectelor din scenă, care să încapsuleze obiectele \textit{RigidBody} și \textit{Collider}.
+Pentru \textbf{faza preliminară}, am implementat direct collider-ele de tip \textit{OBB}, cu un detector $O(n^2)$. După ce am citit despre teorema axei separatoare și eșuarea în a corecta erorile din implementarea mea a testului de intersecție, am ales să folosesc implementarea optimă propusă de \textit{Christer Ericson}\cite{ericson_obb}. Tot aici, am fost nevoit să implementez abstractizarea obiectelor din scenă, care să încapsuleze obiectele \textit{RigidBody} și \textit{Collider}.
 
 \subsection {Etapa exactă}
 
@@ -952,7 +954,7 @@ Faza de \textbf{detecție exactă} și generare a punctelor de coliziune este ce
 
 \subsubsection{GJK}
 
-Pentru \textbf{implementarea GJK}, foarte utilă mi s-a părut explicația lui Casey Muratori\cite{gjk_muratori}, care a oferit o interpretare mult mai ușor de înțeles a algoritmului decât enunțarea lui inițială\cite{gjk_original}. Remarcabil mi se pare că în cazul unui simplex tetraedru, am obținut până la 4 teste condiționale imbricate, pentru determinarea precisă a noului simplex și a noii direcții. Includ aici cazul muchie, deoarece mi se pare că algoritmul în pseudocod nu spune prea multe cititorilor nefamiliarizați cu acesta.
+Pentru \textbf{implementarea GJK}, foarte utilă mi s-a părut explicația lui \textit{Casey Muratori}\cite{gjk_muratori}, care a oferit o interpretare mult mai ușor de înțeles a algoritmului decât enunțarea lui inițială\cite{gjk_original}. Remarcabil mi se pare că în cazul unui simplex tetraedru, am obținut până la 4 teste condiționale imbricate, pentru determinarea precisă a noului simplex și a noii direcții. Includ aici cazul muchie, deoarece mi se pare că algoritmul în pseudocod nu spune prea multe cititorilor nefamiliarizați cu acesta.
 
 \begin{lstlisting}[style=myC++, label={code:gjk_simplex2}, caption = {cazul muchie în algoritmul GJK}]
 void GJKEPA::GJKEPACollisionPointGenerator::doSimplex2()
@@ -972,7 +974,7 @@ void GJKEPA::GJKEPACollisionPointGenerator::doSimplex2()
 }
 \end{lstlisting}
 
-Ofer și codul pentru tratarea cazului triunghi în \autoref{code:gjk_simplex3}.
+Ofer și codul pentru tratarea cazului triunghi în [\autoref{code:gjk_simplex3}].
 \subsubsection{EPA}
 
 Un alt impediment a fost reprezentat de \textbf{implementarea EPA}. Problemele întâlnite au fost:
@@ -1103,7 +1105,7 @@ Se rezolvă vitezele corpurilor prin metoda impulsurilor secvențiale. Calculul 
 
 Deoarece rezolvarea pe rând a contactelor dintr-un manifold poate duce la situații în care un alt contact decât cel curent să fie accentuat, folosesc mai multe iterații pentru aplicarea celor doi pași de mai sus, de fiecare dată încercând să rezolv cel mai adânc, respectiv cel mai rapid contact din manifold, astfel încât soluția să poată converge. Odată rezolvat un contact, schimbările aduse de acesta sunt aplicate tuturor celorlalte contacte din manifold.
 
-Principala resursă folosită pentru înțelegerea acestui proces a fost cartea\cite{millington} lui Ian Millington, iar soluția mea urmează îndeaproape indicațiile și implementarea acestuia.
+Principala resursă folosită pentru înțelegerea acestui proces a fost cartea\cite{millington} lui \textit{Ian Millington}, iar soluția mea urmează îndeaproape indicațiile și implementarea acestuia.
 
 \section {Controlul obiectelor}
 Controlul obiectelor din scenă este realizat cu ajutorul unui obiect\textbf{ ObjectSpawner}[\autoref{fig:ObjectSpawner}], care menține o listă cu toate obiectele și care se ocupă de instanțierea și de actualizarea lor. Folosirea acestui obiect care să abstractizeze operațiile de bază (instanțiere, actualizare, încărcare/salvare scene) asigură un cod cât mai lizibil în aplicația principală și posibilitatea de a folosi aceste apeluri chiar și în cadrul interfeței grafice. Pentru simplitate, poziția acestuia este determinată pe baza poziției camerei și un deplasament față de aceasta. Exemple de folosire:
@@ -1248,7 +1250,7 @@ La sfârșitul dezvoltării aplicației, am reușit cu succes să ating toate ob
 
 Includ o listă completă de facilități oferite și suportate, care să evidențieze cele spuse mai sus:
 \begin{itemize}
-	\item reprezentarea corpurilor 3D în scenă se realizează cu ajutorul obiectelor de tip RigidBody[\autoref{fig:RigidBody}], în care:
+	\item reprezentarea corpurilor 3D în scenă se realizează cu ajutorul obiectelor de tip \textit{RigidBody}[\autoref{fig:RigidBody}], în care:
 		\begin{itemize}
 			\item masa, factorii de scalare, coeficienții de frecare/elasticitate sunt mărimi constante
 			\item forțele și momentele forței care acționează asupra corpurilor sunt mărimi brute care sunt folosite la ajustarea mărimilor secundare
@@ -1265,10 +1267,10 @@ Includ o listă completă de facilități oferite și suportate, care să eviden
 			\item asigura un set de viteze liniare și unghiulare post-coliziune realiste, care să respecte, pe cât posibil, legile fizicii
 			\item separa corpurile imediat, în cazul întrepătrunderilor vizibile
 		\end{itemize}
-	\item toate obiectele și alte elemente anexe(puncte de coliziune, normale, volume încadratoare etc.) sunt desenate pe ecran, într-o fereastră OpenGL
+	\item toate obiectele și alte elemente anexe(puncte de coliziune, normale, volume încadratoare etc.) sunt desenate pe ecran, într-o fereastră \textit{OpenGL}
 	\item este oferită o interfață cu utilizatorul care să îi permită acestuia să:
 		\begin{itemize} 
-			\item încarce sau să salveze scene în format .json [\autoref{fig:gui_load_scene}]
+			\item încarce sau să salveze scene în format \textit{.json} [\autoref{fig:gui_load_scene}]
 			\item instanțieze noi obiecte
 			\item controleze un obiect individual selectat de acesta(atât starea, cât și parametrii constanți) [\autoref{fig:gui_object_control}]
 			\item altereze setările simulării [\autoref{fig:gui_simulation_settings}]
@@ -1276,8 +1278,8 @@ Includ o listă completă de facilități oferite și suportate, care să eviden
 			\item aleagă exact ce elemente dorește să fie desenate [\autoref{fig:gui_rendering}]
 		\end{itemize}
 	\item corpuri 3D suportate: cub, paralelipiped dreptunghic, sferă, cilindru, capsulă și variații obținute prin scalare ale acestora
-	\item sisteme de operare suportate: Windows
-	\item biblioteci adiționale: doar cele incluse în folder-ul /libs
+	\item sisteme de operare suportate: \textit{Windows}
+	\item biblioteci adiționale: doar cele incluse în folder-ul \textit{/libs}
 \end{itemize}
 
 \begin{figure}[H]
@@ -1399,16 +1401,16 @@ Per total, aplicația nu a atins nivelul de performanță pe care mi l-aș fi do
 
 Pe plan teoretic, am reușit să aprofundez suficient de multe cunoștințe astfel încât pe viitor să pot extinde și îmbunătăți aplicația obținută sau să contribui la alte proiecte asemănătoare. Am dobândit o înțelegere foarte bună a arhitecturii unui motor de fizică și a câtorva dintre algoritmii și metodele folosite des în industrie.  Mi-am exersat abilitățile de a programa în C++, mi-am reîmprospătat cunoștințele de \textit{OpenGL} și m-am familiarizat cu biblioteci noi care mi-ar putea fi utile și în viitor.
 
-Practic, am obținut o aplicație grafică \textit{OpenGL}, capabilă să ruleze o simulare de dimensiune rezonabilă (max. 64 de obiecte) a interacțiunilor mecanice dintre corpuri 3D pe sistemul de operare Windows. În plus, am implementat cu succes o interfață grafică pentru utilizator, prin care acesta poate încărca sau salva scene, controla parametrii simulării și direct obiectele din scenă.
+Practic, am obținut o aplicație grafică \textit{OpenGL}, capabilă să ruleze o simulare de dimensiune rezonabilă (max. 64 de obiecte) a interacțiunilor mecanice dintre corpuri 3D pe sistemul de operare \textit{Windows}. În plus, am implementat cu succes o interfață grafică pentru utilizator, prin care acesta poate încărca sau salva scene, controla parametrii simulării și direct obiectele din scenă.
 
 În realizarea aplicației:
 	\begin{itemize}
 		\item am implementat o reprezentare a corpurilor solide robustă și minimală
 		\item am implementat o serie de corpuri 3D (cub, paralelipiped dreptunghic, sferă, cilindru, capsulă) care să aibă asociate câte un obiect \textit{RigidBody} și care să participe în simulare
-		\item am implementat un integrator numeric bazat pe metoda Euler implicită
+		\item am implementat un integrator numeric bazat pe \textit{metoda Euler implicită}
 		\item am implementat un sistem de detecție preliminară a coliziunilor, cu ajutorul volumelor încadratoare de tip \textit{OBB}
 		\item am implementat algoritmii \textit{GJK} și \textit{EPA} pentru detecția și calculul punctelor de coliziune
-		\item am implementat un rezolvitor de coliziuni bazat pe metoda impulsurilor secvențiale
+		\item am implementat un rezolvitor de coliziuni bazat pe \textit{metoda impulsurilor secvențiale}
 		\item am folosit \textit{Dear ImGui} pentru realizarea interfeței grafice
 		\item am testat și am oferit spre folosire o serie de demo-uri care să ilustreze capabilitățile simulatorului
 	\end{itemize}
@@ -1673,7 +1675,7 @@ void GJKEPA::GJKEPACollisionPointGenerator::doSimplex3() {
 
 \begin{figure}[H]
 	\centering
-	\makebox[\textwidth][c]{\includegraphics[width=0.9\linewidth]{pics/CollisionDetection.eps}}
+	\makebox[\textwidth][c]{\includegraphics[width=1.0\linewidth]{pics/CollisionDetection.eps}}
 	\caption[]{Subsistemul de detecție de coliziuni}
 	\label{fig:CollisionDetection}
 \end{figure}
