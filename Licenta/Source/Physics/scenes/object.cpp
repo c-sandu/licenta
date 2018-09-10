@@ -532,7 +532,7 @@ PhysicsObject* ObjectSpawner::spawnBoxDynamic() {
   if (randomizeProperties) {
     float randFactor;
     randFactor = glm::linearRand(0.25f, 4.0f);
-    scale *= randFactor;
+    //scale *= randFactor;
 
     randFactor = glm::linearRand(0.25f, 4.0f);
     mass *= randFactor;
@@ -637,7 +637,7 @@ PhysicsObject* ObjectSpawner::spawnLongBoxDynamic() {
   if (randomizeProperties) {
     float randFactor;
     randFactor = glm::linearRand(0.25f, 4.0f);
-    scale *= randFactor;
+    //scale *= randFactor;
 
     randFactor = glm::linearRand(0.25f, 4.0f);
     mass *= randFactor;
@@ -788,7 +788,7 @@ PhysicsObject* ObjectSpawner::spawnSphereDynamic() {
   if (randomizeProperties) {
     float randFactor;
     randFactor = glm::linearRand(0.25f, 4.0f);
-    scale *= randFactor;
+    //scale *= randFactor;
 
     randFactor = glm::linearRand(0.25f, 4.0f);
     mass *= randFactor;
@@ -893,7 +893,7 @@ PhysicsObject* ObjectSpawner::spawnCylinderDynamic() {
   if (randomizeProperties) {
     float randFactor;
     randFactor = glm::linearRand(0.25f, 4.0f);
-    scale *= randFactor;
+    //scale *= randFactor;
 
     randFactor = glm::linearRand(0.25f, 4.0f);
     mass *= randFactor;
@@ -1002,7 +1002,7 @@ PhysicsObject* ObjectSpawner::spawnCapsuleDynamic() {
   if (randomizeProperties) {
     float randFactor;
     randFactor = glm::linearRand(0.25f, 4.0f);
-    scale *= randFactor;
+    //scale *= randFactor;
 
     randFactor = glm::linearRand(0.25f, 4.0f);
     mass *= randFactor;
