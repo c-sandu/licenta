@@ -7,11 +7,10 @@
 
 #include <Physics/scenes/object.h>
 
-
 namespace PhysicsUI {
-	void initUI();
-	void startUIFrame();
-	void showDemoWindow();
-	void showMainWindow(ObjectSpawner *objSpawner);
-	void renderUI();
-}
+void initUI();
+void startUIFrame();
+void showDemoWindow();
+void showMainWindow(ObjectSpawner* objSpawner);
+void renderUI();
+}  /* end of namespace PhysicsUI */

@@ -53,6 +53,9 @@
  *
  */
 
+#pragma warning(push)
+#pragma warning(disable: 4267)
+
 #if (!defined(_WIN32) && !defined(_WIN64))
 #	include <dirent.h>
 #else // #if (!defined(_WIN32) && !defined(_WIN64))
@@ -1041,4 +1044,4 @@ inline static int alphasort (const struct dirent **e1,const struct dirent **e2) 
 
 #endif //#if (!defined(_WIN32) && !defined(_WIN64))
 
-
+#pragma warning(pop)

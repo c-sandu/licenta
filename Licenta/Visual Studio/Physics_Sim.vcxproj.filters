@@ -28,9 +28,6 @@
     <Filter Include="Physics\shaders">
       <UniqueIdentifier>{bcbe7cce-3443-427f-80ff-984954c48e92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Physics\scenes\demos">
-      <UniqueIdentifier>{2eff39b7-8fbf-4838-877a-c8881e246a89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics\body">
       <UniqueIdentifier>{be1d4141-841d-4eb9-aca6-6f281b781f03}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,9 @@
     </Filter>
     <Filter Include="include\imgui">
       <UniqueIdentifier>{0e738ea9-9fca-4bf2-a3b7-255395a8c9fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\scenes\old">
+      <UniqueIdentifier>{2eff39b7-8fbf-4838-877a-c8881e246a89}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -109,17 +109,8 @@
     <ClCompile Include="..\Source\Physics\collision\contact.cpp">
       <Filter>Physics\collision</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionDetection.cpp">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionResolution.cpp">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Physics\scenes\object.cpp">
       <Filter>Physics\scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp">
-      <Filter>Physics\scenes\demos</Filter>
     </ClCompile>
     <ClCompile Include="..\libs\imgui\imgui.cpp">
       <Filter>include\imgui</Filter>
@@ -133,9 +124,6 @@
     <ClCompile Include="..\libs\imgui\imgui_impl_opengl3.cpp">
       <Filter>include\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestImGui.cpp">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClCompile>
     <ClCompile Include="..\libs\imgui\imgui_demo.cpp">
       <Filter>include\imgui</Filter>
     </ClCompile>
@@ -144,6 +132,21 @@
     </ClCompile>
     <ClCompile Include="..\libs\imgui\addons\imguifilesystem\imguifilesystem.cpp">
       <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\old\TestCollisionDetection.cpp">
+      <Filter>Physics\scenes\old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\old\TestCollisionResolution.cpp">
+      <Filter>Physics\scenes\old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\old\TestImGui.cpp">
+      <Filter>Physics\scenes\old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\old\TestObjectSpawner.cpp">
+      <Filter>Physics\scenes\old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Physics\scenes\DemoScene.cpp">
+      <Filter>Physics\scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -222,20 +225,11 @@
     <ClInclude Include="..\Source\Physics\collision\contact.h">
       <Filter>Physics\collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionDetection.h">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionResolution.h">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Physics\scenes\object.h">
       <Filter>Physics\scenes</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Physics\settings.h">
       <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h">
-      <Filter>Physics\scenes\demos</Filter>
     </ClInclude>
     <ClInclude Include="..\libs\imgui\imconfig.h">
       <Filter>include\imgui</Filter>
@@ -261,9 +255,6 @@
     <ClInclude Include="..\libs\imgui\stb_truetype.h">
       <Filter>include\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestImGui.h">
-      <Filter>Physics\scenes\demos</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Physics\scenes\ui.h">
       <Filter>Physics\scenes</Filter>
     </ClInclude>
@@ -276,6 +267,21 @@
     <ClInclude Include="..\libs\imgui\addons\imguifilesystem\dirent_portable.h">
       <Filter>include\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\old\TestCollisionDetection.h">
+      <Filter>Physics\scenes\old</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\old\TestCollisionResolution.h">
+      <Filter>Physics\scenes\old</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\old\TestImGui.h">
+      <Filter>Physics\scenes\old</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\old\TestObjectSpawner.h">
+      <Filter>Physics\scenes\old</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Physics\scenes\DemoScene.h">
+      <Filter>Physics\scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Physics\shaders\FragmentShader.glsl">
@@ -284,6 +290,5 @@
     <None Include="..\Source\Physics\shaders\VertexShader.glsl">
       <Filter>Physics\shaders</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

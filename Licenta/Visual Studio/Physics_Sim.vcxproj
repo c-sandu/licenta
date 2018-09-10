@@ -46,11 +46,12 @@
     <ClCompile Include="..\Source\Physics\collision\detection\broadphase.cpp" />
     <ClCompile Include="..\Source\Physics\collision\detection\contactgeneration.cpp" />
     <ClCompile Include="..\Source\Physics\collision\resolution\contactresolution.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionDetection.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestCollisionResolution.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestImGui.cpp" />
-    <ClCompile Include="..\Source\Physics\scenes\demos\TestObjectSpawner.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\DemoScene.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\object.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\old\TestCollisionDetection.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\old\TestCollisionResolution.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\old\TestImGui.cpp" />
+    <ClCompile Include="..\Source\Physics\scenes\old\TestObjectSpawner.cpp" />
     <ClCompile Include="..\Source\Physics\scenes\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,18 +91,18 @@
     <ClInclude Include="..\Source\Physics\collision\detection\contactgeneration.h" />
     <ClInclude Include="..\Source\Physics\collision\resolution\contactresolution.h" />
     <ClInclude Include="..\Source\Physics\debug.h" />
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionDetection.h" />
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestCollisionResolution.h" />
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestImGui.h" />
-    <ClInclude Include="..\Source\Physics\scenes\demos\TestObjectSpawner.h" />
+    <ClInclude Include="..\Source\Physics\scenes\DemoScene.h" />
     <ClInclude Include="..\Source\Physics\scenes\object.h" />
+    <ClInclude Include="..\Source\Physics\scenes\old\TestCollisionDetection.h" />
+    <ClInclude Include="..\Source\Physics\scenes\old\TestCollisionResolution.h" />
+    <ClInclude Include="..\Source\Physics\scenes\old\TestImGui.h" />
+    <ClInclude Include="..\Source\Physics\scenes\old\TestObjectSpawner.h" />
     <ClInclude Include="..\Source\Physics\scenes\ui.h" />
     <ClInclude Include="..\Source\Physics\settings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Physics\shaders\FragmentShader.glsl" />
     <None Include="..\Source\Physics\shaders\VertexShader.glsl" />
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>
