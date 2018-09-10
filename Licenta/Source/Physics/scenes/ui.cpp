@@ -20,8 +20,8 @@ void PhysicsUI::initUI() {
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard
-    // Controls  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable
-    // Gamepad Controls
+    // Controls  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   //
+    // Enable Gamepad Controls
 
     ImGui_ImplGlfw_InitForOpenGL(Engine::GetWindow()->GetGLFWWindow(), false);
     ImGui_ImplOpenGL3_Init(glsl_version);
@@ -114,6 +114,26 @@ void PhysicsUI::showMainWindow(ObjectSpawner* objSpawner) {
 
   const unsigned int myOne = 1;
 
+  if (ImGui::CollapsingHeader("Help")) {
+    ImGui::Text("USER GUIDE:");
+    ImGui::Text("");
+    ImGui::Text("Selected object control:");
+    ImGui::BulletText("WASD ...... move");
+    ImGui::BulletText("QE ........ lower/rise");
+    ImGui::BulletText("[];' ...... rotation");
+    ImGui::Text("Camera control:");
+    ImGui::BulletText("with MouseBtn2 held down:");
+    ImGui::Indent();
+    ImGui::BulletText("WASD ...... move");
+    ImGui::BulletText("QE ........ lower/rise");
+    ImGui::BulletText("mouse ..... look around");
+    ImGui::Unindent();
+    ImGui::Text("Spawner:");
+    ImGui::BulletText("SPACE .. spawn new object");
+    ImGui::BulletText("M ...... toggle starting impulse");
+    ImGui::BulletText("R ...... toggle random shape");
+    ImGui::BulletText("T ...... toggle random color and mass");
+  }
   if (ImGui::CollapsingHeader("Simulation")) {
     ImGui::Text("Application average %.3f ms/frame (%.4f FPS)",
                 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
